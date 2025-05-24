@@ -1,0 +1,44 @@
+<h2 mat-dialog-titulo>Adicionar Compromisso</h2>
+<mat-dialog-content>
+  <p>Data: {{ data.date | date:'fullDate' }} às {{ data.hour }}</p>
+  <mat-form-field appearance="fill" style="width: 100%;">
+    <mat-label>Título</mat-label>
+    <input matInput [(ngModel)]="titulo" />
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" style="width: 100%;">
+    <mat-label>Descrição</mat-label>
+    <textarea matInput rows="3" [(ngModel)]="descricao"></textarea>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="w-full">
+  <mat-label>Aluno</mat-label>
+  <input type="text" matInput [formControl]="alunoCtrl" [matAutocomplete]="autoAluno">
+  <mat-autocomplete #autoAluno="matAutocomplete" (optionSelected)="onAlunoSelected($event.option.value)">
+    <mat-option *ngFor="let aluno of alunosFiltrados" [value]="aluno.nome">
+      {{ aluno.nome }}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>
+
+<!-- Botão de adicionar novo -->
+<button mat-button color="primary" (click)="abrirModalNovoAluno()" *ngIf="!alunoEncontrado">
+  + Adicionar novo aluno
+</button>
+
+<mat-form-field appearance="fill" class="w-full">
+  <mat-label>Local</mat-label>
+  <input type="text" matInput [formControl]="localCtrl" [matAutocomplete]="autoLocal">
+  <mat-autocomplete #autoLocal="matAutocomplete" (optionSelected)="onLocalSelected($event.option.value)">
+    <mat-option *ngFor="let local of localsFiltrados" [value]="local.nome">
+      {{ local.nome }} — {{ local.endereco }}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="save()">Salvar</button>
+</mat-dialog-actions>

@@ -1,0 +1,14 @@
+.full-width {
+  width: 100%;
+}
+
+.mat-dialog-container {
+  background-color: rgba(0, 0, 0, 0.7); /* Deixe um pouco transparente para o fundo */
+  border-radius: 10px; /* Arredondar as bordas */
+  padding: 20px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3); /* Sombra suave */
+}
+
+::ng-deep .mat-dialog-container {
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.5); /* Sombra mais forte */
+}

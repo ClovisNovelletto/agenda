@@ -1,0 +1,14 @@
+.mat-dialog-container {
+  border: 2px solid #4CAF50; /* Cor verde, mas pode ajustar conforme seu design */
+  border-radius: 8px; /* Arredondar as bordas */
+  padding: 20px; /* Adiciona um pouco de espaço interno */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2); /* Sombra suave para destacar */
+}
+
+::ng-deep .mat-dialog-container {
+  border: 2px solid #4CAF50;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+

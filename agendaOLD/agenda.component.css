@@ -1,0 +1,27 @@
+.mrgtopbootom {
+  margin-top : 40px;
+  margin-bottom : 40px;
+}
+
+.demo-inline-calendar-card {
+  margin-top : 40px;
+  width: 200px;
+}
+
+@media (max-width: 768px) {
+   .calendar-container {
+     display: inline-block;
+     padding: 10px;
+   }
+}
+
+::ng-deep .custom-grid {
+  /*display: grid !important;*/
+  /*grid-template-columns: repeat(12, 20px) !important;*/
+  gap: 0px !important; /* Espaçamento entre os tiles */
+  width: 30.28% !important;
+} 
+
+.mat-grid-tile_sss {
+  width: 100% !important;
+}

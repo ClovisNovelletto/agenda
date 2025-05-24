@@ -1,1 +1,48 @@
 /* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 40px 0; padding: 40px 0; box-sizing: border-box;
+    font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.custom-aluno-dialog {
+  border: 2px solid #4CAF50;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Aplica o mesmo border-radius dentro do container interno do Material */
+::ng-deep .mat-dialog-container {
+  border-radius: 12px !important;
+}
+
+::ng-deep .custom-aluno-dialog.mat-dialog-container {
+  border: 2px solid #4CAF50;
+  border-radius: 12px !important;
+  padding: 0 !important;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+::ng-deep .mat-dialog-container.custom-aluno-dialog {
+  border: 2px solid #4CAF50;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+/* Estilo para o painel do diálogo */
+::ng-deep .cdk-overlay-pane.custom-aluno-dialog.mat-mdc-dialog-panel {
+  border: 2px solid #4CAF50;
+  border-radius: 2px !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  padding: 0 !important; /* Retira o padding interno */
+  overflow: hidden;
+}
+
+/* Para garantir que o conteúdo do diálogo também tenha o mesmo border-radius */
+::ng-deep .mat-dialog-container {
+  border-radius: 12px !important;
+  padding: 0 !important;  /* Retira qualquer padding dentro do container */
+}

@@ -1,0 +1,82 @@
+<p>ag  works! 1</p>
+
+
+<div class="week-navigation">
+  <button mat-raised-button color="primary" (click)="previousWeek()">← Semana Anterior</button>
+  <span class="week-label">{{ week[0] | date:'dd/MM/yyyy' }} - {{ week[6] | date:'dd/MM/yyyy' }}</span>
+  <button mat-raised-button color="primary" (click)="nextWeek()">Próxima Semana →</button>
+</div>
+
+
+<div class="row" cdkDropListGroup>
+  <div *ngIf="appointments.length > 0" class="agenda-grid">
+    <!-- Cabeçalho -->
+    <div class="header-cell hour-cell">Hora</div>
+    <div class="header-cell" *ngFor="let day of week">
+      {{ day | date: 'EEE dd/MM' }}
+    </div>
+
+    <!-- Corpo -->
+    <ng-container *ngFor="let hour of hours; trackBy: trackByHour">
+      <ng-container *ngFor="let minute of minutes; let i = index; trackBy: trackByMinute">
+        <!-- Coluna da hora -->
+        <div *ngIf="i === 0" class="hour-cell" [attr.style]="'grid-row: span 6;'">
+          {{ hour }}
+        </div>
+
+        <!-- Células -->
+        <div *ngFor="let day of week"
+             class="agenda-cell"
+             [ngClass]="{ 'empty-cell': !hasAppointment(day, hour, minute) }"
+             (mouseenter)="hoveredCell = day + '-' + hour + '-' + minute"
+             (mouseleave)="hoveredCell = null"
+             (click)="isMobile && openAppointmentModal(day, hour, minute)">
+
+          <!-- Dropzone -->
+          <div cdkDropList
+               [cdkDropListData]="getDropListData(day, hour, minute)"
+               class="appointment-dropzone"
+               (cdkDropListDropped)="onDrop($event)">
+              <!--<span style="height: 1; width: 1; overflow: hidden; display: block;">
+                {{ hour }} | {{ minute }}
+                </span>-->
+                 <!--<span>
+                {{ hour }} | {{ minute }}
+              </span>-->
+            <div *ngFor="let appt of getAppointments(day, hour, minute)"
+                 cdkDrag
+                 (cdkDragStarted)="isDragging = true"
+                 (cdkDragEnded)="isDragging = false"
+                 [cdkDragData]="{ appointment: appt, fromDay: day, fromHour: hour, fromMinute: minute }"
+                 class="appointment"
+                 (click)="editarCompromisso(appt); $event.stopPropagation()">
+                <!--teste arrastar compromisso-->
+                <ng-template cdkDragPreview>
+                    <div class="drag-preview">
+                      <strong>{{ appt.aluno }}</strong><br />
+                      <strong>{{ appt.local }}</strong>
+                    </div>
+                  </ng-template>
+                  <ng-template cdkDragPlaceholder>
+                    <div class="invisible-placeholder"></div>
+                  </ng-template>
+                <!--teste-->
+              <strong>{{ appt.aluno }} </strong><br />
+              <strong>{{ appt.local }} </strong><br />
+            </div><!--<div class="OcultarHoraMinu">  {{ hour }} | {{ minute }}</div> -->
+          </div>
+
+          <!-- Botão + -->
+          <div *ngIf="!isMobile && !isDragging && hoveredCell === (day + '-' + hour + '-' + minute)"
+               class="cell-add-button"
+               (click)="openAppointmentModal(day, hour, minute); $event.stopPropagation()">
+            +
+          </div>
+          <button *ngIf="isMobile" class="btn-float-add" (click)="openAppointmentModal(day, hour, minute); $event.stopPropagation()">
+            +
+          </button>
+        </div>
+      </ng-container>
+    </ng-container>
+  </div>
+</div>

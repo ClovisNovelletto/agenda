@@ -1,0 +1,265 @@
+/* Wrapper geral da agenda */
+.agenda-wrapper {
+  overflow-x: auto;
+  width: 100%;
+}
+
+/* Grade da agenda com 7 dias + coluna de horas */
+.agenda-grid {
+  display: grid;
+  grid-template-columns: 80px repeat(7, 1fr); /*80px
+  /*grid-auto-rows: auto;*/ /*60px;*/
+  grid-auto-rows: minmax(10px, auto); 
+  background-color: rgb(48, 10, 214); /* Corrige fundo da grid */
+  gap: 0px;
+  /*grid-template-rows: repeat(12, 40px);*/  /* 12 horários, cada linha com 40px */
+}
+
+/*lateral*/
+.agenda-grid {
+  text-align: center; 
+  vertical-align: center;
+  background: #0d85b4b4;
+}  
+
+.hour-cell {
+  font-size: 14px;
+  border-bottom: 1px solid #ddd;
+  /*height: 60px;*/ /* ou mesmo valor das outras linhas */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Cabeçalhos: dias da semana */
+.header-cell {
+  background-color: #1565c0;
+  color: white;
+  text-align: center;
+  padding: 2px;
+  border: 1px solid #ccc;
+  font-weight: bold;
+}
+
+/* Célula da agenda */
+.agenda-cell {
+  height: auto;
+  min-height: 10px; 
+  position: relative;
+  padding: 2px;
+  /*border: 0.5px solid #ccc;*/
+  box-shadow: inset 0 0 0 0.5px #ccc;
+  /*border: 1px solid rgba(0, 0, 0, 0.1);*/
+  background: #fff;
+  text-align: center;
+ }
+
+/* Zona de drop para os compromissos */
+.appointment-dropzone {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-grow: 1;
+    height: 100%;
+  width: 100%;
+}
+
+/* Visual de cada compromisso */
+.appointment {
+  background-color: #e0f7fa;
+  padding: 4px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: grab;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  word-break: break-word;
+  color: #004d40;
+}
+/* Efeito ao passar o mouse no compromisso */
+.appointment:hover {
+  background-color: #b2ebf2;
+}
+
+.btn-float-add {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #28a745;
+  color: white;
+  font-size: 24px;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+}
+
+/* Botão de adicionar compromisso visível no hover */
+.cell-add-button {
+ position: absolute;
+  top: 2px;
+  right: 2px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 14px;
+  line-height: 20px;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  z-index: 10;
+  /*
+   position: absolute;
+  top: 2px;
+  right: 2px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  */
+  /*
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+*/  
+/*  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  font-weight: bold;
+  font-size: 18px;
+  color: green;
+  cursor: pointer;
+  z-index: 10;
+  display: none;*/
+}
+
+.agenda-cell:hover .cell-add-button {
+  display: block;
+}
+
+/* Navegação entre semanas */
+.week-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  /*height: 10px;*/ /*agora*/
+}
+
+.week-label {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .agenda-grid {
+    grid-template-columns: 25px repeat(7, 1fr);
+    grid-auto-rows: minmax(10px, auto); 
+    /*grid-auto-rows: 50px;*/
+  }
+
+  .appointment {
+    font-size: 10px;
+    padding: 2px 4px;
+  }
+
+  .hour-cell {
+    font-size: 10px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cell-add-button {
+    font-size: 14px;
+  }
+  .btn-float-add {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #28a745;
+    color: white;
+    font-size: 24px;
+    border: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+  }
+}
+
+.invisible-placeholder {
+  visibility: hidden;
+  height: 100%;
+  /*
+  display: block;
+  height: 0;
+  width: 0;
+  overflow: hidden;
+  visibility: hidden;
+  font-size: 0;
+  line-height: 0;*/
+}
+
+.evento {
+  font-size: 12px;
+  padding: 2px 4px;
+  background: #e0f7fa;
+  border-radius: 4px;
+  cursor: move;
+  user-select: none;
+}
+
+.OcultarHoraMinu {
+  font-size: 1px;
+  height: 01;
+  width: 01;
+}
+
+.appointment-placeholder {
+  display: none; /* ou min-height: 0 */
+}
+
+.appointment.dragging {
+  background: #e0e0e0;
+  border: 1px dashed #aaa;
+  box-shadow: 0 0 8px rgba(0,0,0,0.3);
+}
+
+.drag-preview {
+  padding: 6px;
+  background-color: rgba(0, 123, 255, 0.85);
+  color: white;
+  border-radius: 4px;
+  box-shadow: 0 0 6px rgba(0,0,0,0.2);
+}

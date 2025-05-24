@@ -1,0 +1,48 @@
+
+backend
+npm install express cors body-parser
+npm install bcrypt
+npm install express
+npm install jsonwebtoken
+npm install dotenv
+
+
+frontend
+ng add @angular/material
+ng generate component navbar
+npm install material-design-icons
+
+
+  <!-- Conteúdo principal -->
+  <div class="conteudo-principal">
+    <mat-tab-group (selectedTabChange)="onTabChange($event)">
+      <mat-tab label="Agenda" [routerLink]="'/agenda'">
+        <div>
+          <h2>Agenda</h2>
+        </div>
+      </mat-tab>
+      <mat-tab label="Cadastro">
+        <div>
+          <h2>Cadastro</h2>
+          <p>Conteúdo relacionado à agenda aqui...</p>
+        </div>
+      </mat-tab>
+      <mat-tab label="Financeiro" [routerLink]="'/financeiro'">
+
+      </mat-tab>
+      <mat-tab label="Rodizio">
+        <div>
+          <h2>Rodízio</h2>
+          <p>Conteúdo relacionado à agenda aqui...</p>
+        </div>
+      </mat-tab>
+
+    </mat-tab-group>
+  </div>
+
+
+    <a mat-list-item (click)="logout()">Logout</a>
+
+      <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
+        <mat-icon>menu</mat-icon>
+      </button>

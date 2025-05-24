@@ -1,0 +1,177 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden; /* Remove scroll desnecessário */
+  
+  }
+  
+  .menu-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+  }
+  .drop-menu {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    width: 60%;
+  }
+  .material-icons{
+    font-family: 'Material Icons' !important;
+  }
+  
+  mat-sidenav-container {
+    height: 100%;
+    display: flex;
+  }
+  
+  mat-sidenav {
+    width: 250px;
+    background-color: #ffffff; /* Cor de fundo do menu */
+  }
+  
+  mat-sidenav {
+    width: 250px; /* Largura fixa */
+    background-color: #f4f4f4; /* Cor clara e neutra */
+    color: #333; /* Cor das letras para maior contraste */
+  }
+  
+  mat-nav-list a {
+    color: #333; /* Deixa os links mais visíveis */
+    font-weight: bold; /* Realça os links */
+    text-decoration: none;
+  }
+  
+  mat-nav-list a:hover {
+    background-color: #ddd; /* Destaca o link ao passar o mouse */
+  }
+  
+  mat-toolbar {
+    background-color: #6200ea; /* Roxo do Material Design */
+    color: #fff; /* Texto branco para contraste */
+  }
+  
+  mat-toolbar span {
+    font-size: 1.2rem; /* Tamanho do texto do cabeçalho */
+  }
+  
+  mat-sidenav-content {
+    background-color: #fafafa; /* Fundo claro e suave para o conteúdo principal */
+    min-height: 100vh; /* Garante que a altura seja ocupada */
+    padding: 16px; /* Espaçamento interno */
+  }
+  
+  .home-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: calc(100% - 64px); /* Tira a altura do cabeçalho */
+  }
+  
+  
+  .home-container {
+    background-color: #fff; /* Fundo branco suave */
+    color: #333; /* Texto em preto para contraste */
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Estilo moderno */
+  }
+  
+  @media (max-width: 768px) {
+    mat-sidenav {
+      width: 200px;
+    }
+  
+    mat-toolbar span {
+      font-size: 1rem;
+    }
+  }
+  
+  
+  /* ================ toolbar =============*/
+  
+  .example-spacer {
+  flex: 1 1 auto;
+  }
+  
+  /* ================ toolbar =============*/
+  
+  /* ================ menu =============*/
+  example-menu-bar-item {
+  cursor: pointer;
+  border: none;
+  
+  user-select: none;
+  min-width: 34px;
+  line-height: 26px;
+  padding: 0 16px;
+  }
+  
+  .example-menu-bar-item:hover {
+  background-color: rgb(208, 208, 208);
+  }
+  
+  .example-menu {
+  display: inline-flex;
+  flex-direction: column;
+  min-width: 180px;
+  max-width: 280px;
+  background-color: rgb(255, 255, 255);
+  padding: 6px 0;
+  }
+  
+  .example-menu hr {
+  width: 100%;
+  color: rgba(0, 0, 0, 0.12);
+  }
+  
+  .example-menu .example-menu-group {
+  display: inline-flex;
+  flex-direction: column;
+  }
+  
+  .example-menu .example-menu-item {
+  background-color: transparent;
+  cursor: pointer;
+  border: none;
+  
+  user-select: none;
+  min-width: 64px;
+  line-height: 36px;
+  padding: 0 16px;
+  
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  flex: 1;
+  }
+  
+  .example-menu-item > span {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  justify-content: flex-end;
+  }
+  
+  .example-menu .example-menu-item:hover {
+  background-color: rgb(208, 208, 208);
+  }
+  
+  .example-menu .example-menu-item[role='menuitemradio'][aria-checked='true'] {
+  background-color: rgb(225, 225, 225);
+  }
+  .example-menu .example-menu-item[role='menuitemcheckbox'][aria-checked='true'] {
+  background-color: rgb(225, 225, 225);
+  }
+  .example-menu .example-menu-item:active {
+  background-color: rgb(170, 170, 170);
+  }
+  
+  .example-menu-bar-item[aria-expanded='true'],
+  .example-menu-item[aria-expanded='true'] {
+  background-color: rgb(208, 208, 208) !important;
+  }
+  /* ================ menu =============*/  
