@@ -28,6 +28,9 @@ const pool = new Pool({
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 /*
@@ -61,7 +64,7 @@ app.use((req, res, next) => {
 
 
 // Endpoint para registrar um usuário
-app.post('/register', async (req, res) => {
+app.post('/api/register', async (req, res) => {
   const { username, password } = req.body;
 
   try {
@@ -75,7 +78,7 @@ app.post('/register', async (req, res) => {
 });
 
 // Endpoint para autenticar login
-app.post('/login', async (req, res) => {
+app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
 
   try {
@@ -185,15 +188,15 @@ app.get('/api/personals', authenticateToken, async (req, res) => {
   }    
 });
 
-app.get('/home', authenticateToken, (req, res) => {
+app.get('/api/home', authenticateToken, (req, res) => {
   res.json({ message: `Bem-vindo home, ${req.user.username}!` });
 });
 
-app.get('/agenda', authenticateToken, (req, res) => {
+app.get('/api/agenda', authenticateToken, (req, res) => {
   res.json({ message: `Bem-vindo agenda, ${req.user.username}!` });
 });
 
-app.get('/financeiro', authenticateToken, (req, res) => {
+app.get('/api/financeiro', authenticateToken, (req, res) => {
   res.json({ message: `Bem-vindo financeiro, ${req.user.username}!` });
 });
 
@@ -207,44 +210,7 @@ app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
 });
 
-
-/*------------------------------------------*/
-
-app.post('/loginOld', async (req, res) => {
-  const { username, password } = req.body;
-
-  try {
-    // Busca o hash da senha no banco de dados
-    const query = 'SELECT * FROM users WHERE username = $1';
-    const result = await pool.query(query, [username]);
-
-    if (result.rows.length > 0) {
-      const user = result.rows[0];
-
-      // Usa crypt para comparar a senha fornecida com o hash no banco
-      const compareQuery = `SELECT crypt($1, $2) = $2 AS is_valid`;
-      const compareResult = await pool.query(compareQuery, [password, user.password]);
-
-      if (compareResult.rows[0].is_valid) {
-        res.json({ token: 'fake-jwt-token', user });
-      } else {
-        res.status(401).json({ error: 'Credenciais inválidas' });
-      }
-    } else {
-      res.status(401).json({ error: 'Usuário não encontrado' });
-    }
-  } catch (error) {
-    console.error('Erro ao fazer login:', error);
-    res.status(500).json({ error: 'Erro no login' });
-  }
-});
-
-
-app.get('/api/teste', (req, res) => {
-  res.json({ ok: true, msg: 'API funcionando' });
-});
-
-
+''
 // Sirva os arquivos estáticos da aplicação Angular
 app.use(express.static(distPath));
 
