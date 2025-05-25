@@ -3,13 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
-
+import { environment } from '../../src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private apiURL = 'http://localhost:3000/login'; // URL do backend
+  private apiURL = `${environment.apiUrl}/login`; // URL do backend
   private tokenKey = 'jwt-token';
   private loggedIn = new BehaviorSubject<boolean>(false); // Estado inicial
   public isLoggedIn$: Observable<boolean> = this.loggedIn.asObservable();
@@ -39,7 +39,7 @@ export class AuthService {
 
   login(username: string, password: string): void {
     console.log('AS login');
-    this.http.post<{ token: string }>('http://localhost:3000/login', { username, password })
+    this.http.post<{ token: string }>(`${environment.apiUrl}/login`, { username, password })
       .subscribe({
         next: (response) => {
           localStorage.setItem('jwt-token', response.token); // Armazena o token

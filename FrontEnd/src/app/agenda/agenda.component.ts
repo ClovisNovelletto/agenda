@@ -17,7 +17,7 @@ import { MatTableModule } from '@angular/material/table';
 import { Appointment } from '../models/appointment'; // ajuste o caminho conforme sua estrutura
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CdkDropList, CdkDragDrop } from '@angular/cdk/drag-drop';
-
+import { environment } from '../../../src/environments/environment';
 
 
 @Component({
@@ -368,7 +368,7 @@ loadAppointments() {
   console.log('Iniciando requisição HTTP...');
   const token = localStorage.getItem('jwt-token');
   const headers = new HttpHeaders({Authorization: `Bearer ${token}` });    
-  this.http.get<any[]>('http://localhost:3000/api/agendas', {headers}).subscribe((data) => {
+  this.http.get<any[]>(`${environment.apiUrl}/agendas`, {headers}).subscribe((data) => {
     this.appointments = data.map((item) => ({
       agenda_id: item.agenda_id,
       date: new Date(item.date),
@@ -390,7 +390,7 @@ loadAppointments() {
 loadAlunos(): void {
   const token = localStorage.getItem('jwt-token');
   const headers = new HttpHeaders({Authorization: `Bearer ${token}` });    
-  this.http.get<Aluno[]>('http://localhost:3000/api/alunos', {headers}).subscribe((alunos) => {
+  this.http.get<Aluno[]>(`${environment.apiUrl}/alunos`, {headers}).subscribe((alunos) => {
     this.alunos = alunos;
   });
 }
@@ -398,7 +398,7 @@ loadAlunos(): void {
 loadLocals(): void {
   const token = localStorage.getItem('jwt-token');
   const headers = new HttpHeaders({Authorization: `Bearer ${token}` });    
-  this.http.get<Aluno[]>('http://localhost:3000/api/locals', {headers}).subscribe((locals) => {
+  this.http.get<Aluno[]>(`${environment.apiUrl}/locals`, {headers}).subscribe((locals) => {
     this.locals = locals;
   });
 }
@@ -406,7 +406,7 @@ loadLocals(): void {
 loadPersonals(): void {
   const token = localStorage.getItem('jwt-token');
   const headers = new HttpHeaders({Authorization: `Bearer ${token}`});  
-  this.http.get<Personal[]>('http://localhost:3000/api/personals', {headers}).subscribe((personals) => {
+  this.http.get<Personal[]>(`${environment.apiUrl}/personals`, {headers}).subscribe((personals) => {
     this.personals = personals;
   });
 }

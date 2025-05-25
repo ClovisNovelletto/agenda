@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { HttpService } from '../http.service';
-
+import { environment } from '../../../src/environments/environment';
 
 @Component({
     selector: 'app-login',
@@ -24,7 +24,7 @@ export class LoginComponent {
   isLoading = false;
 
   onLogin(): void {
-    this.httpService.post('http://localhost:3000/login', {
+    this.httpService.post(`${environment.apiUrl}/login`, {
       username: this.username,
       password: this.password
     }).subscribe({
