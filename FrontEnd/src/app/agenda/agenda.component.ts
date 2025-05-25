@@ -340,7 +340,8 @@ openAppointmentModal(day: Date, hour: string, minute: number) {
     console.log(compromisso);
 
     if (comp.agenda_id) {
-      this.http.put('/api/agendas', compromisso, { headers }).subscribe({
+      /*this.http.put('/api/agendas', compromisso, { headers }).subscribe({*/
+      this.http.put(`${environment.apiUrl}/agendas`, compromisso, { headers }).subscribe({
         next: () => {
           console.log('Compromisso atualizado com sucesso!');
           // Aqui você pode recarregar a agenda ou dar feedback ao usuário
@@ -351,7 +352,10 @@ openAppointmentModal(day: Date, hour: string, minute: number) {
         }
       });
     }else{
-      this.http.post('/api/agendas', compromisso, { headers }).subscribe({
+
+
+      /*this.http.post('/api/agendas', compromisso, { headers }).subscribe({*/
+      this.http.post(`${environment.apiUrl}/agendas`, compromisso, { headers }).subscribe({
         next: () => {
           console.log('Compromisso inserido com sucesso!');
           // Aqui você pode recarregar a agenda ou dar feedback ao usuário
