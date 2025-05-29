@@ -36,6 +36,11 @@
   </mat-autocomplete>
 </mat-form-field>
 
+<!-- Botão de adicionar novo -->
+<button mat-button color="primary" (click)="abrirModalNovoLocal()" *ngIf="!localEncontrado">
+  + Adicionar novo local
+</button>
+
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">

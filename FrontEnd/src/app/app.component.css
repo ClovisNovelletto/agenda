@@ -3,3 +3,19 @@
    margin-bottom : 40px;
 }
 
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden; /* isso evita scroll duplo */
+}
+
+mat-sidenav-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+router-outlet ~ * {
+  flex-grow: 1;
+  overflow: auto; /* permite rolar o conteúdo da página */
+}

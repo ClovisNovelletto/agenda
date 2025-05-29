@@ -25,8 +25,8 @@ import { MatButtonModule } from '@angular/material/button';
       </mat-form-field>
 
       <mat-form-field appearance="fill" class="w-full">
-        <mat-label>Telefone</mat-label>
-        <input matInput formControlName="telefone" />
+        <mat-label>Endereço</mat-label>
+        <input matInput formControlName="endereco" />
       </mat-form-field>
 
       <div class="flex justify-end mt-4">
@@ -52,7 +52,7 @@ export class AddLocalDialogComponent {
   ) {
     this.form = this.fb.group({
       nome: [data.nomeParcial || '', Validators.required],
-      telefone: ['', Validators.required]
+      endereco: ['', Validators.required]
     });
   }
 

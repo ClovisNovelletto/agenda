@@ -5,6 +5,9 @@ import { AppComponent } from './app.component'; // Componente principal*/
 import { HeaderComponent } from './header/header.component';
 import { HttpClientModule } from '@angular/common/http';
 
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './auth.interceptor';
+
 
 //imports agenda
 import { MatDialogModule } from '@angular/material/dialog';
@@ -40,7 +43,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatSelectModule,
     MatButtonModule,
   ],
-  providers: [],
+  providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
   bootstrap: []
 })
 export class AppModule {}

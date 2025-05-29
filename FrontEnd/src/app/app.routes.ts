@@ -13,11 +13,8 @@ export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' }, // Redireciona a rota raiz para /home
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
   /*{ path: 'agenda', component: AgendaComponent, canActivate: [AuthGuard] },*/
-  {
-    path: 'agenda',
-    canActivate: [AuthGuard],
-    loadComponent: () => import('./agenda/agenda.component').then(m => m.AgendaComponent)
-  },
+  { path: 'agenda', canActivate: [AuthGuard], loadComponent: () => import('./agenda/agenda.component').then(m => m.AgendaComponent)},
+  { path: 'configuracoes',  canActivate: [AuthGuard], loadComponent: () => import('./configuracoes/configuracoes.component').then(m => m.ConfiguracoesComponent)},
   { path: 'financeiro', component: FinanceiroComponent, canActivate: [AuthGuard]},
   { path: 'login', component: LoginComponent },
 ];

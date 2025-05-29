@@ -1,0 +1,86 @@
+<h2 *ngIf="configSelecionada" class="titulo-config">⚙️ Configurações da Agenda</h2>
+
+<form *ngIf="configSelecionada" (ngSubmit)="salvarConfiguracoes()" class="form-config">
+  <div class="form-group">
+    <label class="form-label">Dias de atendimento:</label>
+    <div class="dias-checkboxes">
+      <label *ngFor="let dia of diasSemana" class="checkbox-dia">
+        <input type="checkbox"
+               [checked]="configSelecionada.diasAtendimento.includes(dia.valor)"
+               (change)="toggleDia(dia.valor)"
+               name="diasAtendimento{{dia.valor}}">
+           {{ dia.nome }}
+        </label>
+    </div>
+  </div>
+  <div class="titulo-config">
+    <label class="form-label">Horário de Início dia:</label>
+        <select [(ngModel)]="configSelecionada.horaInicio" name="horaInicio" class="input-config">
+        <option *ngFor="let h of horasPossiveis" [value]="h">{{ h }}:00</option>
+        </select>
+    </div>
+
+  <div class="titulo-config">
+    <label class="form-label">Horário de Final dia.:</label>
+    <select [(ngModel)]="configSelecionada.horaFim" name="horaFim" class="input-config">
+    <option *ngFor="let h of horasPossiveis" [value]="h">{{ h }}:00</option>
+    </select>
+  </div>
+
+  <div class="titulo-config">
+    <label class="form-label">Início de aula a cada:</label>
+    <select [(ngModel)]="configSelecionada.intervaloMinutos" name="intervaloMinutos" class="input-config">
+      <option [value]="10">10 min</option>
+      <option [value]="15">15 min</option>
+      <option [value]="30">30 min</option>
+      <option [value]="60">1h</option>
+    </select>
+  </div>
+
+  <button type="submit" class="btn-salvar">💾 Salvar</button>
+
+  <div *ngIf="isSaving" class="mensagem salvando">
+  ⏳ Salvando configurações...
+  </div>
+
+  <div *ngIf="mensagem" class="mensagem">{{ mensagem }}</div>
+
+  <button type="button" class="fechar-btn" (click)="fechar()">Fechar</button>
+
+</form>
+
+
+<!--
+<h2 *ngIf="configSelecionada">Configurações da Agenda</h2>
+
+<form *ngIf="configSelecionada" (ngSubmit)="salvarConfiguracoes()">
+  <label>Dias de atendimento:</label>
+  <div class="dias-checkboxes">
+    <label *ngFor="let dia of diasSemana">
+    <input type="checkbox"
+            [checked]="configSelecionada.diasAtendimento.includes(dia.valor)"
+            (change)="toggleDia(dia.valor)"
+            name="diasAtendimento{{dia.valor}}">
+            {{ dia.nome }}
+    </label>
+  </div>
+
+
+
+
+  <label>Horário de Início:</label>
+  <input type="number" [(ngModel)]="configSelecionada.horaInicio" name="horaInicio" min="0" max="23">
+
+  <label>Horário de Fim:</label>
+  <input type="number" [(ngModel)]="configSelecionada.horaFim" name="horaFim" min="1" max="23">
+
+  <label>Intervalo entre horários (min):</label>
+  <select [(ngModel)]="configSelecionada.intervaloMinutos" name="intervaloMinutos">
+    <option [value]="10">10 min</option>
+    <option [value]="30">30 min</option>
+    <option [value]="60">1h</option>
+  </select>
+
+  <button type="submit">Salvar</button>
+</form>
+-->

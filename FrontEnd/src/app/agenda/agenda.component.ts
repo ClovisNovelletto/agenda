@@ -12,13 +12,17 @@ import { HttpClient } from '@angular/common/http';
 import { Aluno } from '../models/aluno.model';
 import { Local } from '../models/local.model';
 import { Personal } from '../models/personal.model';
+import { ConfigAgenda } from '../models/configAgenda.model';
 import { HttpHeaders } from '@angular/common/http';
 import { MatTableModule } from '@angular/material/table';
 import { Appointment } from '../models/appointment'; // ajuste o caminho conforme sua estrutura
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CdkDropList, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { environment } from '../../../src/environments/environment';
-
+//import { Configuracoes } from '../configuracoes/configuracoes.component';
+import { PersonalService } from '../services/personal.service';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   standalone: true,
@@ -35,6 +39,7 @@ import { environment } from '../../../src/environments/environment';
     MatTableModule,
     DragDropModule,
     CdkDropList,
+  //  Configuracoes,
   ],
 
  
@@ -47,13 +52,22 @@ export class AgendaComponent implements OnInit, AfterViewInit {
   alunos: Aluno[] = [];
   locals: Local[] = [];
   personals: Personal[] = [];
+  personal?:  Personal;
   selectedAlunoId: number | null = null;
   selectedLocalId: number | null = null;
   selectedPersonalId: number | null = null;
   appointments: Appointment[] = [];
-  readonly minutes: number[] = [0, 10, 20, 30, 40, 50];
+  //readonly minutes: number[] = [0, 10, 20, 30, 40, 50];
+  minutes: number[]=[];
   hoveredCell: string | null = null;
   isDragging = false;
+  
+  configAgenda: ConfigAgenda = {
+    diasAtendimento: [],
+    horaInicio: 8,
+    horaFim: 18,
+    intervaloMinutos: 10
+  };
 
   //appointments: { date: string; hour: string; titulo: string }[] = [];
 
@@ -74,11 +88,13 @@ export class AgendaComponent implements OnInit, AfterViewInit {
   week: Date[] = [];
   isMobile: boolean = false;
   dropListIds: string[] = [];
-  constructor(private dialog: MatDialog, private http: HttpClient ,) {}
+
+  constructor(private dialog: MatDialog, private http: HttpClient, private personalService: PersonalService) {}
 
   
 
   ngOnInit(): void {
+
     console.log('AgendaComponent iniciado');
     this.isMobile = window.innerWidth <= 768; // ajustável conforme seu layout
       window.addEventListener('resize', () => {
@@ -86,60 +102,106 @@ export class AgendaComponent implements OnInit, AfterViewInit {
         this.isMobile = window.innerWidth <= 768;
     });
     const today = new Date();
-    this.loadAppointments();
-    //this.week = this.generateWeek(this.currentDate);
-    this.generateWeek();
+
+    this.loadPersonal().subscribe(config => {
+      this.configAgenda = config;
+      console.log('configAgenda init dentro loald:', this.configAgenda);
+console.log('this.configAgenda.diasAtendimento.length:', this.configAgenda.diasAtendimento.length);
+    this.generateMinutes(); // gerar os minutos corretamente
+    this.generateAllDropListIds(); // agora com os minutos corretos
+    this.generateWeek();           // se também depende disso
+//    this.generateWeek();     // só chama após o carregamento
     this.generateHours();
+    });
+/*
+  this.personalService.getConfiguracoes().subscribe(config => {
+    this.configAgenda = config;
+    this.generateMinutes(); // gerar os minutos corretamente
+    this.generateAllDropListIds(); // agora com os minutos corretos
+    this.generateWeek();           // se também depende disso
+  });
+*/
+    //this.loadPersonals();
+    console.warn('configAgenda init:', this.configAgenda);
+    this.loadAppointments();    
+    //this.generateWeek();
+    //this.generateHours();
     this.loadAlunos();
     this.loadLocals();
-    this.loadPersonals();
-    this.generateAllDropListIds();
+    
+    //this.generateAllDropListIds();
     //console.log('Horários de compromissos:', this.appointments.map(a => a.start.toISOString()));
     console.log('Horários de compromissos completos:', this.appointments);
   }
 
-  /*v6*/
-/*
-  generateWeek(): Date[] {
-  const startOfWeek = new Date(this.currentDate);
-  const dayOfWeek = startOfWeek.getDay(); // 0 = domingo
-  startOfWeek.setDate(startOfWeek.getDate() - dayOfWeek);
-  startOfWeek.setHours(0, 0, 0, 0); // <-- Zera hora aqui também!
 
-  const week: Date[] = [];
+ /* 
+  interface ConfigPersonal {
+  diasAtendimento: number[]; // [1,2,3,4,5] => Seg a Sex
+  horaInicio: number;        // 8
+  horaFim: number;           // 18
+  intervaloMinutos: number;  // 10, 30, 60
+}
+*/
 
-  for (let i = 0; i < 7; i++) {
-    const day = new Date(startOfWeek);
-    day.setDate(startOfWeek.getDate() + i);
-    day.setHours(0, 0, 0, 0); // <-- Zera hora para cada dia!
-    week.push(day);
-  }
-console.log('generateWeek:',week);
-  return week;
+generateWeek(): void {
+  const baseDate = new Date(this.currentDate);
+  const startOfWeek = new Date(baseDate);
+  startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay()); // Domingo (0)
+
+  this.week = this.configAgenda.diasAtendimento.map(dia => {
+    const date = new Date(startOfWeek);
+    date.setDate(startOfWeek.getDate() + dia); // Pula direto para o dia desejado
+    date.setHours(0, 0, 0, 0);
+    return date;
+  });
 }
 
-*/
-  /*v5*/
-  /*generateWeek(): Date[] {
-  //const startOfWeek = this.getStartOfWeek(this.currentDate); // domingo ou segunda, por exemplo
-    const startOfWeek = new Date(this.currentDate);
+/*
+generateWeek(): void {
+  const startOfWeek = new Date(this.currentDate);
   const dayOfWeek = startOfWeek.getDay();
   startOfWeek.setDate(startOfWeek.getDate() - dayOfWeek); // Domingo
-  const week: Date[] = [];
 
-  for (let i = 0; i < 7; i++) {
+  this.week = [];
+
+  for (let i = 0; i < this.configAgenda.diasAtendimento.length; i++) {
     const day = new Date(startOfWeek);
     day.setDate(startOfWeek.getDate() + i);
-    day.setHours(0, 0, 0, 0); // <-- zera a hora!
-    week.push(day);
+    day.setHours(0, 0, 0, 0);
+    if (this.configAgenda.diasAtendimento.includes(day.getDay())) {
+      this.week.push(new Date(day));
+    }
   }
-   console.log('generateWeek:',week);
-  return week;
 }
-  */
-  /*v4*/
-  
-  generateWeek(): void {
+*/
+generateHours() {
+  this.hours = []; // resetar
+  const start = this.configAgenda.horaInicio;
+  const end = this.configAgenda.horaFim;
+ console.log('start:', start);
+  console.log('ends:', end);
+  for (let hour = start; hour <= end; hour++) {
+    this.hours.push(`${hour.toString().padStart(2, '0')}:00`);
+  }
+}
+
+/*
+opcional com intervalos 30 min
+generateHours() {
+  this.hours = [];
+  const start = this.configPersonal.horaInicio;
+  const end = this.configPersonal.horaFim;
+
+  for (let hour = start; hour <= end; hour++) {
+    this.hours.push(`${hour.toString().padStart(2, '0')}:00`);
+    this.hours.push(`${hour.toString().padStart(2, '0')}:30`);
+  }
+}
+*/
+
+/*
+generateWeek(): void {
   const startOfWeek = new Date(this.currentDate);
   const dayOfWeek = startOfWeek.getDay();
   startOfWeek.setDate(startOfWeek.getDate() - dayOfWeek); // Domingo
@@ -152,76 +214,41 @@ console.log('generateWeek:',week);
     return new Date(day); // força nova instância separada
   });
 }
-
-
- /*v3 
-generateWeek(startDate: Date): Date[] {
-  const week: Date[] = [];
-
-  const baseDate = new Date(startDate); // clone para segurança
-  const dayOfWeek = baseDate.getDay();  // 0 = Domingo, 1 = Segunda...
-
-  // Ajusta para o domingo anterior (ou o próprio dia se já for domingo)
-  baseDate.setDate(baseDate.getDate() - dayOfWeek);
-
-  for (let i = 0; i < 7; i++) {
-    const day = new Date(baseDate); // novo clone para cada dia
-    day.setDate(baseDate.getDate() + i);
-    week.push(day);
-  }
-console.log("week", week);    
-  return week;
-}
-*/
-
-/*
-v2  
-generateWeek(startDate: Date): Date[] {
-  const week: Date[] = [];
-
-  for (let i = 0; i < 7; i++) {
-    const day = new Date(startDate); // clone do startDate
-    day.setDate(startDate.getDate() + i);
-    week.push(new Date(day)); // força nova instância
-  }
-
-  return week;
-}
-*/
-
-
-/*v1
-generateWeek(): void {
-  const startOfWeek = new Date(this.currentDate);
-  const dayOfWeek = startOfWeek.getDay();
-  startOfWeek.setDate(startOfWeek.getDate() - dayOfWeek); // Domingo
-
-  this.week = Array.from({ length: 7 }, (_, i) => {
-    const day = new Date(startOfWeek);
-    day.setDate(day.getDate() + i);
-console.log("day", day);    
-    return day;
-
-  });
-}
 */
 /*
-nextWeek(): void {
-  this.currentDate.setDate(this.currentDate.getDate() + 7);
-  this.generateWeek(this.currentDate);
-}
-
-previousWeek(): void {
-  this.currentDate.setDate(this.currentDate.getDate() - 7);
-  this.generateWeek(this.currentDate);
-}
-*/
 generateHours() {
   for (let hour = 8; hour <= 18; hour++) {
     this.hours.push(`${hour.toString().padStart(2, '0')}:00`);
   }
 }
+*/
 
+generateDropListId(day: Date, hour: string, minute: number): string {
+  return `${day.toDateString()}-${hour}-${minute}`;
+}
+
+generateMinutes(): void {
+  this.minutes = [];
+  const intervalo = this.configAgenda.intervaloMinutos || 10;
+  for (let i = 0; i < 60; i += intervalo) {
+    this.minutes.push(i);
+  }
+  this.configAgenda.intervaloMinutos
+  console.log(' this.configAgenda.intervaloMinutos:',  this.configAgenda.intervaloMinutos);
+  console.log('this.minutes:', this.minutes);
+}
+
+generateAllDropListIds() {
+  this.dropListIds = [];
+  for (const day of this.week) {
+    for (const hour of this.hours) {
+      for (const minute of this.minutes) {
+        this.dropListIds.push(this.generateDropListId(day, hour, minute));
+      }
+    }
+  }
+  console.log('dropListIds:', this.dropListIds);
+}
 
 nextWeek() {
   this.currentDate.setDate(this.currentDate.getDate() + 7);
@@ -297,6 +324,14 @@ openAppointmentModal(day: Date, hour: string, minute: number) {
   });
 
   dialogRef.afterClosed().subscribe((result) => {
+    if (result?.atualizouAlunos && result.aluno) {
+      const jaExiste = this.alunos.some(a => a.id === result.aluno.id);
+      console.log('afterClosedo openAppointmentModal antes',  this.alunos);      
+      if (!jaExiste) {
+        this.alunos.push(result.aluno);
+      }
+    console.log('afterClosedo openAppointmentModal depois',  this.alunos);      
+    }
     if (result?.titulo) {
       const start = new Date(day);
       const [h] = hour.split(':');
@@ -407,13 +442,58 @@ loadLocals(): void {
   });
 }
 
-loadPersonals(): void {
-  const token = localStorage.getItem('jwt-token');
-  const headers = new HttpHeaders({Authorization: `Bearer ${token}`});  
-  this.http.get<Personal[]>(`${environment.apiUrl}/personals`, {headers}).subscribe((personals) => {
-    this.personals = personals;
-  });
+loadPersonal(): Observable<ConfigAgenda> {
+  return this.personalService.getMe().pipe(
+    map(personal => ({
+      diasAtendimento: [0,1,2,3,4,5,6].filter(i => (personal as any)[`dia${i}`]),
+      horaInicio: personal.hora_inicio,
+      horaFim: personal.hora_fim,
+      intervaloMinutos: personal.intervalo_minutos
+    }))
+  );
 }
+/*
+loadPersonals(): void {
+
+  this.personalService.getMe().subscribe(personal => {
+  this.personal = personal;
+
+    this.configAgenda = {
+    diasAtendimento: [],
+    horaInicio: parseInt(personal.hora_inicio.split(':')[0], 10),
+    horaFim: parseInt(personal.hora_fim.split(':')[0], 10),
+    intervaloMinutos: personal.intervalo_minutos
+  };
+  for (let i = 0; i <= 6; i++) {
+    if ((personal as any)[`dia${i}`]) {
+        this.configAgenda.diasAtendimento.push(i);
+    }
+  }
+  console.warn('configAgenda load:', this.configAgenda);
+  
+  })
+}
+  */
+//  const token = localStorage.getItem('jwt-token');
+//  const headers = new HttpHeaders({Authorization: `Bearer ${token}`});  
+//  this.http.get<Personal[]>(`${environment.apiUrl}/personals`, {headers}).subscribe((personals) => {
+  //this.personals = personals;
+  
+//  const personal = personals[0];
+//  this.configAgenda = {
+//    diasAtendimento: [],
+//    horaInicio: parseInt(personal.hora_inicio.split(':')[0], 10),
+//    horaFim: parseInt(personal.hora_fim.split(':')[0], 10),
+//    intervaloMinutos: personal.intervalo_minutos
+  //};
+//  for (let i = 0; i <= 6; i++) {
+//    if ((personal as any)[`dia${i}`]) {
+//        this.configAgenda.diasAtendimento.push(i);
+//    }
+  //}
+//  console.warn('configAgenda:', this.configAgenda);
+  //});
+//}
 
 
 getDateTime(appt: Appointment): Date {
@@ -471,6 +551,14 @@ editarCompromisso(appt: any): void {
   });
 
   dialogRef.afterClosed().subscribe(result => {
+    if (result?.atualizouAlunos && result.aluno) {
+      console.log('afterClosedo editarCompromisso antes',  this.alunos);      
+      const jaExiste = this.alunos.some(a => a.id === result.aluno.id);
+      if (!jaExiste) {
+        this.alunos.push(result.aluno);
+      }
+     console.log('afterClosedo editarCompromisso depois',  this.alunos);      
+    }
     if (result?.titulo) {
       // Atualiza compromisso existente
       console.log('result:', result );
@@ -550,23 +638,6 @@ formatHour(date: Date): string {
   return `${h}:${m}`;
 }
 
-
-generateDropListId(day: Date, hour: string, minute: number): string {
-  return `${day.toDateString()}-${hour}-${minute}`;
-}
-
-generateAllDropListIds() {
-  this.dropListIds = [];
-  for (const day of this.week) {
-    for (const hour of this.hours) {
-      for (const minute of [0, 10, 20, 30, 40, 50]) {
-        this.dropListIds.push(this.generateDropListId(day, hour, minute));
-      }
-    }
-  }
-}
-
-
 getDropListId(day: Date, hour: string, minute: number): string {
   return `${day.toISOString()}_${hour}_${minute}`;
 }
@@ -586,44 +657,7 @@ getDropListData(day: Date, hour: string, minute: number) {
     minute: Number(minute)  // força número
   };
 }
-/*
-getDropListData(day: Date, hour: string, minute: number) {
-  const d = new Date(day); // Garante que é um novo objeto
-  return {
-    day: d,
-    hour,
-    minute
-  };
-}
-*/
-/*
-getDropListData(day: Date, hour: string, minute: number) {
-  const [h, m] = hour.split(':').map(Number);
-  const newDay = new Date(day.getFullYear(), day.getMonth(), day.getDate(), h, minute);
 
-//  console.log('getDropListData →', newDay.toString());
-
-//  console.log('getDropListData:', {
-//    toDay: newDay,
-//    toHour: hour,
-//    toMinute: minute
-  //} );
-  return {
-    toDay: newDay,
-    toHour: hour,
-    toMinute: minute
-  };
-}
-  */
-/*
-getDropListData(day: Date, hour: string, minute: number) {
-  return {
-    toDay: new Date(day),
-    toHour: hour,
-    toMinute: minute
-  };
-}
-*/
 }
 
 function buildDateWithTime(baseDay: Date, hour: string, minute: number): Date {
@@ -632,3 +666,5 @@ function buildDateWithTime(baseDay: Date, hour: string, minute: number): Date {
   result.setHours(h, minute, 0, 0);
   return result;
 }
+
+
