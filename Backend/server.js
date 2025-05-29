@@ -145,7 +145,10 @@ const authenticateToken = (req, res, next) => {
 app.get('/api/agendas', authenticateToken, async (req, res) => {
   try {
     console.log("carrega agenda");
-    const result = await pool.query(`SELECT * FROM agendaslista`); 
+    const personalId = req.user.personalId;
+    const compareQuery = `SELECT * FROM agendaslista WHERE PersonalID=$1`;
+    const result = await pool.query(compareQuery, [personalId]);      
+    //const result = await pool.query(`SELECT * FROM agendaslista`); 
     res.json(result.rows);
     //console.log(result.rows); // apenas isso para logar
     // não usar res.json(result.rows);    // envia resposta corretamente uma única vez
@@ -157,7 +160,9 @@ app.get('/api/agendas', authenticateToken, async (req, res) => {
 
 app.get('/api/alunos', authenticateToken, async (req, res) => {
   try {
-    const result = await pool.query('SELECT aluno_id id, aluno nome FROM alunos');
+    const personalId = req.user.personalId;
+    const compareQuery = `SELECT aluno_id id, aluno nome, alufone telefone, alucodconvite codigo_convite FROM alunos WHERE AluPersonalID=$1`;
+    const result = await pool.query(compareQuery, [personalId]);      
     res.json(result.rows);
     //console.log(res.json(result.rows));
   } catch(err) {
@@ -168,7 +173,10 @@ app.get('/api/alunos', authenticateToken, async (req, res) => {
 
 app.get('/api/locals', authenticateToken, async (req, res) => {
   try {
-    const result = await pool.query('SELECT local_id id, local nome FROM locals');
+    const personalId = req.user.personalId;
+    const compareQuery = `SELECT local_id id, local nome, locendereco endereco FROM locals WHERE LocPersonalID=$1`;
+    const result = await pool.query(compareQuery, [personalId]);      
+    //const result = await pool.query('SELECT local_id id, local nome, locendereco endereco FROM locals');
     res.json(result.rows);
     //console.log(res.json(result.rows));
   } catch(err) {
@@ -177,10 +185,51 @@ app.get('/api/locals', authenticateToken, async (req, res) => {
   }
 });
 
+app.get('/api/configuracoes', authenticateToken, async (req, res) => {
+  try {
+     const personalId = req.user.personalId;
+    const compareQuery = `SELECT personal_id id, personal nome,
+                                 dia0, dia1, dia2, dia3, dia4, dia5, dia6, hora_inicio, hora_fim, intervalo_minutos
+       FROM Personals WHERE Personal_ID=$1`;
+    const result = await pool.query(compareQuery, [personalId]);    
+
+    //const result = await pool.query('SELECT personal_id id, personal nome FROM personals'); 
+    res.json(result.rows[0]);
+    //console.log(res.json(result.rows));
+  } catch(err) {
+      console.error(err);
+    res.status(500).send('Erro ao buscar personals');
+  }    
+});
+
 app.get('/api/personals', authenticateToken, async (req, res) => {
   try {
-    const result = await pool.query('SELECT personal_id id, personal nome FROM personals'); 
+     const personalId = req.user.personalId;
+    const compareQuery = `SELECT personal_id id, personal nome,
+                                 dia0, dia1, dia2, dia3, dia4, dia5, dia6, hora_inicio, hora_fim, intervalo_minutos
+       FROM Personals WHERE Personal_ID=$1`;
+    const result = await pool.query(compareQuery, [personalId]);    
+
+    //const result = await pool.query('SELECT personal_id id, personal nome FROM personals'); 
     res.json(result.rows);
+    //console.log(res.json(result.rows));
+  } catch(err) {
+      console.error(err);
+    res.status(500).send('Erro ao buscar personals');
+  }    
+});
+
+app.get('/api/personal/me', authenticateToken, async (req, res) => {
+  try {
+     const personalId = req.user.personalId;
+    const compareQuery = `SELECT personal_id id, personal nome,
+                                 dia0, dia1, dia2, dia3, dia4, dia5, dia6, hora_inicio, hora_fim, intervalo_minutos
+       FROM Personals WHERE Personal_ID=$1`;
+    const result = await pool.query(compareQuery, [personalId]);    
+
+    //const result = await pool.query('SELECT personal_id id, personal nome FROM personals'); 
+    //res.json(result.rows);
+    res.json(result.rows[0]);
     //console.log(res.json(result.rows));
   } catch(err) {
       console.error(err);
@@ -229,23 +278,43 @@ function gerarCodigoConvite(length = 8) {
 }
 
 
-app.post('/api/alunos', async (req, res) => {
-  const { nome, telefone, personal_id } = req.body;
 
+/*
+  try {
+    const result = await pool.query(
+      `INSERT INTO agendas (AgPersonalID, AgAlunoid, AgLocalID, AgData, Agenda, AgStatus)
+      VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+      [personalId, alunoId, localId, dataCorrigida, titulo, status ]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error('Erro ao inserir agenda:', err);
+    res.status(500).json({ error: 'Erro ao inserir agenda' });
+  }
+*/
+app.post('/api/alunos', authenticateToken, async (req, res) => {
+  const { nome, telefone/* personal_id*/ } = req.body;
+  const personalId = req.user.personalId;
   const codigoConvite = gerarCodigoConvite();
 
   try {
-    const result = await db.query(`
+    const result = await pool.query(`
       INSERT INTO Alunos (aluno, alufone, alupersonalid, alucodconvite)
       VALUES ($1, $2, $3, $4)
-      RETURNING id, alucodconvite
-    `, [nome, telefone, personal_id, codigoConvite]);
-
+      RETURNING aluno_id, aluno, alufone, alucodconvite
+    `, [nome, telefone, personalId, codigoConvite]);
     res.json({
-      aluno_id: result.rows[0].id,
+      id: result.rows[0].aluno_id,                         // <- compatível com this.form.patchValue({ alunoId: novoAluno.id });
+      nome: result.rows[0].aluno,                          // <- compatível com this.alunoCtrl.setValue(novoAluno.nome);
+      telefone: result.rows[0].alufone,                    // <- opcional, se quiser manter
       codigo_convite: result.rows[0].alucodconvite
     });
-
+    console.log('Retornando novo aluno:', {
+      id: result.rows[0].aluno_id,
+      nome: result.rows[0].aluno,
+      telefone: result.rows[0].alufone,
+      codigo_convite: result.rows[0].alucodconvite
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ erro: 'Erro ao cadastrar aluno' });
@@ -253,7 +322,33 @@ app.post('/api/alunos', async (req, res) => {
 });
 
 
-app.post('/api/register-aluno', async (req, res) => {
+app.post('/api/locals', authenticateToken, async (req, res) => {
+  const {nome, endereco/* personal_id*/ } = req.body;
+  const personalId = req.user.personalId;
+
+  try {
+    const result = await pool.query(`
+      INSERT INTO locals (local, locendereco, locpersonalid)
+      VALUES ($1, $2, $3)
+      RETURNING local_id, local, locendereco
+    `, [nome, endereco, personalId]);
+    res.json({
+      id: result.rows[0].local_id,                         // <- compatível com this.form.patchValue({ alunoId: novoAluno.id });
+      nome: result.rows[0].local,                          // <- compatível com this.alunoCtrl.setValue(novoAluno.nome);
+      endereco: result.rows[0].locendereco                    // <- opcional, se quiser manter
+    });
+    console.log('Retornando novo local:', {
+      id: result.rows[0].local_id,
+      nome: result.rows[0].local,
+      endereco: result.rows[0].locendereco
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao cadastrar endereco' });
+  }
+});
+
+app.post('/api/register-aluno', authenticateToken, async (req, res) => {
   const { email, senha, codigoConvite } = req.body;
 
   if (!email || !senha || !codigoConvite) {
@@ -298,6 +393,23 @@ app.post('/api/register-aluno', async (req, res) => {
 
 
 
+app.put('/api/personal/configuracoes', authenticateToken, async (req, res) => {
+  const { diasAtendimento, horaInicio, horaFim, intervaloMinutos } = req.body;
+  const personalId = req.user.personalId;
+  try {
+    const result = await pool.query(`
+      UPDATE Personals SET
+        dia0=$1, dia1=$2, dia2=$3, dia3=$4, dia4=$5, dia5=$6, dia6=$7, hora_inicio=$8, hora_fim=$9, intervalo_minutos=$10
+      WHERE Personal_ID = $11`,
+      [diasAtendimento.includes(0), diasAtendimento.includes(1), diasAtendimento.includes(2), diasAtendimento.includes(3),
+       diasAtendimento.includes(4), diasAtendimento.includes(5), diasAtendimento.includes(6), horaInicio, horaFim, intervaloMinutos, personalId]);
+    res.status(201).json(result.rows[0]);
+    } catch (err) {
+      console.error('Erro ao atualizar configurações:', err);
+      res.status(500).json({ error: 'Erro ao atualizar configurações' });
+    }
+});
+
 app.put('/api/agendas', authenticateToken, async (req, res) => {
   const { agenda_id, alunoId, localId, data, /*hora,*/ titulo, /*descricao,*/ status } = req.body;
   const personalId = req.user.personalId;
@@ -309,9 +421,6 @@ app.put('/api/agendas', authenticateToken, async (req, res) => {
   console.log("alunoId", alunoId);
   console.log("localId", localId);
 
-
-  alunoId
-  
   console.log("req.body.data",req.body.data);
 
   const dataHora = new Date(req.body.data);
