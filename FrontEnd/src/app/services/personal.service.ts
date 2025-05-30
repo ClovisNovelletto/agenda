@@ -21,7 +21,7 @@ export class PersonalService {
   getConfiguracoes(): Observable<Personal> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    return this.http.get<Personal>('/api/personal/me', { headers });
+    return this.http.get<Personal>('/personal/me', { headers });
     //return this.http.get<Personal>('/api/personal/me');
   }
 
