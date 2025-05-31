@@ -24,7 +24,8 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 
-//imports aluno no appointment
+//data picker na alteração de data no appointment
+//import { MatNativeDateModule } from '@angular/material/core';
 
 @NgModule({
   declarations: [ 
@@ -42,6 +43,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatAutocompleteModule,
     MatSelectModule,
     MatButtonModule,
+  //  MatNativeDateModule,
   ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
   bootstrap: []

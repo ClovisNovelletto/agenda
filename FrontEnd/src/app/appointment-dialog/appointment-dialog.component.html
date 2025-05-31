@@ -1,16 +1,53 @@
-<h2 mat-dialog-titulo>Adicionar Compromisso</h2>
-<mat-dialog-content>
+<!--<h2 mat-dialog-titulo>Adicionar Compromisso</h2>-->
+
+
+<!--  
+   {{ data.date }}
   <p>Data: {{ data.date | date:'fullDate' }} às {{ data.hour }}</p>
   <mat-form-field appearance="fill" style="width: 100%;">
     <mat-label>Título</mat-label>
     <input matInput [(ngModel)]="titulo" />
   </mat-form-field>
+-->
 
+<mat-dialog-content>
+  <mat-form-field appearance="fill" style="width: 100%;">
+    <mat-label>Título</mat-label>
+    <input matInput [(ngModel)]="titulo" />
+  </mat-form-field>
+  
+  
+  <mat-form-field appearance="fill">
+  <mat-label>Data</mat-label>
+  <input matInput [matDatepicker]="picker" [(ngModel)]="data.date">
+  <!--<input matInput [matDatepicker]="picker" formControlName="data">        se precisar usar formGroup ou formControlName seria mais completo e integrado formulários maiores e com mais validação-->
+  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+  <mat-datepicker #picker></mat-datepicker>
+</mat-form-field>
+
+<mat-form-field appearance="fill">
+  <mat-label>Hora</mat-label>
+  <mat-select [(ngModel)]="data.hour">
+    <mat-option *ngFor="let h of horasPossiveis" [value]="h">{{ h }}</mat-option>
+  </mat-select>
+</mat-form-field>
+
+  <!-- antigos
+  <label>Data:</label>
+  <input type="date" [(ngModel)]="data.date" />
+
+
+  <label>Hora:</label>
+  <select [(ngModel)]="data.hour">
+    <option *ngFor="let h of horasPossiveis" [value]="h">{{ h }}</option>
+  </select>
+-->
+<!--
   <mat-form-field appearance="fill" style="width: 100%;">
     <mat-label>Descrição</mat-label>
     <textarea matInput rows="3" [(ngModel)]="descricao"></textarea>
   </mat-form-field>
-
+-->
   <mat-form-field appearance="fill" class="w-full">
   <mat-label>Aluno</mat-label>
   <input type="text" matInput [formControl]="alunoCtrl" [matAutocomplete]="autoAluno">

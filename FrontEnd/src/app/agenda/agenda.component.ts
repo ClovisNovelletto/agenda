@@ -313,16 +313,19 @@ openAppointmentModal(day: Date, hour: string, minute: number) {
   const start = new Date(day);
   start.setHours(+h, minute, 0, 0);
 
+console.log('this.configAgenda.intervaloMinutos antess', this.configAgenda.intervaloMinutos);
   const dialogRef = this.dialog.open(AppointmentDialogComponent, {
     width: '300px',
     data: {
       date: start,
+      hour: hour, // 👈 Adicione isso!
       alunos: this.alunos,
       locals: this.locals,
-      personalId: 1 //this.personalId // ajuste conforme o nome do id do personal
+      personalId: 1,//this.personalId // ajuste conforme o nome do id do personal
+      intervalo: this.configAgenda?.intervaloMinutos ?? 10,  // 👈 Aqui passa o intervalo
     }
-  });
-
+  }) ;
+console.log('this.configAgenda.intervaloMinutos depois ', this.configAgenda.intervaloMinutos);
   dialogRef.afterClosed().subscribe((result) => {
     if (result?.atualizouAlunos && result.aluno) {
       const jaExiste = this.alunos.some(a => a.id === result.aluno.id);
@@ -332,6 +335,14 @@ openAppointmentModal(day: Date, hour: string, minute: number) {
       }
     console.log('afterClosedo openAppointmentModal depois',  this.alunos);      
     }
+    if (result?.atualizouLocals && result.local) {
+      console.log('afterClosedo openAppointmentModal antes',  this.locals);      
+      const jaExiste = this.locals.some(a => a.id === result.local.id);
+      if (!jaExiste) {
+        this.locals.push(result.local);
+      }
+      console.log('afterClosedo openAppointmentModal depois',  this.locals);
+    }    
     if (result?.titulo) {
       const start = new Date(day);
       const [h] = hour.split(':');
@@ -359,6 +370,21 @@ openAppointmentModal(day: Date, hour: string, minute: number) {
   salvarCompromisso(comp: any): void {
     const token = localStorage.getItem('jwt-token');
         const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+        console.log('entrou salvarCompromisso!');
+
+
+      // Cria um objeto Date com a data que já está no formato correto
+      const dataCompleta = new Date(comp.date);
+
+      // Ajusta a hora e os minutos com base em `this.data.hour`
+/*      const [hour, minute] = comp.hour.split(':'); // Assume que `this.data.hour` é no formato "HH:mm"
+      dataCompleta.setHours(parseInt(hour, 10)); // Define a hora
+      dataCompleta.setMinutes(parseInt(minute, 10)); // Define os minutos
+console.log('dataCompleta', dataCompleta);
+*/
+//      const [h] = comp.hour.split(':');
+//      comp.date.setHours(+h, 0, 0, 0);
+
     const compromisso = {
       /*personalId: comp.personalId,*/ // opcional se já vem do token
       agenda_id: comp.agenda_id,
@@ -437,7 +463,7 @@ loadAlunos(): void {
 loadLocals(): void {
   const token = localStorage.getItem('jwt-token');
   const headers = new HttpHeaders({Authorization: `Bearer ${token}` });    
-  this.http.get<Aluno[]>(`${environment.apiUrl}/locals`, {headers}).subscribe((locals) => {
+  this.http.get<Local[]>(`${environment.apiUrl}/locals`, {headers}).subscribe((locals) => {
     this.locals = locals;
   });
 }
@@ -452,49 +478,6 @@ loadPersonal(): Observable<ConfigAgenda> {
     }))
   );
 }
-/*
-loadPersonals(): void {
-
-  this.personalService.getMe().subscribe(personal => {
-  this.personal = personal;
-
-    this.configAgenda = {
-    diasAtendimento: [],
-    horaInicio: parseInt(personal.hora_inicio.split(':')[0], 10),
-    horaFim: parseInt(personal.hora_fim.split(':')[0], 10),
-    intervaloMinutos: personal.intervalo_minutos
-  };
-  for (let i = 0; i <= 6; i++) {
-    if ((personal as any)[`dia${i}`]) {
-        this.configAgenda.diasAtendimento.push(i);
-    }
-  }
-  console.warn('configAgenda load:', this.configAgenda);
-  
-  })
-}
-  */
-//  const token = localStorage.getItem('jwt-token');
-//  const headers = new HttpHeaders({Authorization: `Bearer ${token}`});  
-//  this.http.get<Personal[]>(`${environment.apiUrl}/personals`, {headers}).subscribe((personals) => {
-  //this.personals = personals;
-  
-//  const personal = personals[0];
-//  this.configAgenda = {
-//    diasAtendimento: [],
-//    horaInicio: parseInt(personal.hora_inicio.split(':')[0], 10),
-//    horaFim: parseInt(personal.hora_fim.split(':')[0], 10),
-//    intervaloMinutos: personal.intervalo_minutos
-  //};
-//  for (let i = 0; i <= 6; i++) {
-//    if ((personal as any)[`dia${i}`]) {
-//        this.configAgenda.diasAtendimento.push(i);
-//    }
-  //}
-//  console.warn('configAgenda:', this.configAgenda);
-  //});
-//}
-
 
 getDateTime(appt: Appointment): Date {
   if (!appt?.hour || !appt?.date) {
@@ -547,6 +530,9 @@ editarCompromisso(appt: any): void {
       compromisso: appt,  // envia todos os dados do compromisso
       alunos: this.alunos,     // 👈 passa a lista
       locals: this.locals,     // 👈 passa a lista
+      intervalo: this.configAgenda?.intervaloMinutos ?? 10,  // 👈 Aqui passa o intervalo
+      horaInicio: this.configAgenda.horaInicio,
+      horaFim: this.configAgenda.horaFim,
     }
   });
 
@@ -559,6 +545,14 @@ editarCompromisso(appt: any): void {
       }
      console.log('afterClosedo editarCompromisso depois',  this.alunos);      
     }
+    if (result?.atualizouLocals && result.local) {
+      console.log('afterClosedo editarCompromisso antes',  this.locals);      
+      const jaExiste = this.locals.some(a => a.id === result.local.id);
+      if (!jaExiste) {
+        this.locals.push(result.local);
+      }
+     console.log('afterClosedo editarCompromisso depois',  this.locals);
+    }    
     if (result?.titulo) {
       // Atualiza compromisso existente
       console.log('result:', result );

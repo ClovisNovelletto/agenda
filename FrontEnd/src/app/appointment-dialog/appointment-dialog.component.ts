@@ -19,7 +19,11 @@ import { AddAlunoDialogComponent } from '../add-aluno-dialog/add-aluno-dialog.co
 import { AddLocalDialogComponent } from '../add-local-dialog/add-local-dialog.component';
 import { environment } from '../../environments/environment';
 
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
+
+   
 @Component({
   standalone: true,
   selector: 'app-appointment-dialog',
@@ -34,11 +38,16 @@ import { environment } from '../../environments/environment';
     ReactiveFormsModule,
     MatAutocompleteModule,
     MatSelectModule,
-
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
+  providers: [MatNativeDateModule],
   templateUrl: './appointment-dialog.component.html',
-  styleUrls: ['./appointment-dialog.component.css']
+  styleUrls: ['./appointment-dialog.component.css'],
+  
+
 })
+
 export class AppointmentDialogComponent {
   titulo: string = '';
   descricao: string = '';
@@ -64,18 +73,50 @@ export class AppointmentDialogComponent {
   atualizouAlunos: boolean = false;
   novoLocalRetorno: any[] = [];
   atualizouLocals: boolean = false;
-
+  horasPossiveis: string[] = [];
+  intervalo: number = 10; // valor padrão
+  horaInicio: number = 6; // valor padrão
+  horaFim: number = 22; // valor padrão
 constructor(
   public dialogRef: MatDialogRef<AppointmentDialogComponent>,
-  @Inject(MAT_DIALOG_DATA) public data: {
+  @Inject(MAT_DIALOG_DATA) public data: any,
+  private http: HttpClient,
+  private fb: FormBuilder,
+  private dialog: MatDialog
+) {
+  this.date = data.date;
+  this.hour = data.hour || '';
+  this.alunos = data.alunos || [];
+  this.locals = data.locals || [];
+  this.selectedPersonal = data.personalId || null;
+  this.intervalo = data.intervalo ?? 10; // 👈 Aqui está certo
+  this.horaInicio = data.horaInicio
+  this.horaFim = data.horaFim
+  console.log('intervalo recebido no filho:', this.intervalo);
+}
+/*
+  constructor(
+  public dialogRef: MatDialogRef<AppointmentDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any
+) {
+  this.date = this.data.date;
+  this.hour = this.data.hour || '';
+  this.alunos = this.data.alunos || [];
+  this.locals = this.data.locals || [];
+  this.selectedPersonal = this.data.personalId || null;
+  this.intervalo = this.data.intervalo ?? 10;  // 👈 Aqui pegamos direto
+  console.log('intervalo recebido no filho:', this.intervalo); // <== verifique isso!
+},*/
+  /*@Inject(MAT_DIALOG_DATA) public data: {
     date: Date;
-    hour?: string;
+    hour: string;
     alunos?: any[];
     locals?: any[];
     personalId?: number;
     compromisso?: any;
-
+    intervalo?: number;
   },
+  *//*
   private http: HttpClient,
   private fb: FormBuilder,
   private dialog: MatDialog,
@@ -86,11 +127,17 @@ constructor(
   this.alunos = data.alunos || [];
   this.locals = data.locals || [];
   this.selectedPersonal = data.personalId || null;
-  }
+  this.intervalo = data.intervalo ?? 10; // 👈 Pega direto da raiz de data, não de data.compromisso
+ 
+  }*/
 
   ngOnInit() {
+    console.log('this.data:', this.data);
     this.atualizouAlunos = false;
     this.atualizouLocals = false;
+    this.intervalo = this.data.intervalo || 10; // fallback para 10 min se não vier
+    console.log('this.data.intervalo', this.data.intervalo);
+        this.horasPossiveis = this.gerarHorasPossiveis(this.horaInicio, this.horaFim, this.intervalo);
   this.form = this.fb.group({
     data: [''],
     hour: [''],
@@ -106,14 +153,20 @@ constructor(
   // Preenche os dados se for edição
   if (this.data.compromisso) {
     console.log('entrou no if data');
+    console.log('e a gora');
+
+    //this.data.date = this.data.compromisso.date.toISOString().substring(0, 10)
     this.data.hour = this.data.compromisso.hour;
     this.titulo = this.data.compromisso.titulo;
     this.descricao = this.data.compromisso.descricao;
 
-    //this.alunoSelecionado = this.alunos?.find(a => a.id === this.data.compromisso.alunoId);
     this.localSelecionado = this.locals?.find(a => a.id === this.data.compromisso.localId);
-//    this.alunoSelecionado = this.alunos?.find(a => a.id == this.data.compromisso.alunoId); // com == compra 15 vs "15" ao invés de ===
+    console.log('localSelecionado', this.localSelecionado);
+    console.log('this.data.compromisso.localId', this.data.compromisso.localId);
+    console.log('this.locals', this.locals);
+    
     this.alunoSelecionado = this.alunos?.find(a => a.id === this.data.compromisso.alunoId);
+
     if (this.alunoSelecionado) {
       this.alunoCtrl.setValue(this.alunoSelecionado.nome);
     }
@@ -261,38 +314,20 @@ constructor(
       }
     });
   }
-/*
-  abrirModalNovoLocal() {
-    const nome = this.localCtrl.value;
 
-    // Abre o modal para pedir o telefone do novo local
-    const dialogRef = this.dialog.open(AddLocalDialogComponent, {
-      width: '400px',
-      height: '300px',
-      panelClass: 'custom-local-dialog',
-      data: { nomeParcial: this.localCtrl.value || '' } // Passa o nome do local já digitado para preencher o campo no modal
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      // Quando o modal é fechado e temos o telefone, fazemos a requisição
-      if (result?.nome && result?.telefone) {
-        const token = localStorage.getItem('jwt-token');
-        const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-        const body = { nome: result.nome, telefone: result.telefone };
-
-        //this.http.post('/api/locals', body, { headers }).subscribe((novoLocal: any) => {
-        this.http.post(`${environment.apiUrl}/locals`, body, { headers }).subscribe((novoLocal: any) => {
-          // Adiciona o novo local à lista e atualiza o campo de seleção
-          this.locals.push(novoLocal);
-          this.localCtrl.setValue(novoLocal.nome);
-          this.form.patchValue({ localId: novoLocal.id });
-          this.localSelecionado = novoLocal;
-        });
-      }
-    });
-  }
-*/
   save(): void {
+          console.log('this.data.date: ', this.data.date);
+          console.log('this.data.hour: ', this.data.hour);
+
+      // Cria um objeto Date com a data que já está no formato correto
+      const dataCompleta = new Date(this.data.date);
+
+      // Ajusta a hora e os minutos com base em `this.data.hour`
+      const [hour, minute] = this.data.hour.split(':'); // Assume que `this.data.hour` é no formato "HH:mm"
+      dataCompleta.setHours(parseInt(hour, 10)); // Define a hora
+      dataCompleta.setMinutes(parseInt(minute, 10)); // Define os minutos
+console.log('dataCompleta', dataCompleta);
+
     this.dialogRef.close({
       atualizouAlunos: this.atualizouAlunos,     // ✅ indica que houve inclusão de aluno
       aluno: this.novoAlunoRetorno,              // ✅ o novo aluno criado no dialog
@@ -305,8 +340,9 @@ constructor(
       //alunoId: this.selectedAluno,
       //localId: this.selectedLocal,
       personalId: this.selectedPersonal,
-      date: this.date,
-      hour: this.hour
+      date: dataCompleta, //this.data.date,
+      hour: this.data.hour
+
     });
   }
 
@@ -314,4 +350,41 @@ constructor(
     this.dialogRef.close();
   }
 
+formatarHora(date: Date): string {
+  const horas = date.getHours().toString().padStart(2, '0');
+  const minutos = date.getMinutes().toString().padStart(2, '0');
+  return `${horas}:${minutos}`;
+}
+
+
+
+gerarHorasPossiveis(inicio: number, fim: number, intervaloMin: number): string[] {
+
+  const horas: string[] = [];
+  const date = new Date();
+  date.setHours(inicio, 0, 0, 0);
+
+  const end = new Date();
+  end.setHours(fim, 0, 0, 0);
+
+  while (date <= end) {
+    const hora = date.getHours().toString().padStart(2, '0');
+    const minuto = date.getMinutes().toString().padStart(2, '0');
+    horas.push(`${hora}:${minuto}`);
+    date.setMinutes(date.getMinutes() + intervaloMin);
+  }
+
+  return horas;
+  /*
+  const horas: string[] = [];
+  for (let h = inicio; h <= fim; h++) {
+    for (let m = 0; m < 60; m += 10) {
+      const hora = h.toString().padStart(2, '0');
+      const minuto = m.toString().padStart(2, '0');
+      horas.push(`${hora}:${minuto}`);
+    }
+  }
+  return horas;
+  */
+}
 }

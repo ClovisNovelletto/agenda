@@ -54,19 +54,7 @@ export class ConfiguracoesComponent {
     this.configSelecionada = config;
   });
 }
-  /*
-  ngOnInit(): void {
 
-      this.personalService.getConfiguracoes().pipe(
-        map(configSelecionada => ({
-          diasAtendimento: [0,1,2,3,4,5,6].filter(i => (configSelecionada as any)[`dia${i}`]),
-          horaInicio: configSelecionada.hora_inicio,
-          horaFim: configSelecionada.hora_fim,
-          intervaloMinutos: configSelecionada.intervalo_minutos
-        }
-      )))
-  }
-*/
 salvarConfiguracoes(): void {
   if (!this.configSelecionada) return;
 
