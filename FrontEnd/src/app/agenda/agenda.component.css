@@ -25,6 +25,28 @@
   vertical-align: center;
   background: #0d85b4b4;
 }  
+/*
+.hour-cell {
+  font-size: 12px;
+  border-bottom: 1px solid #ddd;
+  //height: 60px; 
+  width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}*/
+
+/* Cabeçalhos: da coluna de horas */
+/*.hour-header-cell {
+  font-size: 12px;
+  background-color: #1565c0;
+  color: white;
+  width: 60px;
+  text-align: center;
+  padding: 2px;
+  border: 1px solid #ccc;
+  font-weight: bold;
+}*/
 
 .hour-cell {
   font-size: 14px;
@@ -197,7 +219,7 @@
   }
 
   .hour-cell {
-    font-size: 10px;
+    font-size: 14px;
     border-bottom: 1px solid #ddd;
     display: flex;
     align-items: center;

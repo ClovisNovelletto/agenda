@@ -12,7 +12,7 @@
 
 <div class="agenda-scroll-wrapper">
   <div class="row" cdkDropListGroup>
-    <div *ngIf="appointments.length >= 0" class="agenda-grid" [style.grid-template-columns]="'80px repeat(' + week.length + ', 1fr)'">
+    <div *ngIf="appointments.length >= 0" class="agenda-grid" [style.grid-template-columns]="'60px repeat(' + week.length + ', 1fr)'">
       <!-- Cabeçalho -->
       <div class="header-cell hour-cell">Hora</div>
       <div class="header-cell" *ngFor="let day of week">
@@ -49,19 +49,13 @@
                 [cdkDropListData]="getDropListData(day, hour, minute)"
                 class="appointment-dropzone"
                 (cdkDropListDropped)="onDrop($event)">
-                <!--<span style="height: 1; width: 1; overflow: hidden; display: block;">
-                  {{ hour }} | {{ minute }}
-                  </span>-->
-                  <!--<span>
-                  {{ hour }} | {{ minute }}
-                </span>-->
               <div *ngFor="let appt of getAppointments(day, hour, minute)"
                   cdkDrag
                   (cdkDragStarted)="isDragging = true"
                   (cdkDragEnded)="isDragging = false"
                   [cdkDragData]="{ appointment: appt, fromDay: day, fromHour: hour, fromMinute: minute }"
-                  class="appointment"
-                  (click)="editarCompromisso(appt); $event.stopPropagation()">
+                  class="appointment" [style.backgroundColor]="getStatusCor(appt.statusid)"
+                  (click)="abrirMenuStatus(appt, day, hour, minute); $event.stopPropagation()">
                   <!--teste arrastar compromisso-->
                   <ng-template cdkDragPreview>
                       <div class="drag-preview">
@@ -72,10 +66,9 @@
                     <ng-template cdkDragPlaceholder>
                       <div class="invisible-placeholder"></div>
                     </ng-template>
-                  <!--teste-->
                 <strong>{{ appt.aluno }} </strong><br />
                 <strong>{{ appt.local }} </strong><br />
-              </div><!--<div class="OcultarHoraMinu">  {{ hour }} | {{ minute }}</div> -->
+              </div>
             </div>
 
             <!-- Botão + -->
@@ -93,3 +86,6 @@
     </div>
   </div>
 </div>
+
+<!--(click)="abrirMenuStatus(appt, day, hour, minute)">-->
+<!--                  (click)="editarCompromisso(appt); $event.stopPropagation()">-->

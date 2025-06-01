@@ -9,5 +9,6 @@ export interface Appointment {
   aluno: string;
   localId: number;
   local: string;
+  statusid: number;
   /*personalId: number;*/
 }

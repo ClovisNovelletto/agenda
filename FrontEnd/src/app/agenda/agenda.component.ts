@@ -21,8 +21,12 @@ import { CdkDropList, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { environment } from '../../../src/environments/environment';
 //import { Configuracoes } from '../configuracoes/configuracoes.component';
 import { PersonalService } from '../services/personal.service';
+import { AgendaStatusService } from '../services/agenda-status.service';
+import { AgendaStatus } from '../models/agendaStatus.model';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { AgendaStatusSheetComponent } from '../agenda-status-sheet/agenda-status-sheet.component'; // ajuste o caminho
 
 @Component({
   standalone: true,
@@ -53,6 +57,7 @@ export class AgendaComponent implements OnInit, AfterViewInit {
   locals: Local[] = [];
   personals: Personal[] = [];
   personal?:  Personal;
+  agendaStatus: AgendaStatus[] = [];
   selectedAlunoId: number | null = null;
   selectedLocalId: number | null = null;
   selectedPersonalId: number | null = null;
@@ -89,7 +94,7 @@ export class AgendaComponent implements OnInit, AfterViewInit {
   isMobile: boolean = false;
   dropListIds: string[] = [];
 
-  constructor(private dialog: MatDialog, private http: HttpClient, private personalService: PersonalService) {}
+  constructor(private dialog: MatDialog, private http: HttpClient, private personalService: PersonalService, private agendaStatusService: AgendaStatusService, private bottomSheet: MatBottomSheet) {}
 
   
 
@@ -112,6 +117,7 @@ console.log('this.configAgenda.diasAtendimento.length:', this.configAgenda.diasA
     this.generateWeek();           // se também depende disso
 //    this.generateWeek();     // só chama após o carregamento
     this.generateHours();
+    this.loadAgendaStatus();
     });
 /*
   this.personalService.getConfiguracoes().subscribe(config => {
@@ -284,6 +290,7 @@ saveAppointment(
   aluno: string,
   localId: number,
   local: string,
+  statusid: number,
   /*personalId: number,*/
   start: Date
 ): void {
@@ -301,6 +308,7 @@ saveAppointment(
     aluno,
     localId,
     local,
+    statusid,
     /*personalId*/
   };
 
@@ -323,6 +331,8 @@ console.log('this.configAgenda.intervaloMinutos antess', this.configAgenda.inter
       locals: this.locals,
       personalId: 1,//this.personalId // ajuste conforme o nome do id do personal
       intervalo: this.configAgenda?.intervaloMinutos ?? 10,  // 👈 Aqui passa o intervalo
+      horaInicio: this.configAgenda.horaInicio,
+      horaFim: this.configAgenda.horaFim,
     }
   }) ;
 console.log('this.configAgenda.intervaloMinutos depois ', this.configAgenda.intervaloMinutos);
@@ -357,6 +367,7 @@ console.log('this.configAgenda.intervaloMinutos depois ', this.configAgenda.inte
         result.aluno,
         result.localId,
         result.local,
+        result.statusid,
         /*result.personalId,*/
         start
       );
@@ -444,7 +455,8 @@ loadAppointments() {
       aluno: item.aluno,
       localId: item.localid,
       local: item.local,
-      personalId: item.personalid
+      personalId: item.personalid,
+      statusid: item.statusid
     }));
     console.log('Dados recebidos: ', this.appointments);
     console.log('Horários de compromissos:', this.appointments.map(a => a.start.toISOString()));
@@ -477,6 +489,21 @@ loadPersonal(): Observable<ConfigAgenda> {
       intervaloMinutos: personal.intervalo_minutos
     }))
   );
+}
+
+loadAgendaStatus(): void {
+      this.agendaStatusService.getStatus().subscribe(res => {
+      this.agendaStatus = res;
+    console.warn('agendaStatus load :', this.agendaStatus);    
+    });
+//  return this.statusAgendaService.getStatus().pipe(
+//    map(statusAgenda  => ({ }))
+}
+
+getStatusCor(statusId: number): string {
+  //console.warn('statusId:', statusId);
+  //console.warn('agendaStatus get:', this.agendaStatus);
+  return this.agendaStatus?.find(s => s.id === statusId)?.cor || 'transparent';
 }
 
 getDateTime(appt: Appointment): Date {
@@ -651,6 +678,53 @@ getDropListData(day: Date, hour: string, minute: number) {
     minute: Number(minute)  // força número
   };
 }
+
+  abrirMenuStatus(appt: any, day: Date, hour: string, minute: number) {
+    console.log('entrou no abrirMenuStatus.');
+    const ref = this.bottomSheet.open(AgendaStatusSheetComponent, {
+      data: appt
+    });
+
+    ref.afterDismissed().subscribe(result => {
+      if (!result) return;
+
+      console.log('result.action.', result.action);      
+      if (result.action === 'editar') {
+        this.editarCompromisso(appt);
+      } else if (result.action === 'status' &&  appt.statusid != result.statusId) {
+        const statusId = result.statusId;
+        console.log('status antigo:', appt.statusid);
+        console.log('status novo:', result.statusId);
+
+        const updated = {
+          agenda_id: appt.agenda_id,
+          statusId: result.statusId,
+        };
+
+        const token = localStorage.getItem('jwt-token');
+        const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+        this.http.put(`${environment.apiUrl}/agendaStatus`, updated, { headers }).subscribe({
+          next: () => {
+            console.log('Compromisso atualizado com sucesso!');
+            // Aqui você pode recarregar a agenda ou dar feedback ao usuário
+            this.loadAppointments();
+          },
+          error: (err) => {
+            console.error('Erro ao atualizar  compromisso:', err);
+          }
+        });
+
+
+/*
+        this.http.put(`${environment.apiUrl}/agendaStatus/${appt.agenda_id}`, { statusId })
+          .subscribe(() => {
+            appt.statusid = statusId;
+            // atualize visualmente, se necessário
+          });
+*/          
+      }
+    });
+  }
 
 }
 
