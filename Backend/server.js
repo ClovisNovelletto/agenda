@@ -158,6 +158,20 @@ app.get('/api/agendas', authenticateToken, async (req, res) => {
   }
 });
 
+
+app.get('/api/agendaStatus', authenticateToken, async (req, res) => {
+  try {
+    console.log("carrega agenda status");
+    const personalId = req.user.personalId;
+    const compareQuery = `SELECT agendastatu_id ID, agendastatu Status, agcor Cor FROM AgendaStatus`;
+    const result = await pool.query(compareQuery, null /*[personalId]*/);      
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao buscar agendas status');
+  }
+});
+
 app.get('/api/alunos', authenticateToken, async (req, res) => {
   try {
     const personalId = req.user.personalId;
@@ -420,6 +434,7 @@ app.put('/api/agendas', authenticateToken, async (req, res) => {
   console.log("agenda_id", agenda_id);
   console.log("alunoId", alunoId);
   console.log("localId", localId);
+  console.log("data", data);
 
   console.log("req.body.data",req.body.data);
 
@@ -439,6 +454,26 @@ app.put('/api/agendas', authenticateToken, async (req, res) => {
     } catch (err) {
       console.error('Erro ao atualizar agenda:', err);
       res.status(500).json({ error: 'Erro ao atualizar agenda' });
+    }
+});
+
+app.put('/api/agendaStatus', authenticateToken, async (req, res) => {
+  const { agenda_id, alunoId, localId, data, /*hora,*/ titulo, /*descricao,*/ statusId } = req.body;
+
+  console.log("req",req);
+  console.log("agenda_id",agenda_id);
+  console.log("status", statusId);
+
+  // UPDATE
+  try {
+    const result = await pool.query(`
+      UPDATE Agendas SET AgStatus = $1
+      WHERE Agenda_ID = $2`,
+      [statusId, agenda_id]);
+    res.status(201).json(result.rows[0]);
+    } catch (err) {
+      console.error('Erro ao atualizar status da agenda:', err);
+      res.status(500).json({ error: 'Erro ao atualizar status da agenda' });
     }
 });
 
