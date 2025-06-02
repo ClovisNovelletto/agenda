@@ -427,7 +427,7 @@ app.put('/api/personal/configuracoes', authenticateToken, async (req, res) => {
 app.put('/api/agendas', authenticateToken, async (req, res) => {
   const { agenda_id, alunoId, localId, data, /*hora,*/ titulo, /*descricao,*/ statusId } = req.body;
   const personalId = req.user.personalId;
-
+  statusId = statusId ?? 1;
   console.log("req",req);
   console.log(req.user.username);
   console.log(req.user.personalId);
@@ -435,7 +435,7 @@ app.put('/api/agendas', authenticateToken, async (req, res) => {
   console.log("alunoId", alunoId);
   console.log("localId", localId);
   console.log("data", data);
-
+  console.log("statusId", statusId);
   console.log("req.body.data",req.body.data);
 
   const dataHora = new Date(req.body.data);
@@ -478,10 +478,10 @@ app.put('/api/agendaStatus', authenticateToken, async (req, res) => {
 });
 
 app.post('/api/agendas', authenticateToken, async (req, res) => {
-  const { alunoId, localId, data, /*hora,*/ titulo, /*descricao,*/ status } = req.body;
+  const { alunoId, localId, data, /*hora,*/ titulo, /*descricao,*/ statusId } = req.body;
   const personalId = req.user.personalId;
 
-  console.log(req);
+  //console.log(req);
   console.log(req.user.username);
   console.log(req.user.personalId);
 
@@ -494,7 +494,7 @@ app.post('/api/agendas', authenticateToken, async (req, res) => {
     const result = await pool.query(
       `INSERT INTO agendas (AgPersonalID, AgAlunoid, AgLocalID, AgData, Agenda, AgStatus)
       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-      [personalId, alunoId, localId, dataCorrigida, titulo, status ]
+      [personalId, alunoId, localId, dataCorrigida, titulo, statusId ]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
