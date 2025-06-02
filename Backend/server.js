@@ -425,7 +425,7 @@ app.put('/api/personal/configuracoes', authenticateToken, async (req, res) => {
 });
 
 app.put('/api/agendas', authenticateToken, async (req, res) => {
-  const { agenda_id, alunoId, localId, data, /*hora,*/ titulo, /*descricao,*/ status } = req.body;
+  const { agenda_id, alunoId, localId, data, /*hora,*/ titulo, /*descricao,*/ statusId } = req.body;
   const personalId = req.user.personalId;
 
   console.log("req",req);
@@ -449,7 +449,7 @@ app.put('/api/agendas', authenticateToken, async (req, res) => {
       UPDATE Agendas SET
         AgPersonalID = $1, AgAlunoid = $2, AgLocalID = $3, AgData = $4, Agenda = $5, AgStatus = $6
       WHERE Agenda_ID = $7`,
-      [personalId, alunoId, localId, dataCorrigida, titulo, status, agenda_id]);
+      [personalId, alunoId, localId, dataCorrigida, titulo, statusId, agenda_id]);
     res.status(201).json(result.rows[0]);
     } catch (err) {
       console.error('Erro ao atualizar agenda:', err);
