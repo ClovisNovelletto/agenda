@@ -367,7 +367,7 @@ console.log('this.configAgenda.intervaloMinutos depois ', this.configAgenda.inte
         result.aluno,
         result.localId,
         result.local,
-        result.statusId,
+        result.statusId ?? 1,
         /*result.personalId,*/
         start
       );
@@ -397,7 +397,7 @@ console.log('comp', comp);
       /*hora: comp.hour,*/
       titulo: comp.titulo,
       //descricao: comp.descricao,
-      statusId: comp.statusId /*'agendado' // padrão*/
+      statusId: comp.statusId ?? 1/*'agendado' // padrão*/
     };
 
     console.log('Compromisso dados enviados!');
@@ -448,7 +448,7 @@ loadAppointments() {
       localId: item.localid,
       local: item.local,
       personalId: item.personalid,
-      statusId: item.statusid
+      statusId: item.statusid ?? 1
     }));
     console.log('Dados recebidos: ', this.appointments);
     console.log('Horários de compromissos:', this.appointments.map(a => a.start.toISOString()));
@@ -583,7 +583,7 @@ editarCompromisso(appt: any): void {
         localId: result.localId,
         date: result.date,
         titulo: result.titulo,
-        statusId: appt.statusId,
+        statusId: appt.statusId ?? 1,
       };
       console.log('appt z:', appt );
       console.log('updated z:', updated );
@@ -632,7 +632,7 @@ console.log("To:", toDate, "|", toDate.getTime());
         localId: appt.localId,
         date: toDate,
         titulo: appt.titulo,
-        statusId: appt.statusId,
+        statusId: appt.statusId ?? 1,
         //alunos: this.alunos,     // 👈 passa a lista
         //locals: this.locals,
         /*personalId: result.personalId*/
@@ -684,14 +684,14 @@ getDropListData(day: Date, hour: string, minute: number) {
       if (result.action === 'editar') {
         this.editarCompromisso(appt);
       } else if (result.action === 'status' && appt.statusId != result.statusId) {
-        const statusId = result.statusId;
+        const statusId = result.statusId ?? 1;
         console.log('appt:', appt);
         console.log('status antigo:', appt.statusId);
         console.log('status novo:', result.statusId);
 
         const updated = {
           agenda_id: appt.agenda_id,
-          statusId: result.statusId,
+          statusId: result.statusId ?? 1,
         };
 
         const token = localStorage.getItem('jwt-token');
