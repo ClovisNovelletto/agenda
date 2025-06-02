@@ -19,8 +19,8 @@ import { MatListModule } from '@angular/material/list'; // Se for usar <mat-list
   ],
   template: `
     <div class="status-sheet">
-      <button mat-button (click)="select(1)">✅ Pendente</button>
-      <button mat-button (click)="select(2)">🔵 Efetivado</button>
+      <button mat-button (click)="select(1)">✅ Agendado</button>
+      <button mat-button (click)="select(2)">🔵 Concluído</button>
       <button mat-button (click)="select(3)">❌ Cancelado</button>
       <button mat-button (click)="select(4)">🔴 Falta</button>
       <mat-divider></mat-divider>

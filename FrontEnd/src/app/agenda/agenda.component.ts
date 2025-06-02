@@ -290,7 +290,7 @@ saveAppointment(
   aluno: string,
   localId: number,
   local: string,
-  statusid: number,
+  statusId: number,
   /*personalId: number,*/
   start: Date
 ): void {
@@ -308,7 +308,7 @@ saveAppointment(
     aluno,
     localId,
     local,
-    statusid,
+    statusId,
     /*personalId*/
   };
 
@@ -367,7 +367,7 @@ console.log('this.configAgenda.intervaloMinutos depois ', this.configAgenda.inte
         result.aluno,
         result.localId,
         result.local,
-        result.statusid,
+        result.statusId,
         /*result.personalId,*/
         start
       );
@@ -383,18 +383,10 @@ console.log('this.configAgenda.intervaloMinutos depois ', this.configAgenda.inte
         const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
         console.log('entrou salvarCompromisso!');
 
+console.log('comp', comp);
 
       // Cria um objeto Date com a data que já está no formato correto
       const dataCompleta = new Date(comp.date);
-
-      // Ajusta a hora e os minutos com base em `this.data.hour`
-/*      const [hour, minute] = comp.hour.split(':'); // Assume que `this.data.hour` é no formato "HH:mm"
-      dataCompleta.setHours(parseInt(hour, 10)); // Define a hora
-      dataCompleta.setMinutes(parseInt(minute, 10)); // Define os minutos
-console.log('dataCompleta', dataCompleta);
-*/
-//      const [h] = comp.hour.split(':');
-//      comp.date.setHours(+h, 0, 0, 0);
 
     const compromisso = {
       /*personalId: comp.personalId,*/ // opcional se já vem do token
@@ -405,7 +397,7 @@ console.log('dataCompleta', dataCompleta);
       /*hora: comp.hour,*/
       titulo: comp.titulo,
       //descricao: comp.descricao,
-      status: 1 /*'agendado' // padrão*/
+      statusId: comp.statusId /*'agendado' // padrão*/
     };
 
     console.log('Compromisso dados enviados!');
@@ -456,7 +448,7 @@ loadAppointments() {
       localId: item.localid,
       local: item.local,
       personalId: item.personalid,
-      statusid: item.statusid
+      statusId: item.statusid
     }));
     console.log('Dados recebidos: ', this.appointments);
     console.log('Horários de compromissos:', this.appointments.map(a => a.start.toISOString()));
@@ -582,7 +574,8 @@ editarCompromisso(appt: any): void {
     }    
     if (result?.titulo) {
       // Atualiza compromisso existente
-      console.log('result:', result );
+      console.log('result x:', result );
+      console.log('appt x:', appt );
       //alunoId, localId, data, /*hora,*/ titulo, /*descricao,*/ status 
       const updated = {
         agenda_id: appt.agenda_id,
@@ -590,12 +583,10 @@ editarCompromisso(appt: any): void {
         localId: result.localId,
         date: result.date,
         titulo: result.titulo,
-        status: 1,
-        //alunos: this.alunos,     // 👈 passa a lista
-        //locals: this.locals,
-        /*personalId: result.personalId*/
+        statusId: appt.statusId,
       };
-      console.log('updated:', updated );
+      console.log('appt z:', appt );
+      console.log('updated z:', updated );
       this.salvarCompromisso(updated); // mesma função que salva novo ou atualiza
     }
   });
@@ -641,12 +632,13 @@ console.log("To:", toDate, "|", toDate.getTime());
         localId: appt.localId,
         date: toDate,
         titulo: appt.titulo,
-        status: 1,
+        statusId: appt.statusId,
         //alunos: this.alunos,     // 👈 passa a lista
         //locals: this.locals,
         /*personalId: result.personalId*/
       };
-      console.log('updated:', updated );
+      console.log('appt y:', appt );
+      console.log('updated y:', updated );
       this.salvarCompromisso(updated); // mesma função que salva novo ou atualiza      console.log('updated:', updated );
 
   this.salvarCompromisso(updated);
@@ -691,9 +683,10 @@ getDropListData(day: Date, hour: string, minute: number) {
       console.log('result.action.', result.action);      
       if (result.action === 'editar') {
         this.editarCompromisso(appt);
-      } else if (result.action === 'status' &&  appt.statusid != result.statusId) {
+      } else if (result.action === 'status' && appt.statusId != result.statusId) {
         const statusId = result.statusId;
-        console.log('status antigo:', appt.statusid);
+        console.log('appt:', appt);
+        console.log('status antigo:', appt.statusId);
         console.log('status novo:', result.statusId);
 
         const updated = {
@@ -714,14 +707,6 @@ getDropListData(day: Date, hour: string, minute: number) {
           }
         });
 
-
-/*
-        this.http.put(`${environment.apiUrl}/agendaStatus/${appt.agenda_id}`, { statusId })
-          .subscribe(() => {
-            appt.statusid = statusId;
-            // atualize visualmente, se necessário
-          });
-*/          
       }
     });
   }

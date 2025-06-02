@@ -54,7 +54,7 @@
                   (cdkDragStarted)="isDragging = true"
                   (cdkDragEnded)="isDragging = false"
                   [cdkDragData]="{ appointment: appt, fromDay: day, fromHour: hour, fromMinute: minute }"
-                  class="appointment" [style.backgroundColor]="getStatusCor(appt.statusid)"
+                  class="appointment" [style.backgroundColor]="getStatusCor(appt.statusId)"
                   (click)="abrirMenuStatus(appt, day, hour, minute); $event.stopPropagation()">
                   <!--teste arrastar compromisso-->
                   <ng-template cdkDragPreview>
