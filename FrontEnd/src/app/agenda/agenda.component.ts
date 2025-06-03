@@ -28,10 +28,12 @@ import { map } from 'rxjs/operators';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { AgendaStatusSheetComponent } from '../agenda-status-sheet/agenda-status-sheet.component'; // ajuste o caminho
 
-import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc'
-import timezone from 'dayjs/plugin/timezone'
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 
+  dayjs.extend(utc);
+  dayjs.extend(timezone);
 @Component({
   standalone: true,
   selector: 'app-agenda',
@@ -76,6 +78,7 @@ export class AgendaComponent implements OnInit, AfterViewInit {
     horaInicio: 8,
     horaFim: 18,
     intervaloMinutos: 10
+    
   };
 
   //appointments: { date: string; hour: string; titulo: string }[] = [];
@@ -93,7 +96,8 @@ export class AgendaComponent implements OnInit, AfterViewInit {
   appointmentTitle: string = '';
 
   appointmentDescription: string = '';
-  currentDate: Date = new Date();    
+  //currentDate: Date = new Date();    
+  currentDate: Date = dayjs.utc().tz('America/Sao_Paulo').toDate();
   week: Date[] = [];
   isMobile: boolean = false;
   dropListIds: string[] = [];
@@ -104,14 +108,22 @@ export class AgendaComponent implements OnInit, AfterViewInit {
   
 
   ngOnInit(): void {
+  dayjs.extend(utc)
+  dayjs.extend(timezone)
+  const dataUTC = '2025-06-03T08:00:00Z';
 
+const localDate = dayjs.utc(dataUTC).tz('America/Sao_Paulo');
+
+console.log('Formatado:', localDate.format('YYYY-MM-DD HH:mm'));
+console.log('Objeto Date:', localDate.toDate());
     console.log('AgendaComponent iniciado');
     this.isMobile = window.innerWidth <= 768; // ajustável conforme seu layout
       window.addEventListener('resize', () => {
         this.isMobile = window.innerWidth <= 768;
         this.isMobile = window.innerWidth <= 768;
     });
-    const today = new Date();
+    //const today = new Date();
+    const today = dayjs.utc().tz('America/Sao_Paulo').toDate();
 
     this.loadPersonal().subscribe(config => {
       this.configAgenda = config;
@@ -156,36 +168,21 @@ console.log('this.configAgenda.diasAtendimento.length:', this.configAgenda.diasA
 */
 
 generateWeek(): void {
-  const baseDate = new Date(this.currentDate);
-  const startOfWeek = new Date(baseDate);
+  //const baseDate = new Date(this.currentDate);
+  const baseDate = dayjs.utc(this.currentDate).tz('America/Sao_Paulo').toDate();
+  //const startOfWeek = new Date(baseDate);
+  const startOfWeek = dayjs.utc(baseDate).tz('America/Sao_Paulo').toDate();
   startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay()); // Domingo (0)
 
   this.week = this.configAgenda.diasAtendimento.map(dia => {
-    const date = new Date(startOfWeek);
+    //const date = new Date(startOfWeek);
+    const date = dayjs.utc(startOfWeek).tz('America/Sao_Paulo').toDate();
     date.setDate(startOfWeek.getDate() + dia); // Pula direto para o dia desejado
     date.setHours(0, 0, 0, 0);
     return date;
   });
 }
 
-/*
-generateWeek(): void {
-  const startOfWeek = new Date(this.currentDate);
-  const dayOfWeek = startOfWeek.getDay();
-  startOfWeek.setDate(startOfWeek.getDate() - dayOfWeek); // Domingo
-
-  this.week = [];
-
-  for (let i = 0; i < this.configAgenda.diasAtendimento.length; i++) {
-    const day = new Date(startOfWeek);
-    day.setDate(startOfWeek.getDate() + i);
-    day.setHours(0, 0, 0, 0);
-    if (this.configAgenda.diasAtendimento.includes(day.getDay())) {
-      this.week.push(new Date(day));
-    }
-  }
-}
-*/
 generateHours() {
   this.hours = []; // resetar
   const start = this.configAgenda.horaInicio;
@@ -197,42 +194,6 @@ generateHours() {
   }
 }
 
-/*
-opcional com intervalos 30 min
-generateHours() {
-  this.hours = [];
-  const start = this.configPersonal.horaInicio;
-  const end = this.configPersonal.horaFim;
-
-  for (let hour = start; hour <= end; hour++) {
-    this.hours.push(`${hour.toString().padStart(2, '0')}:00`);
-    this.hours.push(`${hour.toString().padStart(2, '0')}:30`);
-  }
-}
-*/
-
-/*
-generateWeek(): void {
-  const startOfWeek = new Date(this.currentDate);
-  const dayOfWeek = startOfWeek.getDay();
-  startOfWeek.setDate(startOfWeek.getDate() - dayOfWeek); // Domingo
-
-  this.week = Array.from({ length: 7 }, (_, i) => {
-    const day = new Date(startOfWeek);  // cria um novo Date baseado no domingo
-    day.setDate(startOfWeek.getDate() + i);
-    day.setHours(0, 0, 0, 0); // <-- zera a hora!
-    console.log('generateWeek:',new Date(day));
-    return new Date(day); // força nova instância separada
-  });
-}
-*/
-/*
-generateHours() {
-  for (let hour = 8; hour <= 18; hour++) {
-    this.hours.push(`${hour.toString().padStart(2, '0')}:00`);
-  }
-}
-*/
 
 generateDropListId(day: Date, hour: string, minute: number): string {
   return `${day.toDateString()}-${hour}-${minute}`;
@@ -274,12 +235,14 @@ previousWeek() {
 }
 
 getAppointments(day: Date, hour: string, minute: number): Appointment[] {
-  const target = new Date(day);
+  //const target = new Date(day);
+  const target = dayjs.utc(day).tz('America/Sao_Paulo').toDate();
   const [h] = hour.split(':');
   target.setHours(+h, minute, 0, 0);
 
   return this.appointments.filter(appt => {
-    const apptDate = new Date(appt.start);
+    //const apptDate = new Date(appt.start);
+    const apptDate = dayjs.utc(appt.start).tz('America/Sao_Paulo').toDate();
     return apptDate.getTime() === target.getTime();
   });
 }
@@ -323,7 +286,8 @@ saveAppointment(
 
 openAppointmentModal(day: Date, hour: string, minute: number) {
   const [h] = hour.split(':');
-  const start = new Date(day);
+  //const start = new Date(day);
+  const start = dayjs.utc(day).tz('America/Sao_Paulo').toDate();
   start.setHours(+h, minute, 0, 0);
 
 console.log('this.configAgenda.intervaloMinutos antess', this.configAgenda.intervaloMinutos);
@@ -359,7 +323,8 @@ console.log('this.configAgenda.intervaloMinutos depois ', this.configAgenda.inte
       console.log('afterClosedo openAppointmentModal depois',  this.locals);
     }    
     if (result?.titulo) {
-      const start = new Date(day);
+      //const start = new Date(day);
+      const start = dayjs.utc(day).tz('America/Sao_Paulo').toDate();
       const [h] = hour.split(':');
       start.setHours(+h, minute, 0, 0);
       this.saveAppointment(
@@ -391,7 +356,8 @@ console.log('this.configAgenda.intervaloMinutos depois ', this.configAgenda.inte
 console.log('comp', comp);
 
       // Cria um objeto Date com a data que já está no formato correto
-      const dataCompleta = new Date(comp.date);
+      //const dataCompleta = new Date(comp.date);
+      const dataCompleta = dayjs.utc(comp.date).tz('America/Sao_Paulo').toDate();
 
     const compromisso = {
       /*personalId: comp.personalId,*/ // opcional se já vem do token
@@ -438,8 +404,8 @@ console.log('comp', comp);
   }
   
 loadAppointments() {
-  dayjs.extend(utc)
-  dayjs.extend(timezone)
+
+
   console.log('Iniciando requisição HTTP...');
   const token = localStorage.getItem('jwt-token');
   const headers = new HttpHeaders({Authorization: `Bearer ${token}` });    
@@ -447,9 +413,19 @@ loadAppointments() {
     console.log('data: ', data);
     this.appointments = data.map((item) => ({
       agenda_id: item.agenda_id,
-      date: dayjs.utc(item.date).tz('America/Sao_Paulo').toDate(),
-      start: dayjs.utc(item.start).tz('America/Sao_Paulo').toDate(),
-      //date: dayjs(item.data).toDate(),
+      date: dayjs(item.date).toDate(),
+      start: dayjs(item.start).toDate(),
+      //date: dayjs.utc(item.date).tz('America/Sao_Paulo').toDate(),
+      //start: dayjs.utc(item.start).tz('America/Sao_Paulo').toDate(),
+      //date: new Date(Date.parse(item.date));
+      //start: new Date(Date.parse(item.start));
+      //date: dayjs.utc(item.date).tz('America/Sao_Paulo').toDate(),
+      //start: dayjs.utc(item.start).tz('America/Sao_Paulo').toDate(),
+      //date: dayjs(item.date).utc().toISOString();
+      //start: dayjs(item.start).utc().toISOString();
+      //date: new Date(item.date),
+      //start: new Date(item.start),
+      //date: dayjs(item.date).toDate(),
       //start: dayjs(item.start).toDate(),
       hour: item.hour,
       titulo: item.titulo,
@@ -512,11 +488,13 @@ getStatusCor(statusId: number): string {
 getDateTime(appt: Appointment): Date {
   if (!appt?.hour || !appt?.date) {
     console.warn('Compromisso incompleto:', appt);
-    return new Date(); // ou null, dependendo do que você quiser exibir
+    //return new Date(); // ou null, dependendo do que você quiser exibir
+    return dayjs.utc().tz('America/Sao_Paulo').toDate();
   }
 
   const [h, m] = appt.hour.split(':');
-  const date = new Date(appt.date);
+  //const date = new Date(appt.date);
+  const date = dayjs.utc(appt.date).tz('America/Sao_Paulo').toDate();
   date.setHours(+h, +m);
   return date;
 }
@@ -530,12 +508,14 @@ formatTime(date: Date): string {
 
 
 hasAppointment(day: Date, hour: string, minute: number): boolean {
-  const target = new Date(day);
+  //const target = new Date(day);
+  const target = dayjs.utc(day).tz('America/Sao_Paulo').toDate();
   const [h] = hour.split(':');
   target.setHours(+h, minute, 0, 0);
 //console.log('Verificando:', target.toISOString());
   return this.appointments.some(appt => {
-    const apptDate = new Date(appt.start); // usando `start` agora
+    //const apptDate = new Date(appt.start); // usando `start` agora
+    const apptDate = dayjs.utc(appt.start).tz('America/Sao_Paulo').toDate();
     return apptDate.getFullYear() === target.getFullYear() &&
            apptDate.getMonth() === target.getMonth() &&
            apptDate.getDate() === target.getDate() &&
@@ -548,8 +528,8 @@ hasAppointment(day: Date, hour: string, minute: number): boolean {
 editarCompromisso(appt: any): void {
   console.log('entrou no ediar:');
   console.log('appt:', appt );
-  const safeDate = new Date(Date.parse(appt.date));
-
+  //const safeDate = new Date(Date.parse(appt.date));
+  const safeDate = dayjs.utc(Date.parse(appt.date)).tz('America/Sao_Paulo').toDate();
   console.log('appt.data:', appt.date );
   console.log('safeDate:', safeDate );
   const dialogRef = this.dialog.open(AppointmentDialogComponent, {
@@ -614,11 +594,13 @@ ngAfterViewInit(): void {
 onDrop(event: CdkDragDrop<any>) {
 
 const appt = event.item.data.appointment;
-const toDay = new Date(event.container.data.day); // já é uma Date
+//const toDay = new Date(event.container.data.day); // já é uma Date
+const toDay = dayjs.utc(event.container.data.day).tz('America/Sao_Paulo').toDate();
 const hour = event.container.data.hour;
 const minute = event.container.data.minute;
 
-const fromDate = new Date(event.item.data.appointment.start); // ou .date
+//const fromDate = new Date(event.item.data.appointment.start); // ou .date
+const fromDate = dayjs.utc(event.item.data.appointment.start).tz('America/Sao_Paulo').toDate();
 const toDate = buildDateWithTime(toDay, event.container.data.hour, event.container.data.minute);
 console.log("From:", fromDate, "|", fromDate.getTime());
 console.log("To:", toDate, "|", toDate.getTime());
@@ -676,7 +658,8 @@ trackByMinute(index: number, minute: number): number {
 
 getDropListData(day: Date, hour: string, minute: number) {
   return {
-    day: new Date(day),  // cria nova instância para evitar referência
+    //day: new Date(day),  // cria nova instância para evitar referência
+    day: dayjs.utc(day).tz('America/Sao_Paulo').toDate(),
     hour: String(hour),  // força string
     minute: Number(minute)  // força número
   };
@@ -726,7 +709,8 @@ getDropListData(day: Date, hour: string, minute: number) {
 
 function buildDateWithTime(baseDay: Date, hour: string, minute: number): Date {
   const [h, m] = hour.split(':').map(Number);
-  const result = new Date(baseDay);
+  //const result = new Date(baseDay);
+  const result = dayjs.utc(baseDay).tz('America/Sao_Paulo').toDate();
   result.setHours(h, minute, 0, 0);
   return result;
 }
