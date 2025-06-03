@@ -6,7 +6,18 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import dotenv from 'dotenv';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc.js';
+import timezone from 'dayjs/plugin/timezone.js';
 
+
+//const dayjs = require('dayjs');
+//const utc = require('dayjs/plugin/utc');
+//const timezone = require('dayjs/plugin/timezone');
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+process.env.TZ = 'UTC';
 dotenv.config();
 
 // Recriando `__dirname`
@@ -22,14 +33,16 @@ const app = express();
 app.use(express.json()); // Middleware para JSON
 app.use(cors());
 
+const isProd = process.env.NODE_ENV === 'production'
+
 const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
+  user: isProd ? process.env.DB_USER_PROD : process.env.DB_USER_LOCAL,
+  host: isProd ? process.env.DB_HOST_PROD : process.env.DB_HOST_LOCAL,
+  database: isProd ? process.env.DB_NAME_PROD : process.env.DB_NAME_LOCAL,
+  password: isProd ? process.env.DB_PASSWORD_PROD : process.env.DB_PASSWORD_LOCAL,
+  port: isProd ? process.env.DB_PORT_PROD : process.env.DB_PORT_LOCAL,
   ssl: {
-    rejectUnauthorized: false,
+    rejectUnauthorized: isProd ? process.env.DB_SSL_PROD : process.env.DB_SSL_LOCAL,
   },
 });
 
@@ -441,6 +454,12 @@ app.put('/api/agendas', authenticateToken, async (req, res) => {
 
   // Adiciona 3 horas (10800000 ms)
   const dataCorrigida = new Date(dataHora.getTime() - 0 * 60 * 60 * 1000);
+  //const isProd = process.env.NODE_ENV === 'production'
+  //const dataCorrigida = isProd
+  //? new Date(dataHora.getTime() - 3 * 60 * 60 * 1000)
+  //: new Date(dataHora.getTime());
+
+
 
   // UPDATE
   try {
@@ -483,12 +502,22 @@ app.post('/api/agendas', authenticateToken, async (req, res) => {
   //console.log(req);
   console.log(req.user.username);
   console.log(req.user.personalId);
+    
 
   const dataHora = new Date(req.body.data);
 
   // Adiciona 3 horas (10800000 ms)
-  const dataCorrigida = new Date(dataHora.getTime() - 0 * 60 * 60 * 1000);
+//  const dataCorrigida = new Date(dataHora.getTime() - 0 * 60 * 60 * 1000);
+  
+  // Exemplo: dataHora é '2025-06-02T08:30' vinda do frontend
+//const dataHoraLocal = dayjs.tz(dataHora, 'America/Sao_Paulo');
 
+// Transforma para UTC antes de salvar no banco
+//const dataCorrigida = dataHoraLocal.utc().toDate();
+
+const dataCorrigida = dayjs(req.body.data).tz('America/Sao_Paulo').utc().toDate();
+console.log("req.body.data", req.body.data);
+console.log("dataCorrigida", dataCorrigida);
   try {
     const result = await pool.query(
       `INSERT INTO agendas (AgPersonalID, AgAlunoid, AgLocalID, AgData, Agenda, AgStatus)
