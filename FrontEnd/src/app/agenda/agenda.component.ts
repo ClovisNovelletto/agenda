@@ -28,6 +28,10 @@ import { map } from 'rxjs/operators';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { AgendaStatusSheetComponent } from '../agenda-status-sheet/agenda-status-sheet.component'; // ajuste o caminho
 
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+
 @Component({
   standalone: true,
   selector: 'app-agenda',
@@ -93,6 +97,7 @@ export class AgendaComponent implements OnInit, AfterViewInit {
   week: Date[] = [];
   isMobile: boolean = false;
   dropListIds: string[] = [];
+
 
   constructor(private dialog: MatDialog, private http: HttpClient, private personalService: PersonalService, private agendaStatusService: AgendaStatusService, private bottomSheet: MatBottomSheet) {}
 
@@ -433,14 +438,16 @@ console.log('comp', comp);
   }
   
 loadAppointments() {
+  dayjs.extend(utc)
+  dayjs.extend(timezone)
   console.log('Iniciando requisição HTTP...');
   const token = localStorage.getItem('jwt-token');
   const headers = new HttpHeaders({Authorization: `Bearer ${token}` });    
   this.http.get<any[]>(`${environment.apiUrl}/agendas`, {headers}).subscribe((data) => {
     this.appointments = data.map((item) => ({
       agenda_id: item.agenda_id,
-      date: new Date(item.date),
-      start: new Date(item.start),
+      date: dayjs.utc(item.data).tz('America/Sao_Paulo').toDate(),
+      start: dayjs.utc(item.start).tz('America/Sao_Paulo').toDate(),
       hour: item.hour,
       titulo: item.titulo,
       alunoId: item.alunoid,
@@ -450,6 +457,7 @@ loadAppointments() {
       personalId: item.personalid,
       statusId: item.statusid ?? 1
     }));
+    
     console.log('Dados recebidos: ', this.appointments);
     console.log('Horários de compromissos:', this.appointments.map(a => a.start.toISOString()));
     console.log('Appointments mapeados:', this.appointments);
