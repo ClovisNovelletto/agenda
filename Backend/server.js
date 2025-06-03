@@ -427,7 +427,7 @@ app.put('/api/personal/configuracoes', authenticateToken, async (req, res) => {
 app.put('/api/agendas', authenticateToken, async (req, res) => {
   const { agenda_id, alunoId, localId, data, /*hora,*/ titulo, /*descricao,*/ statusId } = req.body;
   const personalId = req.user.personalId;
-  statusId = statusId ?? 1;
+  statusId = statusId;
   console.log("req",req);
   console.log(req.user.username);
   console.log(req.user.personalId);
