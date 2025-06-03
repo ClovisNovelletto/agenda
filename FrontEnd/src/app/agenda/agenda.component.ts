@@ -446,8 +446,10 @@ loadAppointments() {
   this.http.get<any[]>(`${environment.apiUrl}/agendas`, {headers}).subscribe((data) => {
     this.appointments = data.map((item) => ({
       agenda_id: item.agenda_id,
-      date: dayjs.utc(item.data).tz('America/Sao_Paulo').toDate(),
-      start: dayjs.utc(item.start).tz('America/Sao_Paulo').toDate(),
+      //date: dayjs.utc(item.data).tz('America/Sao_Paulo').toDate(),
+      //start: dayjs.utc(item.start).tz('America/Sao_Paulo').toDate(),
+      date: dayjs(item.data).toDate(),
+      start: dayjs(item.start).toDate(),
       hour: item.hour,
       titulo: item.titulo,
       alunoId: item.alunoid,
