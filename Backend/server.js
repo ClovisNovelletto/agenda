@@ -36,13 +36,13 @@ app.use(cors());
 const isProd = process.env.NODE_ENV === 'production'
 
 const pool = new Pool({
-  user: isProd ? process.env.DB_USER_PROD : process.env.DB_USER_LOCAL,
-  host: isProd ? process.env.DB_HOST_PROD : process.env.DB_HOST_LOCAL,
-  database: isProd ? process.env.DB_NAME_PROD : process.env.DB_NAME_LOCAL,
-  password: isProd ? process.env.DB_PASSWORD_PROD : process.env.DB_PASSWORD_LOCAL,
-  port: isProd ? process.env.DB_PORT_PROD : process.env.DB_PORT_LOCAL,
+  user: isProd ? process.env.DB_USER : process.env.DB_USER_LOCAL,
+  host: isProd ? process.env.DB_HOST : process.env.DB_HOST_LOCAL,
+  database: isProd ? process.env.DB_NAME : process.env.DB_NAME_LOCAL,
+  password: isProd ? process.env.DB_PASSWORD : process.env.DB_PASSWORD_LOCAL,
+  port: isProd ? process.env.DB_PORT : process.env.DB_PORT_LOCAL,
   ssl: {
-    rejectUnauthorized: isProd ? process.env.DB_SSL_PROD : process.env.DB_SSL_LOCAL,
+    rejectUnauthorized: false,
   },
 });
 
