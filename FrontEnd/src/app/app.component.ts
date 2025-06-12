@@ -22,7 +22,7 @@ import { TopComponent } from './top/top.component';
     imports: [RouterModule, FooterComponent, TopComponent, MatSidenavModule] // Adicione o RouterModule aqui
 })
 export class AppComponent {
-  title = 'IA.Agenda';
+  title = 'h2u Agenda';
   isLoggedIn: boolean = false; // Inicialmente o usuário não está logado
 
   constructor(private authService: AuthService, private router: Router) {}

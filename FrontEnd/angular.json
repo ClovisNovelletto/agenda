@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "pilates": {
+    "h2uAgenda": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/pilates",
+            "outputPath": "dist/h2uAgenda",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": ["zone.js"],
@@ -68,10 +68,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "pilates:build:production"
+              "buildTarget": "h2uAgenda:build:production"
             },
             "development": {
-              "buildTarget": "pilates:build:development"
+              "buildTarget": "h2uAgenda:build:development"
             }
           },
           "defaultConfiguration": "development"
