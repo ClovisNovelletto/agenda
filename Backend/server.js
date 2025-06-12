@@ -51,7 +51,7 @@ const pool = new Pool({
 const pool = new Pool({
   user: 'postgres', // Substitua pelo seu usuário do banco
   host: 'localhost',
-  database: 'Pilates', // O nome do banco que você criou
+  database: 'h2uAgenda', // O nome do banco que você criou
   password: 'sabro123', // Substitua pela sua senha
   port: 5432, // Porta padrão do PostgreSQL
 });*/
@@ -60,10 +60,10 @@ const pool = new Pool({
 
 console.log(__dirname);
 //__dirname = "../frontend/";
-//const caminhoDist = "C:\\Users\\clovi\\OneDrive\\Documentos\\Meus\\PUC\\pilates\\frontend";
-const caminhoDist = "C:/Users/clovi/OneDrive/Documentos/Meus/PUC/pilates/frontend";
-const distPath = path.join(caminhoDist, 'dist/pilates');
-const distPathIndex = path.join(caminhoDist, 'dist/pilates/browser/index.html');
+//const caminhoDist = "C:\\h2uAgenda\\frontend";
+const caminhoDist = "C:/h2uAgenda/frontend";
+const distPath = path.join(caminhoDist, 'dist/h2uAgenda');
+const distPathIndex = path.join(caminhoDist, 'dist/h2uAgenda/browser/index.html');
 
 console.log(caminhoDist);
 console.log(distPath);
