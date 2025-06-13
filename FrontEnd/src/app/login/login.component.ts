@@ -25,7 +25,7 @@ export class LoginComponent {
 
   onLogin(): void {
     this.httpService.post(`${environment.apiUrl}/login`, {
-      username: this.username,
+      username: this.username.trim(),
       password: this.password
     }).subscribe({
       next: (response: any) => {
