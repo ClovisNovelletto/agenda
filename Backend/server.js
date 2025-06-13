@@ -92,27 +92,31 @@ app.post('/api/register', async (req, res) => {
 
 // Endpoint para autenticar login
 app.post('/api/login', async (req, res) => {
-  const { username, password } = req.body;
+  const username = req.body.username?.trim();;
+  const password = req.body.password;
 
   try {
     const query = 'SELECT id, password, tipo_usuario FROM users WHERE username = $1';
     const result = await pool.query(query, [username]);
-    console.log(query);
-    console.log(result);
-    if (result.rows.length > 0) {
-      const storedHash = result.rows[0].password;
+//    console.log(query);
+//    console.log(result);
+      console.log(username);
       console.log(password);
-      console.log(storedHash);
+if (result.rows.length > 0) {
+      const storedHash = result.rows[0].password;
+      console.log(username);
+      console.log(password);
+//      console.log(storedHash);
       const compareQuery = `SELECT crypt($1, $2) = $2 AS is_valid`;
       const compareResult = await pool.query(compareQuery, [password, storedHash]);
-console.log(compareResult)
+//console.log(compareResult)
       if (compareResult.rows[0].is_valid) {
         // tratamento para pegar personal ou aluno
         const userId = result.rows[0].id;
         const tipo = result.rows[0].tipo_usuario;
-console.log(result);
-console.log(userId);
-console.log(tipo);
+//console.log(result);
+//console.log(userId);
+//console.log(tipo);
         let personalId = null;
         let alunoId = null;
 
