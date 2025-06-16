@@ -159,6 +159,90 @@ const authenticateToken = (req, res, next) => {
 };
 
 /*----------------------------------------------------------*/
+app.get('/api/alunoLista', authenticateToken, async (req, res) => {
+  try {
+    console.log("carrega alunos");
+    const personalId = req.user.personalId;
+    const compareQuery = `SELECT aluno_id id, aluno nome, alufone telefone, aludatanasc datanasc, aluemail email, alucpf cpf, aluativo ativo, alucodconvite codigo_convite FROM Alunos WHERE AluPersonalID=$1`;
+    const result = await pool.query(compareQuery, [personalId]);      
+    res.json(result.rows);
+    //console.log(result.rows); // apenas isso para logar
+    // não usar res.json(result.rows);    // envia resposta corretamente uma única vez
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao buscar alunos');
+  }
+});
+
+
+app.put('/api/alunoSave', authenticateToken, async (req, res) => {
+  const { id, nome, telefone, datanasc, cpf, email, ativo } = req.body;
+
+  // UPDATE
+  try {
+    const result = await pool.query(`
+      UPDATE Alunos SET
+        Aluno = $1, AluCPF = $2, AluDataNasc = $3, AluEmail = $4, AluAtivo = $5, alufone = $6
+      WHERE Aluno_ID = $7`,
+      [nome, cpf, datanasc, email, ativo, telefone, id]);
+    res.status(201).json(result.rows[0]);
+    } catch (err) {
+      console.error('Erro ao atualizar agenda:', err);
+      res.status(500).json({ error: 'Erro ao atualizar agenda' });
+    }
+});
+
+
+app.post('/api/alunoInsert', authenticateToken, async (req, res) => {
+  const { nome, telefone, datanasc, cpf, email, ativo } = req.body;
+  const personalId = req.user.personalId;
+  const codigoConvite = gerarCodigoConvite();
+
+  try {
+    const result = await pool.query(`
+      INSERT INTO Alunos (aluno, AluCPF, AluDataNasc, AluEmail, AluAtivo, alufone, alupersonalid, alucodconvite)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING aluno_id, aluno, alufone, alucodconvite
+    `, [nome, cpf, datanasc, email, ativo, telefone, personalId, codigoConvite]);
+    res.json({
+      id: result.rows[0].aluno_id,                         // <- compatível com this.form.patchValue({ alunoId: novoAluno.id });
+      nome: result.rows[0].aluno,                          // <- compatível com this.alunoCtrl.setValue(novoAluno.nome);
+      telefone: result.rows[0].alufone,                    // <- opcional, se quiser manter
+      codigo_convite: result.rows[0].alucodconvite
+    });
+    console.log('Retornando novo aluno:', {
+      id: result.rows[0].aluno_id,
+      nome: result.rows[0].aluno,
+      telefone: result.rows[0].alufone,
+      codigo_convite: result.rows[0].alucodconvite
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao cadastrar aluno' });
+  }
+});
+
+/*
+app.post('/api/alunoInsert', authenticateToken, async (req, res) => {
+  const { id, nome, telefone, datanasc, cpf, email, ativo } = req.body;
+  const personalId = req.user.personalId;
+  console.log("req",req);
+  console.log("req.body", req.body);
+  console.log("datanasc",datanasc);
+  // INSERT
+  try {
+    const result = await pool.query(`
+      INSERT INTO Alunos(Aluno, AluCPF, AluDataNasc, AluEmail, AluAtivo, AluFone, AluPersonalID)
+        Aluno = $1, AluCPF = $2, AluDataNasc = $3, AluEmail = $4, AluAtivo = $5, alufone = $6
+      WHERE Aluno_ID = $7`,
+      [nome, cpf, datanasc, email, ativo, telefone, personalId]);
+    res.status(201).json(result.rows[0]);
+    } catch (err) {
+      console.error('Erro ao atualizar agenda:', err);
+      res.status(500).json({ error: 'Erro ao atualizar agenda' });
+    }
+});
+*/
 app.get('/api/agendas', authenticateToken, async (req, res) => {
   try {
     console.log("carrega agenda");
@@ -308,21 +392,6 @@ function gerarCodigoConvite(length = 8) {
   return codigo;
 }
 
-
-
-/*
-  try {
-    const result = await pool.query(
-      `INSERT INTO agendas (AgPersonalID, AgAlunoid, AgLocalID, AgData, Agenda, AgStatus)
-      VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-      [personalId, alunoId, localId, dataCorrigida, titulo, status ]
-    );
-    res.status(201).json(result.rows[0]);
-  } catch (err) {
-    console.error('Erro ao inserir agenda:', err);
-    res.status(500).json({ error: 'Erro ao inserir agenda' });
-  }
-*/
 app.post('/api/alunos', authenticateToken, async (req, res) => {
   const { nome, telefone/* personal_id*/ } = req.body;
   const personalId = req.user.personalId;
