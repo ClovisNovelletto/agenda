@@ -15,7 +15,25 @@ import localePt from '@angular/common/locales/pt';
 import { registerLocaleData } from '@angular/common';
 import { importProvidersFrom, LOCALE_ID } from '@angular/core';
 
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+
 registerLocaleData(localePt);
+
+import { MAT_DATE_LOCALE, MAT_DATE_FORMATS, DateAdapter } from '@angular/material/core';
+import { MomentDateAdapter } from '@angular/material-moment-adapter';
+import { MatMomentDateModule } from '@angular/material-moment-adapter';
+
+export const MY_DATE_FORMATS = {
+  parse: {
+    dateInput: 'DD/MM/YYYY',
+  },
+  display: {
+    dateInput: 'DD/MM/YYYY',
+    monthYearLabel: 'MMMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -25,6 +43,8 @@ bootstrapApplication(AppComponent, {
     importProvidersFrom(MatNativeDateModule),
     provideAnimations(),
     { provide: LOCALE_ID, useValue: 'pt-BR' },
+    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
   ]
 }).catch(err => console.error(err));
 

@@ -1,0 +1,87 @@
+<b>teste </b>
+  <b>teste </b>b>
+    <b>teste </b>b>
+<div>
+testando
+</div>  
+
+<div>
+testando
+</div>  
+
+<!--
+<div class="filtros" style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 16px;">
+  <mat-form-field appearance="outline" style="flex: 1;">
+    <mat-label>Pesquisar por nome ou telefone</mat-label>
+    <input matInput [(ngModel)]="filtroTexto" placeholder="Digite nome ou telefone" />
+  </mat-form-field>
+
+  <mat-button-toggle-group [(ngModel)]="filtroStatus" aria-label="Filtro de status">
+    <mat-button-toggle value="todos">Todos</mat-button-toggle>
+    <mat-button-toggle value="ativos">Ativos</mat-button-toggle>
+    <mat-button-toggle value="inativos">Inativos</mat-button-toggle>
+  </mat-button-toggle-group>
+
+  <button mat-raised-button color="primary" (click)="aplicarFiltro()">
+    Pesquisar
+  </button>
+
+  <button mat-mini-fab color="accent" (click)="novoAluno()" aria-label="Novo Aluno">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>
+-->
+
+<div class="filtros" style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+  <mat-form-field class="campo-pesquisa" appearance="outline" style="flex: 1; min-width: 150px;">
+    <mat-label>Pesquisar</mat-label>
+    <input matInput [(ngModel)]="filtroTexto" (keyup.enter)="aplicarFiltro()" />
+    <button mat-icon-button matSuffix aria-label="Pesquisar" (click)="aplicarFiltro()">
+      <mat-icon>search</mat-icon>
+    </button>
+  </mat-form-field>
+
+  <mat-button-toggle-group class="grupo-toggle" [(ngModel)]="filtroStatus" style="flex-wrap: nowrap;">
+    <mat-button-toggle value="todos">Todos</mat-button-toggle>
+    <mat-button-toggle value="ativos">Ativos</mat-button-toggle>
+    <mat-button-toggle value="inativos">Inativos</mat-button-toggle>
+  </mat-button-toggle-group>
+
+  <button mat-mini-fab color="accent" (click)="novoAluno()" aria-label="Novo Aluno">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>
+
+
+
+<div class="aluno-item" *ngFor="let aluno of alunosFiltrados">
+  <div class="aluno-info">
+    <span class="nome">{{ aluno.nome }}</span>
+    <span class="telefone">{{ aluno.telefone }}</span>
+    <span class="status" [class.ativo]="aluno.ativo" [class.inativo]="!aluno.ativo">
+      {{ aluno.ativo ? 'Ativo' : 'Inativo' }}
+    </span>
+  </div>
+  <button mat-icon-button color="primary" (click)="onEditar(aluno)">
+    <mat-icon>edit</mat-icon>
+  </button>
+</div>
+
+
+<!--
+</div>  
+<div class="aluno-lista-container">
+  <div class="aluno-item" *ngFor="let aluno of alunos">
+    <div class="aluno-info">
+      <strong>{{ aluno.nome }}</strong>
+      <span>{{ aluno.telefone }}</span>
+      <span *ngIf="!aluno.ativo" class="inativo">(Inativo)</span>
+    </div>
+    <div class="aluno-acoes">
+      <button mat-icon-button (click)="onEditar(aluno)">
+        <mat-icon>edit</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>
+-->

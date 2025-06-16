@@ -1,0 +1,101 @@
+.aluno-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.aluno-info {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  font-size: 14px;
+}
+
+.nome {
+  font-weight: 500;
+}
+
+.telefone {
+  color: #555;
+}
+
+.status {
+  font-weight: bold;
+}
+
+.status.ativo {
+  color: green;
+}
+
+.status.inativo {
+  color:#ff6b6b
+}
+
+
+/*filtros*/
+/*
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.campo-pesquisa {
+  flex: 1 1 150px;
+  min-width: 100px;
+}
+
+.grupo-toggle {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.botao-pesquisar {
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .grupo-toggle {
+    font-size: 12px;
+    transform: scale(0.9);
+  }
+
+  .botao-pesquisar {
+    padding: 0 8px;
+  }
+
+  .filtros {
+    justify-content: space-between;
+  }
+}
+*/
+/*novos filtros*/
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.campo-pesquisa {
+  min-width: 150px;
+  flex: 1 1 auto;
+}
+
+.grupo-toggle {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 4px;
+}
+
+@media (max-width: 600px) {
+  .grupo-toggle {
+    font-size: 12px;
+    transform: scale(0.9);
+  }
+}

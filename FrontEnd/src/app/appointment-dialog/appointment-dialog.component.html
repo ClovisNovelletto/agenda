@@ -1,86 +1,78 @@
-<!--<h2 mat-dialog-titulo>Adicionar Compromisso</h2>-->
 
+<form [formGroup]="form">
+  <mat-dialog-content>
+    <mat-form-field appearance="fill" style="width: 100%;">
+      <mat-label>Título</mat-label>
+      <input matInput formControlName="titulo" required />
+      <mat-error *ngIf="form.get('titulo')?.hasError('required') && form.get('titulo')?.touched">
+        Campo obrigatório
+      </mat-error>
+    </mat-form-field>
 
-<!--  
-   {{ data.date }}
-  <p>Data: {{ data.date | date:'fullDate' }} às {{ data.hour }}</p>
-  <mat-form-field appearance="fill" style="width: 100%;">
-    <mat-label>Título</mat-label>
-    <input matInput [(ngModel)]="titulo" />
-  </mat-form-field>
--->
+    <mat-form-field appearance="fill">
+      <mat-label>Data</mat-label>
+      <input matInput
+            [matDatepicker]="picker"
+            formControlName="data"
+            required>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
 
-<mat-dialog-content>
-  <mat-form-field appearance="fill" style="width: 100%;">
-    <mat-label>Título</mat-label>
-    <input matInput [(ngModel)]="titulo" />
-  </mat-form-field>
-  
-  
-  <mat-form-field appearance="fill">
-  <mat-label>Data</mat-label>
-  <input matInput [matDatepicker]="picker" [(ngModel)]="data.date">
-  <!--<input matInput [matDatepicker]="picker" formControlName="data">        se precisar usar formGroup ou formControlName seria mais completo e integrado formulários maiores e com mais validação-->
-  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-  <mat-datepicker #picker></mat-datepicker>
-</mat-form-field>
+      <mat-error *ngIf="form.get('data')?.hasError('required') && form.get('data')?.touched">
+        Campo obrigatório
+      </mat-error>
+    </mat-form-field>
 
-<mat-form-field appearance="fill">
-  <mat-label>Hora</mat-label>
-  <mat-select [(ngModel)]="data.hour">
-    <mat-option *ngFor="let h of horasPossiveis" [value]="h">{{ h }}</mat-option>
-  </mat-select>
-</mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Hora</mat-label>
+      <mat-select formControlName="hour" required>
+        <mat-option *ngFor="let h of horasPossiveis" [value]="h">{{ h }}</mat-option>
+      </mat-select>
 
-  <!-- antigos
-  <label>Data:</label>
-  <input type="date" [(ngModel)]="data.date" />
+      <mat-error *ngIf="form.get('hour')?.hasError('required') && form.get('hour')?.touched">
+        Campo obrigatório
+      </mat-error>
+    </mat-form-field>  
 
+    <mat-form-field appearance="fill" class="w-full">
+      <mat-label>Aluno</mat-label>
+      <input type="text" matInput [formControl]="alunoCtrl" [matAutocomplete]="autoAluno" required>
+      <mat-autocomplete #autoAluno="matAutocomplete" (optionSelected)="onAlunoSelected($event.option.value)">
+        <mat-option *ngFor="let aluno of alunosFiltrados" [value]="aluno.nome">
+          {{ aluno.nome }}
+        </mat-option>
+      </mat-autocomplete>
 
-  <label>Hora:</label>
-  <select [(ngModel)]="data.hour">
-    <option *ngFor="let h of horasPossiveis" [value]="h">{{ h }}</option>
-  </select>
--->
-<!--
-  <mat-form-field appearance="fill" style="width: 100%;">
-    <mat-label>Descrição</mat-label>
-    <textarea matInput rows="3" [(ngModel)]="descricao"></textarea>
-  </mat-form-field>
--->
-  <mat-form-field appearance="fill" class="w-full">
-  <mat-label>Aluno</mat-label>
-  <input type="text" matInput [formControl]="alunoCtrl" [matAutocomplete]="autoAluno">
-  <mat-autocomplete #autoAluno="matAutocomplete" (optionSelected)="onAlunoSelected($event.option.value)">
-    <mat-option *ngFor="let aluno of alunosFiltrados" [value]="aluno.nome">
-      {{ aluno.nome }}
-    </mat-option>
-  </mat-autocomplete>
-</mat-form-field>
+      <mat-error *ngIf="alunoCtrl.hasError('required') && alunoCtrl.touched">
+        Campo obrigatório
+      </mat-error>
 
-<!-- Botão de adicionar novo -->
-<button mat-button color="primary" (click)="abrirModalNovoAluno()" *ngIf="!alunoEncontrado">
-  + Adicionar novo aluno
-</button>
+    </mat-form-field>
 
-<mat-form-field appearance="fill" class="w-full">
-  <mat-label>Local</mat-label>
-  <input type="text" matInput [formControl]="localCtrl" [matAutocomplete]="autoLocal">
-  <mat-autocomplete #autoLocal="matAutocomplete" (optionSelected)="onLocalSelected($event.option.value)">
-    <mat-option *ngFor="let local of localsFiltrados" [value]="local.nome">
-      {{ local.nome }} — {{ local.endereco }}
-    </mat-option>
-  </mat-autocomplete>
-</mat-form-field>
+    <!-- Botão de adicionar novo -->
+    <button mat-button color="primary" (click)="abrirModalNovoAluno()" *ngIf="!alunoEncontrado">
+      + Adicionar novo aluno
+    </button>
 
-<!-- Botão de adicionar novo -->
-<button mat-button color="primary" (click)="abrirModalNovoLocal()" *ngIf="!localEncontrado">
-  + Adicionar novo local
-</button>
+    <mat-form-field appearance="fill" class="w-full">
+      <mat-label>Local</mat-label>
+      <input type="text" matInput [formControl]="localCtrl" [matAutocomplete]="autoLocal" required>
+      <mat-autocomplete #autoLocal="matAutocomplete" (optionSelected)="onLocalSelected($event.option.value)">
+        <mat-option *ngFor="let local of localsFiltrados" [value]="local.nome">
+          {{ local.nome }} — {{ local.endereco }}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
 
-</mat-dialog-content>
+    <!-- Botão de adicionar novo -->
+    <button mat-button color="primary" (click)="abrirModalNovoLocal()" *ngIf="!localEncontrado">
+      + Adicionar novo local
+    </button>
 
-<mat-dialog-actions align="end">
-  <button mat-button (click)="cancel()">Cancelar</button>
-  <button mat-raised-button color="primary" (click)="save()">Salvar</button>
-</mat-dialog-actions>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+      <button mat-button (click)="cancel()">Cancelar</button>
+      <button mat-raised-button color="primary" (click)="save()" [disabled]="form.invalid">Salvar</button>
+  </mat-dialog-actions>
+</form>

@@ -314,6 +314,7 @@ console.log('this.configAgenda.intervaloMinutos depois ', this.configAgenda.inte
       }
     console.log('afterClosedo openAppointmentModal depois',  this.alunos);      
     }
+    console.log('result',  result);      
     if (result?.atualizouLocals && result.local) {
       console.log('afterClosedo openAppointmentModal antes',  this.locals);      
       const jaExiste = this.locals.some(a => a.id === result.local.id);
