@@ -1,21 +1,55 @@
-.mrgtopbootom {
+.xmrgtopbootom {
    margin-top : 40px;
    margin-bottom : 40px;
 }
 
-html, body {
-  height: 100%;
+xhtml, xbody {
+  /*height: 100%;*/
   margin: 0;
   overflow: hidden; /* isso evita scroll duplo */
 }
 
-mat-sidenav-container {
+xmat-sidenav-container {
   height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-router-outlet ~ * {
+xrouter-outlet ~ * {
   flex-grow: 1;
   overflow: auto; /* permite rolar o conteúdo da página */
+}
+
+
+/*novo*/
+app-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background-color: #ffa726; /* amarelo/laranja */
+  z-index: 1000;
+}
+
+app-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background-color: #ffa726;
+  z-index: 1000;
+}
+
+.conteudo {
+  padding-top: 40px;   /* altura do topo */
+  padding-bottom: 40px; /* altura do rodapé */
+  /*min-height: 100vh;*/
+  background-color: #000; /* fundo da home/preto */
+  color: white;
+  /*overflow-y: auto;*/
+  box-sizing: border-box; /* importante para incluir o padding no cálculo */
+  overflow: hidden; /* evita scroll em conteúdo curto */
+  min-height: calc(100vh - 80px);  
 }

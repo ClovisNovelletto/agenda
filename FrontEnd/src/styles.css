@@ -1,8 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 40px 0; padding: 40px 0; box-sizing: border-box;
-    font-family: Roboto, "Helvetica Neue", sans-serif; }
+html, body { height: 100%;  margin: 0px 0; padding: 0px 0}
+/*body { margin: 40px 0; padding: 40px 0; box-sizing: border-box;
+    font-family: Roboto, "Helvetica Neue", sans-serif; }*/
 
 .custom-aluno-dialog {
   border: 2px solid #4CAF50;
