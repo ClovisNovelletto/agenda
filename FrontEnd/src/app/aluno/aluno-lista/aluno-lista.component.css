@@ -1,3 +1,13 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
 .aluno-item {
   display: flex;
   justify-content: space-between;
@@ -34,6 +44,11 @@
 }
 
 
+/*tirar espaço logo abaixo dos campos de pesquisa e status - ativo/inativo*/
+::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
 /*novos filtros*/
 
 .filtros {
@@ -61,3 +76,69 @@
     transform: scale(0.9);
   }
 }
+
+
+
+/*rolagem*/
+.tela-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; 
+  border: 2px solid red;
+  overflow: hidden;
+}
+
+.lista-scroll {
+  flex: 1;
+  overflow-y: auto;
+  /* padding: 8px;*/
+  min-height: 0; 
+}
+
+/*filtro*/
+/*filtro 3*/
+
+.filtros {
+  position: sticky;
+  top: 2px; /* abaixo da barra top */
+  /*top: 0;*/
+  background: #494646;
+  z-index: 10;
+  padding: 6px;
+  border-bottom: 1px solid #ccc;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.filtros mat-form-field {
+  flex: 1 1 100px;
+  min-width: 90px;
+}
+
+.botao-verde {
+  background-color: #28a745;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+mat-sidenav-container,
+main.conteudo {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Conteúdo principal da aplicação */
+/*main.conteudo {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-top: 40px; 
+  padding-bottom: 40px; 
+}*/

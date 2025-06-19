@@ -14,19 +14,21 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { NgModule } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   selector: 'app-aluno-lista',
-   imports: [CommonModule, MatIconModule, MatNativeDateModule, MatSlideToggleModule, MatButtonToggleModule, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule], // Adicione o RouterModule aqui]
+   imports: [CommonModule, MatIconModule, MatNativeDateModule, MatSlideToggleModule, MatButtonToggleModule, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatSelectModule, MatMenuModule] , // Adicione o RouterModule aqui]
   templateUrl: './aluno-lista.component.html',
   styleUrls: ['./aluno-lista.component.css'] 
 })
 export class AlunoListaComponent implements OnInit {
-  filtroTexto: string = '';
-  filtroStatus: 'todos' | 'ativos' | 'inativos' = 'todos';
+  filtroTexto: string = "";
+  filtroStatus: string = "Todos";
   alunos: Aluno[] = [];
   alunosFiltrados: Aluno[] = [];
-
+  ordemCrescente = true;
   constructor(private dialog: MatDialog, private alunoService: AlunoService) {}
 
   ngOnInit(): void {
@@ -63,9 +65,49 @@ export class AlunoListaComponent implements OnInit {
     this.alunoService.listar().subscribe(lista => {
       this.alunos = lista;
       this.aplicarFiltro();
+      console.log('this.alunosFiltrados',this.alunosFiltrados);
     });
   }
 
+  aplicarFiltro() {
+  this.alunosFiltrados = this.alunos.filter(aluno => {
+    const filtStatus = (this.filtroStatus === "Ativos" ? true : false);
+    const condTexto = aluno.nome.toLowerCase().includes(this.filtroTexto.toLowerCase().trim()) ||
+                      aluno.telefone.includes(this.filtroTexto.trim());
+
+    const condStatus = this.filtroStatus == "Todos" || aluno.ativo == filtStatus;
+
+    console.log('');
+    console.log('aluno.nome', aluno.nome);
+    console.log('aluno.ativo', aluno.ativo);
+    console.log('this.filtroTexto', this.filtroTexto);
+    console.log('this.filtroStatus', this.filtroStatus);
+    console.log('condTexto', condTexto);
+    console.log('condStatus', condStatus);
+
+    return condTexto && condStatus;
+  });
+}
+/*  
+  aplicarFiltro() {
+    const texto = this.filtroTexto.toLowerCase().trim();
+    const status = this.filtroStatus;
+
+    this.alunosFiltrados = this.alunos.filter(aluno => {
+    const condicaoTexto =
+      aluno.nome.toLowerCase().includes(texto) ||
+      aluno.telefone.includes(texto);
+
+    const condicaoStatus =
+      status == null ||
+      (status == true && aluno.ativo) ||
+      (status == false && !aluno.ativo);
+
+    return condicaoTexto && condicaoStatus;
+    });
+  }
+  */
+  /*
   aplicarFiltro() {
     const texto = this.filtroTexto.toLowerCase();
     this.alunosFiltrados = this.alunos.filter(aluno => {
@@ -79,6 +121,7 @@ export class AlunoListaComponent implements OnInit {
       return matchTexto && matchStatus;
     });
   }
+  */
 
   novoAluno() {
     const isMobile = window.innerWidth < 600;
@@ -94,5 +137,17 @@ export class AlunoListaComponent implements OnInit {
       }
     });
   }
+
+
+
+ordenarPor(campo: keyof Aluno) {
+  this.alunos.sort((a, b) => {
+    const valorA = a[campo]?.toString().toLowerCase() || '';
+    const valorB = b[campo]?.toString().toLowerCase() || '';
+    return this.ordemCrescente ? valorA.localeCompare(valorB) : valorB.localeCompare(valorA);
+  });
+
+  this.ordemCrescente = !this.ordemCrescente;
+}
 
 }
