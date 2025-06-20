@@ -16,11 +16,13 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 
 import { MatDatepickerModule } from '@angular/material/datepicker';
 
+import { MatFormField } from '@angular/material/form-field';
+
 @Component({
   selector: 'app-aluno-form',
   imports: [MatInputModule, MatNativeDateModule, MatSlideToggleModule, CommonModule,
             ReactiveFormsModule, MatFormFieldModule, MatInputModule,  MatSlideToggleModule,
-            MatButtonModule, MatDialogModule, MatIconModule, MatToolbarModule, MatDatepickerModule], // Adicione o RouterModule aqui]
+            MatButtonModule, MatDialogModule, MatIconModule, MatToolbarModule, MatDatepickerModule, MatFormField], // Adicione o RouterModule aqui]
   templateUrl: './aluno-form.component.html'
 })
 export class AlunoFormComponent implements OnInit {
@@ -33,14 +35,6 @@ export class AlunoFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    /*this.form = this.fb.group({
-      nome: [this.data?.nome || '', Validators.required],
-      telefone: [this.data?.telefone || '', Validators.required],
-      email: [this.data?.email || ''],
-      datanasc: [this.data?.datanasc || ''],
-      cpf: [this.data?.cpf || ''],
-      ativo: [this.data?.ativo !== false]
-    });*/
 
     this.form = this.fb.group({
       nome: ['', Validators.required],
@@ -51,8 +45,7 @@ export class AlunoFormComponent implements OnInit {
       datanasc: [null],
     });
 
-console.log('this.data.aluno.datanasc: ',this.data.aluno.datanasc);    
-console.log('this.data.aluno: ', this.data.aluno);
+    
     if (this.data?.aluno) {
       console.log('this.data.aluno: ', this.data.aluno);
       this.form.patchValue({

@@ -69,6 +69,23 @@ export class AlunoListaComponent implements OnInit {
     });
   }
 
+
+  aplicarFiltro(): void {
+  this.alunosFiltrados = this.alunos
+    .filter(aluno => {
+      const correspondeTexto = this.filtroTexto
+        ? aluno.nome.toLowerCase().includes(this.filtroTexto.toLowerCase())
+        : true;
+
+      const correspondeStatus = this.filtroStatus === 'Todos'
+        || (this.filtroStatus === 'Ativos' && aluno.ativo)
+        || (this.filtroStatus === 'Inativos' && !aluno.ativo);
+
+      return correspondeTexto && correspondeStatus;
+    })
+    .sort((a, b) => a.nome.localeCompare(b.nome)); // <-- ordenação fixa por nome
+  }
+/*
   aplicarFiltro() {
   this.alunosFiltrados = this.alunos.filter(aluno => {
     const filtStatus = (this.filtroStatus === "Ativos" ? true : false);
@@ -77,17 +94,12 @@ export class AlunoListaComponent implements OnInit {
 
     const condStatus = this.filtroStatus == "Todos" || aluno.ativo == filtStatus;
 
-    console.log('');
-    console.log('aluno.nome', aluno.nome);
-    console.log('aluno.ativo', aluno.ativo);
-    console.log('this.filtroTexto', this.filtroTexto);
-    console.log('this.filtroStatus', this.filtroStatus);
-    console.log('condTexto', condTexto);
-    console.log('condStatus', condStatus);
 
     return condTexto && condStatus;
   });
 }
+*/
+
 /*  
   aplicarFiltro() {
     const texto = this.filtroTexto.toLowerCase().trim();

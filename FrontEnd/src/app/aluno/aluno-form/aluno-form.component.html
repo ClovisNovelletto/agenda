@@ -7,27 +7,28 @@
 
 <div class="form-wrapper">
   <form [formGroup]="form" (ngSubmit)="salvar()">
-    <mat-form-field appearance="outline">
+
+    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px">
       <mat-label>Nome</mat-label>
       <input matInput formControlName="nome" />
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px">
       <mat-label>Telefone</mat-label>
       <input matInput formControlName="telefone" />
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px">
       <mat-label>Email</mat-label>
       <input matInput type="email" formControlName="email" />
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px">
       <mat-label>CPF</mat-label>
       <input matInput formControlName="cpf" />
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px">
       <mat-label>Nascimento</mat-label>
 
       <input matInput [matDatepicker]="picker" formControlName="datanasc">
@@ -36,11 +37,13 @@
 
     </mat-form-field>
 
-    <mat-slide-toggle formControlName="ativo">Aluno ativo</mat-slide-toggle>
+    <mat-slide-toggle formControlName="ativo" style="margin-left: 3px; margin-bottom: 5px">Aluno ativo</mat-slide-toggle>
 
-    <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
-      Salvar
-    </button>
+    <div>
+      <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+        Salvar
+      </button>
+    </div>
   </form>
 </div>
 
