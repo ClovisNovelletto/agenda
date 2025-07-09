@@ -34,6 +34,9 @@ app.use(express.json()); // Middleware para JSON
 app.use(cors());
 
 const isProd = process.env.NODE_ENV === 'production'
+
+console.log('NODE_ENV:', process.env.NODE_ENV);
+
 /*
 const pool = new Pool({
   user: isProd ? process.env.DB_USER : process.env.DB_USER_LOCAL,
