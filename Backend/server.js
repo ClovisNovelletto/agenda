@@ -37,6 +37,15 @@ const isProd = process.env.NODE_ENV === 'production'
 
 console.log('NODE_ENV:', process.env.NODE_ENV);
 
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  },
+  host: new URL(process.env.DATABASE_URL).hostname, // força IPv4
+  family: 4 // força uso de IPv4 (evita ENETUNREACH)
+});
+
 /*
 const pool = new Pool({
   user: isProd ? process.env.DB_USER : process.env.DB_USER_LOCAL,
@@ -51,6 +60,7 @@ const pool = new Pool({
   family: 4
 });
 */
+/*
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
@@ -58,7 +68,7 @@ const pool = new Pool({
   },
   family: 4 // Força IPv4
 })
-
+*/
 /*
 // Configuração da conexão com PostgreSQL
 const pool = new Pool({
