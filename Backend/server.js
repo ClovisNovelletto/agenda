@@ -37,6 +37,18 @@ const isProd = process.env.NODE_ENV === 'production'
 
 console.log('NODE_ENV:', process.env.NODE_ENV);
 
+/*SupaBase*/
+import postgres from 'postgres';
+
+const sql = postgres(process.env.DATABASE_URL, {
+  ssl: 'require',   // Supabase exige SSL
+  hostname: new URL(process.env.DATABASE_URL).hostname, // Força IPv4 resolvido
+});
+
+export default sql;
+/**/
+
+/*
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
@@ -45,7 +57,7 @@ const pool = new Pool({
   host: new URL(process.env.DATABASE_URL).hostname, // força IPv4
   family: 4 // força uso de IPv4 (evita ENETUNREACH)
 });
-
+*/
 /*
 const pool = new Pool({
   user: isProd ? process.env.DB_USER : process.env.DB_USER_LOCAL,
@@ -120,7 +132,12 @@ app.post('/api/login', async (req, res) => {
 
   try {
     const query = 'SELECT id, password, tipo_usuario FROM users WHERE username = $1';
-    const result = await pool.query(query, [username]);
+//    const result = await pool.query(query, [username]);
+
+    /*supabase*/
+     const result = await sql`
+      SELECT id, password, tipo_usuario FROM users WHERE username = $1`;
+
 //    console.log(query);
 //    console.log(result);
       console.log(username);
