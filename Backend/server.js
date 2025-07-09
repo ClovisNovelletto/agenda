@@ -137,7 +137,7 @@ app.post('/api/login', async (req, res) => {
     /*supabase*/
     console.log("Vai conectar");
      const result = await sql`
-      SELECT id, password, tipo_usuario FROM users WHERE username = $1`;
+      SELECT id, password, tipo_usuario FROM users WHERE username = ${username}`;
 
     //    console.log(query);
     //    console.log(result);
