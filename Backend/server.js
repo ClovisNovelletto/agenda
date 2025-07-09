@@ -34,7 +34,7 @@ app.use(express.json()); // Middleware para JSON
 app.use(cors());
 
 const isProd = process.env.NODE_ENV === 'production'
-
+/*
 const pool = new Pool({
   user: isProd ? process.env.DB_USER : process.env.DB_USER_LOCAL,
   host: isProd ? process.env.DB_HOST : process.env.DB_HOST_LOCAL,
@@ -47,6 +47,14 @@ const pool = new Pool({
    // 👇 força IPv4
   family: 4
 });
+*/
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  },
+  family: 4 // Força IPv4
+})
 
 /*
 // Configuração da conexão com PostgreSQL
