@@ -44,6 +44,8 @@ const pool = new Pool({
   ssl: {
     rejectUnauthorized: false,
   },
+   // 👇 força IPv4
+  family: 4
 });
 
 /*
