@@ -147,20 +147,25 @@ app.post('/api/login', async (req, res) => {
     //    console.log(result);
     console.log(username);
     console.log(password);
-    if (result.rows.length > 0) {
+    if (result.length > 0) {
       console.log("result ok");
-      const storedHash = result.rows[0].password;
+      //const storedHash = result.rows[0].password;
+      const storedHash = result[1];
       console.log(username);
       console.log(password);
       //      console.log(storedHash);
-      const compareQuery = `SELECT crypt($1, $2) = $2 AS is_valid`;
-      const compareResult = await pool.query(compareQuery, [password, storedHash]);
+      //const compareQuery = `SELECT crypt($1, $2) = $2 AS is_valid`;
+      //const compareResult = await pool.query(compareQuery, [password, storedHash]);
       //console.log(compareResult)
-      if (compareResult.rows[0].is_valid) {
+      //if (compareResult.rows[0].is_valid) {
+      const resultSenhaValida = await sql`
+        SELECT crypt(${password}, ${storedHash}) = ${storedHash} AS is_valid
+      `;
+      if (resultSenhaValida[0].is_valid) {      
         console.log("result válido");
         // tratamento para pegar personal ou aluno
-        const userId = result.rows[0].id;
-        const tipo = result.rows[0].tipo_usuario;
+        const userId = result[0];
+        const tipo = result[2];
         //console.log(result);
         //console.log(userId);
         //console.log(tipo);
@@ -168,11 +173,14 @@ app.post('/api/login', async (req, res) => {
         let alunoId = null;
 
         if (tipo == 2) {
-          const resPersonal = await pool.query('SELECT personal_id id FROM personals WHERE peruserid = $1', [userId]);
-          personalId = resPersonal.rows[0]?.id ?? null;
+          //const resPersonal = await pool.query('SELECT personal_id id FROM personals WHERE peruserid = $1', [userId]);
+          const resPersonal = await sql`SELECT personal_id id FROM personals WHERE peruserid = ${userId}`;
+          personalId = resPersonal[0];
         } else if (tipo ==3) {
-          const resAluno = await pool.query('SELECT aluno_id id FROM alunos WHERE aluuserid = $1', [userId]);
-          alunoId = resAluno.rows[0]?.id ?? null;
+          //const resAluno = await pool.query('SELECT aluno_id id FROM alunos WHERE aluuserid = $1', [userId]);
+          //alunoId = resAluno.rows[0]?.id ?? null;
+          const resAluno = await sql`SELECT aluno_id AS id FROM alunos WHERE aluuserid = ${userId}`;
+          const alunoId = resAluno[0]?.id ?? null;
         }
 
         // Gera o token JWT com informações do usuário
