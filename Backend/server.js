@@ -41,9 +41,13 @@ console.log('NODE_ENV:', process.env.NODE_ENV);
 import postgres from 'postgres';
 
 const sql = postgres(process.env.DATABASE_URL, {
-  ssl: 'require',   // Supabase exige SSL
-  hostname: new URL(process.env.DATABASE_URL).hostname, // Força IPv4 resolvido
+  ssl: 'require'
 });
+
+//const sql = postgres(process.env.DATABASE_URL, {
+//  ssl: 'require',   // Supabase exige SSL
+//  hostname: new URL(process.env.DATABASE_URL).hostname, // Força IPv4 resolvido
+//});
 
 export default sql;
 /**/
