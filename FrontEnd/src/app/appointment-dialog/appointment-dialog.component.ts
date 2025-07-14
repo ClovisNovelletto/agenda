@@ -328,7 +328,8 @@ export class AppointmentDialogComponent {
     }          
 
       // Cria um objeto Date com a data que já está no formato correto
-      const dataCompleta = new Date(this.data.date);
+      //const dataCompleta = new Date(this.data.date);
+      const dataCompleta = new Date(this.form.value.data);
 
       if (!this.form.value.hour) {
         console.error('Hora não preenchida');

@@ -108,14 +108,14 @@ export class AgendaComponent implements OnInit, AfterViewInit {
   
 
   ngOnInit(): void {
-  dayjs.extend(utc)
-  dayjs.extend(timezone)
-  const dataUTC = '2025-06-03T08:00:00Z';
+    dayjs.extend(utc)
+    dayjs.extend(timezone)
+    const dataUTC = '2025-06-03T08:00:00Z';
 
-const localDate = dayjs.utc(dataUTC).tz('America/Sao_Paulo');
+    const localDate = dayjs.utc(dataUTC).tz('America/Sao_Paulo');
 
-console.log('Formatado:', localDate.format('YYYY-MM-DD HH:mm'));
-console.log('Objeto Date:', localDate.toDate());
+    console.log('Formatado:', localDate.format('YYYY-MM-DD HH:mm'));
+    console.log('Objeto Date:', localDate.toDate());
     console.log('AgendaComponent iniciado');
     this.isMobile = window.innerWidth <= 768; // ajustável conforme seu layout
       window.addEventListener('resize', () => {
@@ -128,22 +128,22 @@ console.log('Objeto Date:', localDate.toDate());
     this.loadPersonal().subscribe(config => {
       this.configAgenda = config;
       console.log('configAgenda init dentro loald:', this.configAgenda);
-console.log('this.configAgenda.diasAtendimento.length:', this.configAgenda.diasAtendimento.length);
-    this.generateMinutes(); // gerar os minutos corretamente
-    this.generateAllDropListIds(); // agora com os minutos corretos
-    this.generateWeek();           // se também depende disso
-//    this.generateWeek();     // só chama após o carregamento
-    this.generateHours();
-    this.loadAgendaStatus();
+      console.log('this.configAgenda.diasAtendimento.length:', this.configAgenda.diasAtendimento.length);
+      this.generateMinutes(); // gerar os minutos corretamente
+      this.generateAllDropListIds(); // agora com os minutos corretos
+      this.generateWeek();           // se também depende disso
+      // this.generateWeek();     // só chama após o carregamento
+      this.generateHours();
+      this.loadAgendaStatus();
     });
-/*
-  this.personalService.getConfiguracoes().subscribe(config => {
-    this.configAgenda = config;
-    this.generateMinutes(); // gerar os minutos corretamente
-    this.generateAllDropListIds(); // agora com os minutos corretos
-    this.generateWeek();           // se também depende disso
-  });
-*/
+    /*
+      this.personalService.getConfiguracoes().subscribe(config => {
+        this.configAgenda = config;
+        this.generateMinutes(); // gerar os minutos corretamente
+        this.generateAllDropListIds(); // agora com os minutos corretos
+        this.generateWeek();           // se também depende disso
+      });
+    */
     //this.loadPersonals();
     console.warn('configAgenda init:', this.configAgenda);
     this.loadAppointments();    
@@ -290,7 +290,7 @@ openAppointmentModal(day: Date, hour: string, minute: number) {
   const start = dayjs.utc(day).tz('America/Sao_Paulo').toDate();
   start.setHours(+h, minute, 0, 0);
 
-console.log('this.configAgenda.intervaloMinutos antess', this.configAgenda.intervaloMinutos);
+  console.log('this.configAgenda.intervaloMinutos antess', this.configAgenda.intervaloMinutos);
   const dialogRef = this.dialog.open(AppointmentDialogComponent, {
     width: '300px',
     data: {
@@ -304,7 +304,7 @@ console.log('this.configAgenda.intervaloMinutos antess', this.configAgenda.inter
       horaFim: this.configAgenda.horaFim,
     }
   }) ;
-console.log('this.configAgenda.intervaloMinutos depois ', this.configAgenda.intervaloMinutos);
+  console.log('this.configAgenda.intervaloMinutos depois ', this.configAgenda.intervaloMinutos);
   dialogRef.afterClosed().subscribe((result) => {
     if (result?.atualizouAlunos && result.aluno) {
       const jaExiste = this.alunos.some(a => a.id === result.aluno.id);

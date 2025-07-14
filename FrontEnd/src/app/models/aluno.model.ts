@@ -6,4 +6,5 @@ export interface Aluno {
   datanasc?: string;
   cpf?: string;
   ativo: boolean;
+  diasAula: [];
 }

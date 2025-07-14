@@ -42,6 +42,23 @@ export class ConfiguracoesComponent {
 
   ngOnInit(): void {
     // Exemplo: preencher das 6h às 22h
+    /// log inicio
+    this.personalService.getConfiguracoes().pipe(
+      map(configSelecionada => {
+        console.log('CONFIG DO BACKEND:', configSelecionada);
+
+        return {
+          diasAtendimento: [0,1,2,3,4,5,6].filter(i => (configSelecionada as any)[`dia${i}`]),
+          horaInicio: configSelecionada.hora_inicio,
+          horaFim: configSelecionada.hora_fim,
+          intervaloMinutos: configSelecionada.intervalo_minutos
+        };
+      })
+    ).subscribe(config => {
+      console.log('CONFIG FORMATADA:', config);
+      this.configSelecionada = config;
+    });
+    /// log final
     this.horasPossiveis = Array.from({length: 17}, (_, i) => i + 6);    
     this.personalService.getConfiguracoes().pipe(
     map(configSelecionada => ({

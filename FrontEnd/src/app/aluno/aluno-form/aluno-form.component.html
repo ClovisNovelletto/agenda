@@ -6,7 +6,7 @@
 </mat-toolbar>
 
 <div class="form-wrapper">
-  <form [formGroup]="form" (ngSubmit)="salvar()">
+  <form *ngIf="form" [formGroup]="form" (ngSubmit)="salvar()">
 
     <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px">
       <mat-label>Nome</mat-label>
@@ -38,6 +38,57 @@
     </mat-form-field>
 
     <mat-slide-toggle formControlName="ativo" style="margin-left: 3px; margin-bottom: 5px">Aluno ativo</mat-slide-toggle>
+
+    <!--dias horas-->
+    <div style="margin-top: 16px; margin-bottom: 16px;">
+      <label style="font-weight: 500;">Dias de Aula:</label>
+
+      <div formArrayName="diasAula">
+        <ng-container *ngFor="let grupo of diasAulaArray.controls; let j = index">
+          <div [formGroupName]="j" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+
+            <mat-checkbox formControlName="ativo">
+              {{ diasSemana[j] }}
+            </mat-checkbox>
+
+            <mat-form-field appearance="outline" style="width: 150px;">
+              <mat-label>Horário</mat-label>
+              <mat-select formControlName="hora">
+                <mat-option *ngFor="let h of horasPossiveis" [value]="h">{{ h }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+          </div>
+        </ng-container>
+      </div>
+    </div>
+    <!--
+    <div style="margin-top: 16px; margin-bottom: 16px;">
+      <label style="font-weight: 500;">Dias de Aula:</label>
+
+      <ng-container >
+        <div formArrayName="diasAula">
+          <ng-container *ngFor="let grupo of diasAulaArray.controls; let j = index">
+            <div [formGroupName]="j" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+
+              <mat-checkbox formControlName="ativo">
+                {{ diasSemana[configAgenda.diasAtendimento[j]] }}
+              </mat-checkbox>
+
+              <mat-form-field appearance="outline" style="width: 150px;">
+                <mat-label>Horário</mat-label>
+                <mat-select formControlName="hora">
+                  <mat-option *ngFor="let h of horasPossiveis" [value]="h">{{ h }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+            </div>
+          </ng-container>
+        </div>
+      </ng-container>
+    </div>
+    -->
+    <!--dias horas-->
 
     <div>
       <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
