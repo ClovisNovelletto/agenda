@@ -42,6 +42,10 @@ import postgres from 'postgres';
 
 const sql = postgres(process.env.DATABASE_URL, {
   ssl: 'require'
+  // Pool options (descomente se necessário):
+  //max: 10,            // número máximo de conexões simultâneas
+  //idle_timeout: 60,   // desconecta conexões ociosas após 60s
+  //connect_timeout: 10 // falha após 10s tentando conectar
 });
 
 //const sql = postgres(process.env.DATABASE_URL, {
@@ -206,7 +210,10 @@ app.get('/api/alunoLista', authenticateToken, async (req, res) => {
     const personalId = req.user.personalId;
     //const compareQuery = `SELECT aluno_id id, aluno nome, alufone telefone, aludatanasc datanasc, aluemail email, alucpf cpf, aluativo ativo, alucodconvite codigo_convite FROM Alunos WHERE AluPersonalID=$1`;
     //const result = await pool.query(compareQuery, [personalId]);      
-    const aluno = await sql`SELECT aluno_id id, aluno nome, alufone telefone, aludatanasc datanasc, aluemail email, alucpf cpf, aluativo ativo, alucodconvite codigo_convite FROM Alunos WHERE AluPersonalID = ${personalId}`;
+    const aluno = await sql`SELECT aluno_id id, aluno nome, alufone telefone, aludatanasc datanasc, aluemail email, alucpf cpf, aluativo ativo, alucodconvite codigo_convite,
+                                   aludia0, aludia1, aludia2, aludia3, aludia4, aludia5, aludia6,
+                                   aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6
+                            FROM Alunos WHERE AluPersonalID = ${personalId}`;
     res.json(aluno);
     //console.log(result.rows); // apenas isso para logar
     // não usar res.json(result.rows);    // envia resposta corretamente uma única vez
@@ -218,7 +225,31 @@ app.get('/api/alunoLista', authenticateToken, async (req, res) => {
 
 
 app.put('/api/alunoSave', authenticateToken, async (req, res) => {
-  const { id, nome, telefone, datanasc, cpf, email, ativo } = req.body;
+  //const camposDia = [aludia0, aludia1, aludia2, aludia3, aludia4, aludia5, aludia6];
+  //const camposHora = [aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6];
+  //const { id, nome, telefone, datanasc, cpf, email, ativo, aludia0, aludia1, aludia2, aludia3, aludia4, aludia5, aludia6, aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6 } = req.body;
+
+  // Preenche valores padrão se não vieram do frontend
+  for (let i = 0; i < 7; i++) {
+    if (typeof req.body[`aludia${i}`] === 'undefined') {
+      req.body[`aludia${i}`] = false;
+    }
+    if (typeof req.body[`aluhora${i}`] === 'undefined') {
+      req.body[`aluhora${i}`] = null;
+    }
+  }
+
+  // Agora que os valores estão garantidos, você pode extrair:
+  const {
+    id, nome, telefone, datanasc, cpf, email, ativo,
+    aludia0, aludia1, aludia2, aludia3, aludia4, aludia5, aludia6,
+    aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6
+  } = req.body;
+
+  //for (let i = 0; i < 7; i++) {
+  //  if (typeof camposDia[i] === 'undefined') req.body[`aludia${i}`] = false;
+  //  if (typeof camposHora[i] === 'undefined') req.body[`aluhora${i}`] = null;
+  //}
 
   // UPDATE
   try {
@@ -230,7 +261,9 @@ app.put('/api/alunoSave', authenticateToken, async (req, res) => {
     //res.status(201).json(result.rows[0]);
     const aluno = await sql`
       UPDATE Alunos SET
-       Aluno = ${nome}, AluCPF = ${cpf}, AluDataNasc = ${datanasc}, AluEmail = ${email}, AluAtivo = ${ativo}, alufone = ${telefone}
+       Aluno = ${nome}, AluCPF = ${cpf}, AluDataNasc = ${datanasc}, AluEmail = ${email}, AluAtivo = ${ativo}, alufone = ${telefone},
+       aludia0 = ${aludia0}, aludia1 = ${aludia1}, aludia2 = ${aludia2}, aludia3 = ${aludia3}, aludia4 = ${aludia4}, aludia5 = ${aludia5}, aludia6 = ${aludia6},
+       aluhora0 = ${aluhora0}, aluhora1 = ${aluhora1}, aluhora2 = ${aluhora2}, aluhora3 = ${aluhora3}, aluhora4 = ${aluhora4}, aluhora5 = ${aluhora5}, aluhora6 = ${aluhora6}
        WHERE Aluno_ID = ${id}
       RETURNING *
     `;    
@@ -332,7 +365,10 @@ app.get('/api/alunos', authenticateToken, async (req, res) => {
     const personalId = req.user.personalId;
     //const compareQuery = `SELECT aluno_id id, aluno nome, alufone telefone, alucodconvite codigo_convite FROM alunos WHERE AluPersonalID=$1`;
     //const result = await pool.query(compareQuery, [personalId]);      
-    const alunos = await sql`SELECT aluno_id id, aluno nome, alufone telefone, alucodconvite codigo_convite FROM alunos WHERE AluPersonalID=${personalId} AND AluAtivo = true`;
+    const alunos = await sql`SELECT aluno_id id, aluno nome, alufone telefone, alucodconvite codigo_convite,
+                                    aludia0, aludia1, aludia2, aludia3, aludia4, aludia5, aludia6,
+                                    aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6
+      FROM alunos WHERE AluPersonalID=${personalId} AND AluAtivo = true`;
     res.json(alunos);
     //console.log(res.json(result.rows));
   } catch(err) {
@@ -588,20 +624,21 @@ app.put('/api/personal/configuracoes', authenticateToken, async (req, res) => {
 app.put('/api/agendas', authenticateToken, async (req, res) => {
   const { agenda_id, alunoId, localId, data, /*hora,*/ titulo, /*descricao,*/ statusId } = req.body;
   const personalId = req.user.personalId;
-  console.log("req",req);
-  console.log(req.user.username);
-  console.log(req.user.personalId);
+  //console.log("req",req);
+  //console.log(req.user.username);
+  //console.log(req.user.personalId);
   console.log("agenda_id", agenda_id);
-  console.log("alunoId", alunoId);
-  console.log("localId", localId);
+  //console.log("alunoId", alunoId);
+  //console.log("localId", localId);
   console.log("data", data);
-  console.log("statusId", statusId);
-  console.log("req.body.data",req.body.data);
+  //console.log("statusId", statusId);
+  //console.log("req.body.data",req.body.data);
 
   const dataHora = new Date(req.body.data);
 
   // Adiciona 3 horas (10800000 ms)
   const dataCorrigida = new Date(dataHora.getTime() - 0 * 60 * 60 * 1000);
+  console.log("dataCorrigida", dataCorrigida);
   //const isProd = process.env.NODE_ENV === 'production'
   //const dataCorrigida = isProd
   //? new Date(dataHora.getTime() - 3 * 60 * 60 * 1000)
