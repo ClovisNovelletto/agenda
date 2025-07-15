@@ -60,15 +60,15 @@ export class AlunoFormComponent implements OnInit {
 
   ngOnInit(): void {
 
-      this.form = this.fb.group({
-        nome: ['', Validators.required],
-        telefone: ['', Validators.required],
-        ativo: [true],
-        email: [''],
-        cpf: [''],
-        datanasc: [null],
-        diasAula: this.fb.array([])
-      });
+    this.form = this.fb.group({
+      nome: ['', Validators.required],
+      telefone: ['', Validators.required],
+      ativo: [true],
+      email: [''],
+      cpf: [''],
+      datanasc: [null],
+      diasAula: this.fb.array([])
+    });
 
     this.loadPersonal().subscribe(config => {
       this.configAgenda = config;
@@ -104,96 +104,7 @@ export class AlunoFormComponent implements OnInit {
         formArray.push(grupo);
       }
 
-      /*  
-      for (let i = 0; i < 7; i++) {
-        const estaHabilitado = this.configAgenda.diasAtendimento.includes(i);
-
-        const grupo = this.fb.group({
-          ativo: [{ value: false, disabled: !estaHabilitado }],
-          hora: [{ value: '', disabled: true }]
-        });
-
-        grupo.get('ativo')?.valueChanges.subscribe(ativo => {
-          const horaControl = grupo.get('hora');
-          if (ativo && estaHabilitado) {
-            horaControl?.enable();
-          } else {
-            horaControl?.disable();
-          }
-        });
-
-        formArray.push(grupo);
-      }
-        */
       console.log("diasAula:", this.form.value.diasAula);
-      /*
-      for (let i = 0; i < 7; i++) {
-        const estaHabilitado = this.configAgenda.diasAtendimento.includes(i);
-
-        const grupo = this.fb.group({
-          ativo: [{ value: false, disabled: !estaHabilitado }],
-          hora: [{ value: '', disabled: true }]
-        });
-
-        grupo.get('ativo')?.valueChanges.subscribe(ativo => {
-          const horaControl = grupo.get('hora');
-          if (ativo && estaHabilitado) {
-            horaControl?.enable();
-          } else {
-            horaControl?.disable();
-          }
-        });
-
-        (this.form.get('diasAula') as FormArray).push(grupo);
-      }
-      */
-      /*for (let i = 0; i < 7; i++) {
-        if (this.configAgenda.diasAtendimento.includes(i)) {
-          const grupo = this.fb.group({
-            ativo: [false],
-            hora: ['']
-          });
-
-          grupo.get('ativo')?.valueChanges.subscribe(ativo => {
-            const horaControl = grupo.get('hora');
-            if (ativo) {
-              horaControl?.enable();
-            } else {
-              horaControl?.disable();
-            }
-          });
-
-          grupo.get('hora')?.disable();
-          formArray.push(grupo);
-        } else {
-          // Se o personal não atende esse dia, ainda assim mantém o espaço para manter alinhamento
-          // Isso evita confusão nos índices
-          formArray.push(this.fb.group({
-            ativo: [{ value: false, disabled: true }],
-            hora: [{ value: '', disabled: true }]
-          }));
-        }
-      }*/
-      /*
-      this.configAgenda.diasAtendimento.forEach((_, i) => {
-        const grupo = this.fb.group({
-          ativo: [false],
-          hora: ['']
-        });
-
-        // Habilita/desabilita o campo 'hora' conforme o 'ativo' muda
-        grupo.get('ativo')?.valueChanges.subscribe(ativo => {
-          const horaControl = grupo.get('hora');
-          if (ativo) {
-            horaControl?.enable();
-          } else {
-            horaControl?.disable();
-          }
-        });
-
-        grupo.get('hora')?.disable(); // Começa desabilitado
-        (this.form.get('diasAula') as FormArray).push(grupo);
-      });*/
 
       this.horasPossiveis = this.gerarHorasPossiveis(this.configAgenda.horaInicio, this.configAgenda.horaFim, this.configAgenda.intervaloMinutos);
 
@@ -206,30 +117,28 @@ export class AlunoFormComponent implements OnInit {
           cpf: this.data.aluno.cpf,
           datanasc: this.data.aluno.datanasc
             ? new Date(this.data.aluno.datanasc)
-            : null
+            : null,
         });
 
         const diasAulaArray = this.form.get('diasAula') as FormArray;
 
-        for (let i = 0; i < diasAulaArray.length; i++) {
-          const grupo = diasAulaArray.at(i) as FormGroup;
-          const ativo = this.data.aluno[`aludia${i}`];
-          const hora = this.data.aluno[`aluhora${i}`] || '';
+        for (let i = 0; i < 7; i++) {
+          const ativo = this.data.aluno[`aludia${i}`] ?? false;
+          const hora = this.data.aluno[`aluhora${i}`] ?? '';
 
+          const grupo = diasAulaArray.at(i);
           grupo.get('ativo')?.setValue(ativo);
           grupo.get('hora')?.setValue(hora);
-
-          if (ativo) {
-            grupo.get('hora')?.enable();
-          } else {
+          if (!ativo) {
             grupo.get('hora')?.disable();
+          } else {
+            grupo.get('hora')?.enable();
           }
         }
-      }      
+      }
+ 
     });
-console.log('diasAtendimento:', this.configAgenda.diasAtendimento);
-
-
+    console.log('diasAtendimento:', this.configAgenda.diasAtendimento);
   }
 
   salvar() {
@@ -246,26 +155,19 @@ console.log('diasAtendimento:', this.configAgenda.diasAtendimento);
         datanasc: formValue.datanasc,
       };
 
-      // Adiciona aludia0...6 e aluhora0...6
-      formValue.diasAula.forEach((dia: any, index: number) => {
-        updated[`aludia${index}`] = dia.ativo;
-        updated[`aluhora${index}`] = dia.hora || null;
+      const diasAulaArray = this.form.get('diasAula') as FormArray;
+
+      // Garante que percorre todos os 7 dias
+      diasAulaArray.controls.forEach((grupo, i) => {
+        updated[`aludia${i}`] = grupo.get('ativo')?.value;
+        updated[`aluhora${i}`] = grupo.get('hora')?.value || null;
       });
+
       console.log('updated:', updated);
       this.dialogRef.close(updated);
     }
   }
-  /*
-  salvar() {
-    if (this.form.valid) {
-      const updated: Aluno = {
-        id: this.data?.aluno?.id ?? null,
-        ...this.form.value
-      };
-      this.dialogRef.close(updated);
-    }
-  }*/
-
+  
   fechar() {
     this.dialogRef.close();
   }
