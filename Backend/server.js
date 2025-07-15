@@ -233,10 +233,13 @@ app.put('/api/alunoSave', authenticateToken, async (req, res) => {
   for (let i = 0; i < 7; i++) {
     if (typeof req.body[`aludia${i}`] === 'undefined') {
       req.body[`aludia${i}`] = false;
-    }
-    if (typeof req.body[`aluhora${i}`] === 'undefined') {
       req.body[`aluhora${i}`] = null;
     }
+    if (typeof req.body[`aluhora${i}`] === 'undefined' || req.body[`aludia${i}`] == false) {
+      req.body[`aluhora${i}`] = null;
+    }
+    //console.error(req.body[`aludia${i}`]);
+    //console.error(req.body[`aluhora${i}`]);
   }
 
   // Agora que os valores estão garantidos, você pode extrair:
@@ -246,19 +249,8 @@ app.put('/api/alunoSave', authenticateToken, async (req, res) => {
     aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6
   } = req.body;
 
-  //for (let i = 0; i < 7; i++) {
-  //  if (typeof camposDia[i] === 'undefined') req.body[`aludia${i}`] = false;
-  //  if (typeof camposHora[i] === 'undefined') req.body[`aluhora${i}`] = null;
-  //}
-
   // UPDATE
   try {
-    //const result = await pool.query(`
-    //  UPDATE Alunos SET
-    //    Aluno = $1, AluCPF = $2, AluDataNasc = $3, AluEmail = $4, AluAtivo = $5, alufone = $6
-    //  WHERE Aluno_ID = $7`,
-    //  [nome, cpf, datanasc, email, ativo, telefone, id]);
-    //res.status(201).json(result.rows[0]);
     const aluno = await sql`
       UPDATE Alunos SET
        Aluno = ${nome}, AluCPF = ${cpf}, AluDataNasc = ${datanasc}, AluEmail = ${email}, AluAtivo = ${ativo}, alufone = ${telefone},
