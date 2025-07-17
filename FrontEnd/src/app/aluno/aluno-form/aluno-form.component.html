@@ -34,8 +34,24 @@
       <input matInput [matDatepicker]="picker" formControlName="datanasc">
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
-
     </mat-form-field>
+
+    <mat-form-field appearance="fill" class="w-full" style="margin-left: 3px; margin-bottom: 5px">
+      <mat-label>Local</mat-label>
+      <input type="text" matInput [formControl]="localCtrl" [matAutocomplete]="autoLocal" required>
+      <mat-autocomplete #autoLocal="matAutocomplete" (optionSelected)="onLocalSelected($event.option.value)">
+        <mat-option *ngFor="let local of localsFiltrados" [value]="local.nome">
+          {{ local.nome }} — {{ local.endereco }}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <!-- Botão de adicionar novo -->
+  <!--  <button mat-button color="primary" (click)="abrirModalNovoLocal()" *ngIf="!localEncontrado">
+      + Adicionar novo local
+    </button>
+  -->
+    
 
     <mat-slide-toggle formControlName="ativo" style="margin-left: 3px; margin-bottom: 5px">Aluno ativo</mat-slide-toggle>
 

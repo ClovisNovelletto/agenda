@@ -4,9 +4,73 @@
   <span class="week-label">
     {{ week[0] | date:'dd/MM/yyyy' }} - {{ week[week.length - 1] | date:'dd/MM/yyyy' }}
   </span>
+
+  <!-- botão para abrir o seletor -->
+<!--   
+  <button mat-raised-button color="primary" (click)="abrirSeletorMes()">
+    Gerar agenda mensal
+  </button>
+-->
+  <button mat-raised-button color="primary" (click)="abrirDialogoGerarAgenda()">
+    Gerar agenda mensal
+  </button>
+  
+
   <button mat-raised-button color="primary" (click)="nextWeek()">Próxima Semana →</button>
 </div>
 
+
+<!-- MatDatepicker só para mês/ano -->
+ <mat-form-field appearance="outline" *ngIf="mostrarSeletorMes">
+  <mat-label>Escolha o mês</mat-label>
+  <mat-select [value]="mesSelecionado" (selectionChange)="gerarListaMeses()">
+    <mat-option *ngFor="let mes of mesesDisponiveis" [value]="mes">
+      {{ mes.label }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+ <!--
+<mat-form-field appearance="outline" *ngIf="mostrarSeletorMes">
+  <mat-label>Escolha o mês</mat-label>
+  <input matInput [matDatepicker]="picker" #trigger readonly (click)="picker.open()">
+  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+  <mat-datepicker
+    #picker
+    startView="multi-year"
+    (monthSelected)="gerarAgenda($event)"
+    (yearSelected)="anoSelecionado = $event"
+    panelClass="month-picker">
+  </mat-datepicker>
+</mat-form-field>
+-->
+<!--
+ <mat-form-field appearance="outline" *ngIf="mostrarSeletorMes">
+  <mat-label>Escolha o mês</mat-label>
+  <input matInput [matDatepicker]="picker" #trigger readonly (dateChange)="gerarAgenda($event.value)">
+  <mat-datepicker
+    #picker
+    startView="multi-year"
+    (monthSelected)="gerarAgenda($event)"
+    (yearSelected)="anoSelecionado = $event"
+    panelClass="month-picker">
+  </mat-datepicker>
+</mat-form-field>
+-->
+<!--
+<mat-form-field appearance="outline" *ngIf="mostrarSeletorMes">
+  <mat-label>Escolha o mês</mat-label>
+  <input matInput [matDatepicker]="picker" [value]="dataAtual" readonly (click)="picker.open()">
+  <mat-datepicker #picker 
+                  startView="multi-year" 
+                  (monthSelected)="gerarAgenda($event)"
+                  [startAt]="dataAtual"
+                  [maxDate]="maxData"
+                  [minDate]="minData"
+                  panelClass="month-picker">
+  </mat-datepicker>
+</mat-form-field>
+-->
 <div class="agenda-scroll-wrapper">
   <div class="row" cdkDropListGroup>
     <div *ngIf="appointments.length >= 0" class="agenda-grid" [style.grid-template-columns]="'60px repeat(' + week.length + ', 1fr)'">

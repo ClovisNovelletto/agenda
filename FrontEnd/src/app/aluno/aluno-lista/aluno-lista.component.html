@@ -38,6 +38,8 @@
       <div class="aluno-info">
         <span class="nome">{{ aluno.nome }}</span>
         <span class="telefone">{{ aluno.telefone }}</span>
+        <span class="aludias">{{ aluno.aludias }}</span>
+        <span class="local">{{ aluno.local }}</span>
         <span class="status" [class.ativo]="aluno.ativo" [class.inativo]="!aluno.ativo">
           {{ aluno.ativo ? 'Ativo' : 'Inativo' }}
         </span>

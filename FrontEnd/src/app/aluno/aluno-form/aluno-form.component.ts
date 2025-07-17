@@ -27,16 +27,27 @@ import { FormArray, FormControl } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { MatSelectModule } from '@angular/material/select';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { AddLocalDialogComponent } from '../../add-local-dialog/add-local-dialog.component';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+import { HttpHeaders } from '@angular/common/http';
+import { startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'app-aluno-form',
   imports: [MatInputModule, MatNativeDateModule, MatSlideToggleModule, CommonModule, MatCheckboxModule,
             ReactiveFormsModule, MatFormFieldModule, MatInputModule,  MatSlideToggleModule, MatOptionModule, MatSelectModule,
-            MatButtonModule, MatDialogModule, MatIconModule, MatToolbarModule, MatDatepickerModule, MatFormField], // Adicione o RouterModule aqui]
+            MatButtonModule, MatDialogModule, MatIconModule, MatToolbarModule, MatDatepickerModule, MatFormField, MatAutocompleteModule], // Adicione o RouterModule aqui]
   templateUrl: './aluno-form.component.html'
 })
 export class AlunoFormComponent implements OnInit {
   form!: FormGroup;
+  locals: any[] = [];
+  localCtrl = new FormControl('');
+  localsFiltrados: any[] = [];
+  localSelecionado: any = null;
+  localEncontrado: boolean = true;
   horasPossiveis: string[] = [];
   intervalo: number = 10; // valor padrão
   horaInicio: number = 6; // valor padrão
@@ -55,6 +66,7 @@ export class AlunoFormComponent implements OnInit {
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<AlunoFormComponent>,
     private personalService: PersonalService,
+    private http: HttpClient,
     @Inject(MAT_DIALOG_DATA) public  data: any // { aluno?: Aluno }//data: Aluno 
   ) {}
 
@@ -67,8 +79,32 @@ export class AlunoFormComponent implements OnInit {
       email: [''],
       cpf: [''],
       datanasc: [null],
+      localId: ['', Validators.required],
       diasAula: this.fb.array([])
     });
+
+    const token = localStorage.getItem('jwt-token');
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+
+    this.http.get<any[]>(`${environment.apiUrl}/locals`, { headers }).subscribe(data => {    
+      this.locals = data;
+
+      this.localCtrl.valueChanges
+        .pipe(
+          startWith(''),
+          map(value => value?.toLowerCase()),
+          map(nome => {
+            const filtrado = this.locals.filter(a => a.nome.toLowerCase().includes(nome));
+            this.localEncontrado = filtrado.length > 0;
+            return filtrado;
+          })
+        )
+        .subscribe(result => {
+          this.localsFiltrados = result;
+        });
+    });
+
+    //const localSelecionado = this.locals?.find(l => l.id === comp.localId);
 
     this.loadPersonal().subscribe(config => {
       this.configAgenda = config;
@@ -108,6 +144,13 @@ export class AlunoFormComponent implements OnInit {
 
       this.horasPossiveis = this.gerarHorasPossiveis(this.configAgenda.horaInicio, this.configAgenda.horaFim, this.configAgenda.intervaloMinutos);
 
+      
+      console.log("this.data?.aluno:", this.data?.aluno);
+      
+
+      const localSelecionado = this.locals?.find(l => l.id === this.data.aluno.localId);
+      console.log("localSelecionado:", localSelecionado);
+
       if (this.data?.aluno) {
         this.form.patchValue({
           nome: this.data.aluno.nome,
@@ -118,8 +161,10 @@ export class AlunoFormComponent implements OnInit {
           datanasc: this.data.aluno.datanasc
             ? new Date(this.data.aluno.datanasc)
             : null,
+          localId: localSelecionado?.id /*this.data.aluno.localId*/
         });
 
+      
         const diasAulaArray = this.form.get('diasAula') as FormArray;
 
         for (let i = 0; i < 7; i++) {
@@ -137,6 +182,16 @@ export class AlunoFormComponent implements OnInit {
         }
       }
  
+
+      /**/
+      this.localSelecionado = this.locals?.find(l => l.id ===  this.data.aluno.localId);
+      if (this.localSelecionado) {
+        this.localCtrl.setValue(this.localSelecionado.nome);
+        this.form.get('localId')?.setValue(this.localSelecionado.id);
+      }
+
+
+      /**/
     });
     console.log('diasAtendimento:', this.configAgenda.diasAtendimento);
   }
@@ -152,6 +207,7 @@ export class AlunoFormComponent implements OnInit {
         ativo: formValue.ativo,
         email: formValue.email,
         cpf: formValue.cpf,
+        localId: this.localSelecionado?.id,
         datanasc: formValue.datanasc,
       };
 
@@ -211,4 +267,55 @@ console.log('horas possíveis:', horas);
     return this.form.get('diasAula') as FormArray;
   }
 
+  onLocalSelected(nome: string) {
+    console.log('onLocalSelected...');
+    const local = this.locals.find(a => a.nome === nome);
+    if (local) {
+      console.log('localId: ', local.id);
+      this.form.patchValue({ localId: local.id });
+      this.localSelecionado = local;
+      console.log('localSelecionado: ', this.localSelecionado);
+    } else {
+      this.form.patchValue({ localId: '' });
+    }
+  }
+  /*
+  abrirModalNovoLocal() {
+    const nome = this.localCtrl.value;
+
+    // Abre o modal para pedir o endereco do novo local
+    const dialogRef = this.dialog.open(AddLocalDialogComponent, {
+      width: '400px',
+      height: '300px',
+      panelClass: 'custom-local-dialog',
+      data: { nomeParcial: this.localCtrl.value || '' } // Passa o nome do local já digitado para preencher o campo no modal
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      // Quando o modal é fechado e temos o endereco, fazemos a requisição
+      if (result?.nome && result?.endereco) {
+        const token = localStorage.getItem('jwt-token');
+        const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+        const body = { nome: result.nome, endereco: result.endereco };
+
+        /*this.http.post('/api/locals', body, { headers }).subscribe((novoLocal: any) => {*/
+     /*   this.http.post(`${environment.apiUrl}/locals`, body, { headers }).subscribe((novoLocal: any) => {
+          // Adiciona o novo local à lista e atualiza o campo de seleção
+          console.log('Novo local recebido do backend:', novoLocal);
+          //this.locals.push(novoLocal);
+          const jaExiste = this.locals.some(a => a.id == novoLocal.id);
+          if (!jaExiste) {
+            this.locals.push(novoLocal);
+            this.novoLocalRetorno= novoLocal;
+            this.atualizouLocals = true;
+          }
+          console.log('novoLocal.nome: ', novoLocal.nome);
+          console.log('novoLocal.id: ', novoLocal.id);
+          this.localCtrl.setValue(novoLocal.nome);
+          this.form.patchValue({ localId: novoLocal.id });
+          this.localSelecionado = novoLocal;
+        });
+      }
+    });
+  }*/
 }

@@ -341,3 +341,10 @@ ajuste na altura das linhas, aumentado de 10 para 30 na propriedade grid-auto-ro
 .agenda-wrapper::-webkit-scrollbar-track {
   background: #eee;
 }
+
+::ng-deep .month-picker .mat-calendar-period-button {
+  display: none;
+}
+::ng-deep .month-picker .mat-calendar-arrow {
+  display: none;
+}

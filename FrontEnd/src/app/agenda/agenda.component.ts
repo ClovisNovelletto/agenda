@@ -1,3 +1,4 @@
+import { ReactiveFormsModule } from '@angular/forms';
 import { Component, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AppointmentDialogComponent } from '../appointment-dialog/appointment-dialog.component';
@@ -31,9 +32,17 @@ import { AgendaStatusSheetComponent } from '../agenda-status-sheet/agenda-status
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import {MatDatepickerInput} from '@angular/material/datepicker';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
 
-  dayjs.extend(utc);
-  dayjs.extend(timezone);
+import { DialogGerarAgendaComponent } from './dialog-gerar-agenda/dialog-gerar-agenda.component'; // ajuste o caminho
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 @Component({
   standalone: true,
   selector: 'app-agenda',
@@ -49,8 +58,14 @@ import timezone from 'dayjs/plugin/timezone';
     MatTableModule,
     DragDropModule,
     CdkDropList,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    ReactiveFormsModule,
+    MatOptionModule,
+    MatSelectModule,
   //  Configuracoes,
   ],
+  providers: [MatDatepickerModule]
 
  
 })
@@ -73,6 +88,14 @@ export class AgendaComponent implements OnInit, AfterViewInit {
   hoveredCell: string | null = null;
   isDragging = false;
   
+  mostrarSeletorMes = false;
+  anoSelecionado: Date | null = null;
+  dataAtual = new Date();
+  minData = new Date(2024, 0); // Janeiro 2024
+  maxData = new Date(2030, 11); // Dezembro 2030
+  mesesDisponiveis: { label: string, dataInicio: Date, dataFim: Date }[] = [];
+  mesSelecionado: any = null;
+
   configAgenda: ConfigAgenda = {
     diasAtendimento: [],
     horaInicio: 8,
@@ -103,11 +126,22 @@ export class AgendaComponent implements OnInit, AfterViewInit {
   dropListIds: string[] = [];
 
 
-  constructor(private dialog: MatDialog, private http: HttpClient, private personalService: PersonalService, private agendaStatusService: AgendaStatusService, private bottomSheet: MatBottomSheet) {}
+  constructor(private dialog: MatDialog, private http: HttpClient, private personalService: PersonalService, private agendaStatusService: AgendaStatusService, private bottomSheet: MatBottomSheet, private snackBar: MatSnackBar) {}
 
   
 
   ngOnInit(): void {
+    this.gerarListaMeses();
+    // Define o mês atual como selecionado
+    const hoje = dayjs();
+    const atual = this.mesesDisponiveis.find(m =>
+      dayjs(m.dataInicio).isSame(hoje, 'month')
+    );
+    if (atual) {
+      this.mesSelecionado = atual;
+    }
+    console.log('atual:', atual);
+    console.log('this.mesSelecionado:', this.mesSelecionado);
     dayjs.extend(utc)
     dayjs.extend(timezone)
     const dataUTC = '2025-06-03T08:00:00Z';
@@ -706,6 +740,81 @@ getDropListData(day: Date, hour: string, minute: number) {
     });
   }
 
+  abrirSeletorMes() {
+    this.mostrarSeletorMes = true;
+  }
+
+  //gerarAgenda(data: Date) {
+  gerarAgenda(mesSelecionado: { dataInicio: Date, dataFim: Date }) {
+    this.mostrarSeletorMes = false;
+
+    //const ano = data.getFullYear();
+    //const mes = data.getMonth();
+    //const inicio = new Date(ano, mes, 1);
+    //const fim = new Date(ano, mes + 1, 0);
+
+    const payload = {
+      data_inicio: dayjs(mesSelecionado.dataInicio).format('YYYY-MM-DD'),
+      data_fim: dayjs(mesSelecionado.dataFim).format('YYYY-MM-DD'),
+      //data_inicio: inicio.toISOString().substring(0, 10),
+      //data_fim: fim.toISOString().substring(0, 10),
+      //personal_id: this.usuarioLogado.id
+    };
+console.error('payload:', payload);
+//    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
+//    this.http.post(`${environment.apiUrl}/agenda/gerar`, payload, { headers })
+        const token = localStorage.getItem('jwt-token');
+        const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+        this.http.post(`${environment.apiUrl}/agendaGerar`, payload, { headers }).subscribe({
+        next: () => this.snackBar.open('Agenda gerada com sucesso!', 'Fechar', { duration: 3000 }),
+        error: err => this.snackBar.open('Erro ao gerar agenda!', 'Fechar', { duration: 3000 })
+      });
+  }
+
+  gerarListaMeses() {
+  const hoje = dayjs();
+  this.mesesDisponiveis = [];
+
+  for (let i = -6; i <= 6; i++) {
+    const data = hoje.add(i, 'month');
+    const inicio = data.startOf('month').toDate();
+    const fim = data.endOf('month').toDate();
+    const label = data.format('MMMM [de] YYYY'); // Ex: Julho de 2025
+
+    this.mesesDisponiveis.push({
+      label,
+      dataInicio: inicio,
+      dataFim: fim
+    });
+  }
+}
+
+  abrirDialogoGerarAgenda() {
+    const dialogRef = this.dialog.open(DialogGerarAgendaComponent, {
+      width: '300px'
+    });
+
+    dialogRef.afterClosed().subscribe((mesSelecionado) => {
+      if (mesSelecionado) {
+        this.gerarAgenda(mesSelecionado);
+      }
+    });
+  }
+
+/*confirmarGeracao(mes: any) {
+    const dialogRef = this.dialog.open(DialogConfirmacaoComponent, {
+      data: {
+        mensagem: `Deseja gerar a agenda para ${mes.label}?`
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true) {
+        this.gerarAgenda(mes);
+      }
+    });
+  }
+*/
 }
 
 function buildDateWithTime(baseDay: Date, hour: string, minute: number): Date {
