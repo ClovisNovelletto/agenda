@@ -211,9 +211,16 @@ app.get('/api/alunoLista', authenticateToken, async (req, res) => {
     //const compareQuery = `SELECT aluno_id id, aluno nome, alufone telefone, aludatanasc datanasc, aluemail email, alucpf cpf, aluativo ativo, alucodconvite codigo_convite FROM Alunos WHERE AluPersonalID=$1`;
     //const result = await pool.query(compareQuery, [personalId]);      
     const aluno = await sql`SELECT aluno_id id, aluno nome, alufone telefone, aludatanasc datanasc, aluemail email, alucpf cpf, aluativo ativo, alucodconvite codigo_convite,
-                                   aludia0, aludia1, aludia2, aludia3, aludia4, aludia5, aludia6,
-                                   aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6
-                            FROM Alunos WHERE AluPersonalID = ${personalId}`;
+        AluLocalID AS "localId", (SELECT Local FROM Locals WHERE Local_ID=AluLocalID) Local,
+        aludia0, aludia1, aludia2, aludia3, aludia4, aludia5, aludia6, aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6,
+	      CASE WHEN aludia0 = true THEN 'Dom: ' || aluhora0 || CASE WHEN aludia1=true OR aludia2=true OR aludia3=true OR aludia4=true OR aludia5=true OR aludia6=true THEN ' / ' ELSE '' END ELSE '' END ||
+        CASE WHEN aludia1 = true THEN 'Seg: ' || aluhora1 || CASE WHEN aludia2=true OR aludia3=true OR aludia4=true OR aludia5=true OR aludia6=true THEN ' / ' ELSE '' END ELSE '' END ||
+        CASE WHEN aludia2 = true THEN 'Ter: ' || aluhora2 || CASE WHEN aludia3=true OR aludia4=true OR aludia5=true OR aludia6=true THEN ' / ' ELSE '' END ELSE '' END ||
+        CASE WHEN aludia3 = true THEN 'Qua: ' || aluhora3 || CASE WHEN aludia4=true OR aludia5=true OR aludia6=true THEN ' / ' ELSE '' END ELSE '' END ||
+        CASE WHEN aludia4 = true THEN 'Qui: ' || aluhora4 || CASE WHEN aludia5=true OR aludia6=true THEN ' / ' ELSE '' END ELSE '' END ||
+        CASE WHEN aludia5 = true THEN 'Sex: ' || aluhora5 || CASE WHEN aludia6=true THEN ' / ' ELSE '' END ELSE '' END ||
+        CASE WHEN aludia6 = true THEN 'Sab: ' || aluhora6 ELSE '' END aludias
+      FROM Alunos WHERE AluPersonalID = ${personalId}`;
     res.json(aluno);
     //console.log(result.rows); // apenas isso para logar
     // não usar res.json(result.rows);    // envia resposta corretamente uma única vez
@@ -246,14 +253,14 @@ app.put('/api/alunoSave', authenticateToken, async (req, res) => {
   const {
     id, nome, telefone, datanasc, cpf, email, ativo,
     aludia0, aludia1, aludia2, aludia3, aludia4, aludia5, aludia6,
-    aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6
+    aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6, localId
   } = req.body;
 
   // UPDATE
   try {
     const aluno = await sql`
       UPDATE Alunos SET
-       Aluno = ${nome}, AluCPF = ${cpf}, AluDataNasc = ${datanasc}, AluEmail = ${email}, AluAtivo = ${ativo}, alufone = ${telefone},
+       Aluno = ${nome}, AluCPF = ${cpf}, AluDataNasc = ${datanasc}, AluEmail = ${email}, AluAtivo = ${ativo}, alufone = ${telefone}, alulocalid = ${localId},
        aludia0 = ${aludia0}, aludia1 = ${aludia1}, aludia2 = ${aludia2}, aludia3 = ${aludia3}, aludia4 = ${aludia4}, aludia5 = ${aludia5}, aludia6 = ${aludia6},
        aluhora0 = ${aluhora0}, aluhora1 = ${aluhora1}, aluhora2 = ${aluhora2}, aluhora3 = ${aluhora3}, aluhora4 = ${aluhora4}, aluhora5 = ${aluhora5}, aluhora6 = ${aluhora6}
        WHERE Aluno_ID = ${id}
@@ -268,9 +275,30 @@ app.put('/api/alunoSave', authenticateToken, async (req, res) => {
 
 
 app.post('/api/alunoInsert', authenticateToken, async (req, res) => {
-  const { nome, telefone, datanasc, cpf, email, ativo } = req.body;
+  //const { nome, telefone, datanasc, cpf, email, ativo } = req.body;
   const personalId = req.user.personalId;
   const codigoConvite = gerarCodigoConvite();
+
+    // Preenche valores padrão se não vieram do frontend
+  for (let i = 0; i < 7; i++) {
+    if (typeof req.body[`aludia${i}`] === 'undefined') {
+      req.body[`aludia${i}`] = false;
+      req.body[`aluhora${i}`] = null;
+    }
+    if (typeof req.body[`aluhora${i}`] === 'undefined' || req.body[`aludia${i}`] == false) {
+      req.body[`aluhora${i}`] = null;
+    }
+    //console.error(req.body[`aludia${i}`]);
+    //console.error(req.body[`aluhora${i}`]);
+  }
+
+  // Agora que os valores estão garantidos, você pode extrair:
+  const {
+    id, nome, telefone, datanasc, cpf, email, ativo,
+    aludia0, aludia1, aludia2, aludia3, aludia4, aludia5, aludia6,
+    aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6, localId
+  } = req.body;
+
 
   try {
     //const result = await pool.query(`
@@ -279,8 +307,11 @@ app.post('/api/alunoInsert', authenticateToken, async (req, res) => {
     //  RETURNING aluno_id, aluno, alufone, alucodconvite
     //`, [nome, cpf, datanasc, email, ativo, telefone, personalId, codigoConvite]);
     const aluno = await sql`
-      INSERT INTO Alunos (aluno, AluCPF, AluDataNasc, AluEmail, AluAtivo, alufone, alupersonalid, alucodconvite)
-      VALUES (${nome}, ${cpf}, ${datanasc}, ${email}, ${ativo}, ${telefone}, ${personalId}, ${codigoConvite})
+      INSERT INTO Alunos (aluno, AluCPF, AluDataNasc, AluEmail, AluAtivo, alufone, alupersonalid, alucodconvite, alulocalid,
+      aludia0, aludia1, aludia2, aludia3, aludia4, aludia5, aludia6, aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6)
+      VALUES (${nome}, ${cpf}, ${datanasc}, ${email}, ${ativo}, ${telefone}, ${personalId}, ${codigoConvite}, ${localId},
+      ${aludia0}, ${aludia1}, ${aludia2}, ${aludia3}, ${aludia4}, ${aludia5}, ${aludia6},
+      ${aluhora0}, ${aluhora1}, ${aluhora2}, ${aluhora3}, ${aluhora4}, ${aluhora5}, ${aluhora6})
       RETURNING *`; 
     res.json({
       id: aluno[0].aluno_id,                         // <- compatível com this.form.patchValue({ alunoId: novoAluno.id });
@@ -358,7 +389,7 @@ app.get('/api/alunos', authenticateToken, async (req, res) => {
     //const compareQuery = `SELECT aluno_id id, aluno nome, alufone telefone, alucodconvite codigo_convite FROM alunos WHERE AluPersonalID=$1`;
     //const result = await pool.query(compareQuery, [personalId]);      
     const alunos = await sql`SELECT aluno_id id, aluno nome, alufone telefone, alucodconvite codigo_convite,
-                                    aludia0, aludia1, aludia2, aludia3, aludia4, aludia5, aludia6,
+                                    aludia0, aludia1, aludia2, aludia3, aludia4, aludia5, aludia6, alulocalid,
                                     aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6
       FROM alunos WHERE AluPersonalID=${personalId} AND AluAtivo = true`;
     res.json(alunos);
@@ -681,6 +712,27 @@ app.put('/api/agendaStatus', authenticateToken, async (req, res) => {
       console.error('Erro ao atualizar status da agenda:', err);
       res.status(500).json({ error: 'Erro ao atualizar status da agenda' });
     }
+});
+
+app.post('/api/agendaGerar', authenticateToken, async (req, res) => {
+  const personalId = req.user.personalId;
+  const {data_inicio, data_fim} = req.body;
+
+  console.error('personalId:', personalId);
+  console.error('data_inicio:', data_inicio);
+  console.error('data_fim:', data_fim);
+  try {
+    const agenda = await sql`
+    INSERT INTO Agendas(Agenda, AgPersonalID, AgAlunoID, AgLocalID, AgData, AgStatus) --ON CONFLICT DO NOTHING
+    SELECT 'Teste', ${personalId}, Aluno_ID, AluLocalID, datahora + interval '3 hour', 1 FROM h2uGetAgenda(${data_inicio}, ${data_fim}, ${personalId})
+    ON CONFLICT DO NOTHING
+    RETURNING *`;
+    res.status(201).json(agenda);
+  } catch (err) {
+    console.error('Erro ao gerar agenda do mês:', err);
+    res.status(500).json({ error: 'Erro ao inserir agenda' });
+  }
+
 });
 
 app.post('/api/agendas', authenticateToken, async (req, res) => {
