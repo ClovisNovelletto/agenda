@@ -137,7 +137,8 @@ app.post('/api/register', async (req, res) => {
 app.post('/api/login', async (req, res) => {
   const username = req.body.username?.trim();;
   const password = req.body.password;
-
+console.log("username", username);
+console.log("password", password);
   try {
     const query = 'SELECT id, password, tipo_usuario FROM users WHERE username = $1';
     //    const result = await pool.query(query, [username]);
@@ -149,9 +150,11 @@ app.post('/api/login', async (req, res) => {
       console.log("result ok");
 
       const storedHash = result[0].password;
+      console.log("storedHash", storedHash);
       const resultSenhaValida = await sql`
-        SELECT crypt(${password}, ${storedHash}) = ${storedHash} AS is_valid
+        SELECT crypt(${password}, ${storedHash}) = ${storedHash} AS is_valid, crypt(${password}, ${storedHash}) teste
       `;
+      console.log("resultSenhaValida[0].is_valid", resultSenhaValida[0].teste);
       if (resultSenhaValida[0].is_valid) {      
         console.log("result válido");
         // tratamento para pegar personal ou aluno
