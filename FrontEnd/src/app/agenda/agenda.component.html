@@ -6,11 +6,6 @@
   </span>
 
   <!-- botão para abrir o seletor -->
-<!--   
-  <button mat-raised-button color="primary" (click)="abrirSeletorMes()">
-    Gerar agenda mensal
-  </button>
--->
   <button mat-raised-button color="primary" (click)="abrirDialogoGerarAgenda()">
     Gerar agenda mensal
   </button>
@@ -30,47 +25,6 @@
   </mat-select>
 </mat-form-field>
 
- <!--
-<mat-form-field appearance="outline" *ngIf="mostrarSeletorMes">
-  <mat-label>Escolha o mês</mat-label>
-  <input matInput [matDatepicker]="picker" #trigger readonly (click)="picker.open()">
-  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-  <mat-datepicker
-    #picker
-    startView="multi-year"
-    (monthSelected)="gerarAgenda($event)"
-    (yearSelected)="anoSelecionado = $event"
-    panelClass="month-picker">
-  </mat-datepicker>
-</mat-form-field>
--->
-<!--
- <mat-form-field appearance="outline" *ngIf="mostrarSeletorMes">
-  <mat-label>Escolha o mês</mat-label>
-  <input matInput [matDatepicker]="picker" #trigger readonly (dateChange)="gerarAgenda($event.value)">
-  <mat-datepicker
-    #picker
-    startView="multi-year"
-    (monthSelected)="gerarAgenda($event)"
-    (yearSelected)="anoSelecionado = $event"
-    panelClass="month-picker">
-  </mat-datepicker>
-</mat-form-field>
--->
-<!--
-<mat-form-field appearance="outline" *ngIf="mostrarSeletorMes">
-  <mat-label>Escolha o mês</mat-label>
-  <input matInput [matDatepicker]="picker" [value]="dataAtual" readonly (click)="picker.open()">
-  <mat-datepicker #picker 
-                  startView="multi-year" 
-                  (monthSelected)="gerarAgenda($event)"
-                  [startAt]="dataAtual"
-                  [maxDate]="maxData"
-                  [minDate]="minData"
-                  panelClass="month-picker">
-  </mat-datepicker>
-</mat-form-field>
--->
 <div class="agenda-scroll-wrapper">
   <div class="row" cdkDropListGroup>
     <div *ngIf="appointments.length >= 0" class="agenda-grid" [style.grid-template-columns]="'60px repeat(' + week.length + ', 1fr)'">
@@ -110,26 +64,31 @@
                 [cdkDropListData]="getDropListData(day, hour, minute)"
                 class="appointment-dropzone"
                 (cdkDropListDropped)="onDrop($event)">
-              <div *ngFor="let appt of getAppointments(day, hour, minute)"
+              <!--<div *ngFor="let appt of getAppointments(day, hour, minute); trackBy: trackByAppt"-->
+              <!--<div *ngFor="let appt of (appointments$ | async) | appointmentsFiltradosPor(day, hour, minute); trackBy: trackByAppt"-->
+              <ng-container *ngIf="appointments$ | async as appointments">
+                <div *ngFor="let appt of (appointments | appointmentsFiltradosPor: day : hour : minute); trackBy: trackByAppt"
                   cdkDrag
                   (cdkDragStarted)="isDragging = true"
                   (cdkDragEnded)="isDragging = false"
                   [cdkDragData]="{ appointment: appt, fromDay: day, fromHour: hour, fromMinute: minute }"
                   class="appointment" [style.backgroundColor]="getStatusCor(appt.statusId)"
                   (click)="abrirMenuStatus(appt, day, hour, minute); $event.stopPropagation()">
+                  
                   <!--teste arrastar compromisso-->
                   <ng-template cdkDragPreview>
-                      <div class="drag-preview">
-                        <strong>{{ appt.aluno }}</strong><br />
-                        <strong>{{ appt.local }}</strong>
-                      </div>
-                    </ng-template>
-                    <ng-template cdkDragPlaceholder>
-                      <div class="invisible-placeholder"></div>
-                    </ng-template>
-                <strong>{{ appt.aluno }} </strong><br />
-                <strong>{{ appt.local }} </strong><br />
-              </div>
+                    <div class="drag-preview">
+                      <strong>{{ appt.aluno }}</strong><br />
+                      <strong>{{ appt.local }}</strong>
+                    </div>
+                  </ng-template>
+                  <ng-template cdkDragPlaceholder>
+                    <div class="invisible-placeholder"></div>
+                  </ng-template>
+                  <strong>{{ appt.aluno }} </strong><br />
+                  <strong>{{ appt.local }} </strong><br />
+                </div>
+              </ng-container>
             </div>
 
             <!-- Botão + -->
@@ -147,6 +106,3 @@
     </div>
   </div>
 </div>
-
-<!--(click)="abrirMenuStatus(appt, day, hour, minute)">-->
-<!--                  (click)="editarCompromisso(appt); $event.stopPropagation()">-->
