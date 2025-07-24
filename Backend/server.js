@@ -154,7 +154,7 @@ console.log("password", password);
       const resultSenhaValida = await sql`
         SELECT crypt(${password}, ${storedHash}) = ${storedHash} AS is_valid, crypt(${password}, ${storedHash}) teste
       `;
-      console.log("resultSenhaValida[0].is_valid", resultSenhaValida[0].teste);
+      console.log("resultSenhaValida[0].teste", resultSenhaValida[0].teste);
       if (resultSenhaValida[0].is_valid) {      
         console.log("result válido");
         // tratamento para pegar personal ou aluno
@@ -736,6 +736,21 @@ app.post('/api/agendaGerar', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Erro ao inserir agenda' });
   }
 
+});
+
+app.post('/api/agendaPorPeriodo', authenticateToken, async (req, res) => {
+  try {
+    console.log("carrega agenda");
+    const personalId = req.user.personalId;
+    const {data_inicio, data_fim} = req.body;
+    console.log("data_inicio: ", data_inicio);
+    console.log("data_fim: ", data_fim);
+    const agendas = await sql`SELECT * FROM agendaslista WHERE PersonalID = ${personalId} AND Date>=${data_inicio} AND Date <=${data_fim}`;
+    res.json(agendas);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao buscar agendas');
+  }
 });
 
 app.post('/api/agendas', authenticateToken, async (req, res) => {
