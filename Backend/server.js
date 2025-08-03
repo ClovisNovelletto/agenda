@@ -118,33 +118,18 @@ app.use((req, res, next) => {
 });
 
 
-
-// Endpoint para registrar um usuário
-app.post('/api/register', async (req, res) => {
-  const { username, password } = req.body;
-
-  try {
-    const query = 'INSERT INTO users (username, password) VALUES ($1, $2)';
-    await pool.query(query, [username, password]);
-    res.status(201).json({ message: 'Usuário registrado com sucesso!' });
-  } catch (error) {
-    console.error('Erro ao registrar usuário:', error);
-    res.status(500).json({ error: 'Erro ao registrar usuário' });
-  }
-});
-
 // Endpoint para autenticar login
 app.post('/api/login', async (req, res) => {
-  const username = req.body.username?.trim();;
+  const email = req.body.email?.trim();;
   const password = req.body.password;
-console.log("username", username);
+console.log("email", email);
 console.log("password", password);
   try {
     const query = 'SELECT id, password, tipo_usuario FROM users WHERE username = $1';
     //    const result = await pool.query(query, [username]);
 
     /*supabase*/
-     const result = await sql`SELECT id, password, tipo_usuario FROM users WHERE username = ${username}`;
+     const result = await sql`SELECT id, password, tipo_usuario FROM users WHERE email = ${email}`;
 
     if (result.length > 0) {
       console.log("result ok");
@@ -173,7 +158,7 @@ console.log("password", password);
         }
 
         // Gera o token JWT com informações do usuário
-        const token = jwt.sign({ username, tipo, personalId, alunoId  }, SECRET_KEY, { expiresIn: '1h' });
+        const token = jwt.sign({ email, tipo, personalId, alunoId  }, SECRET_KEY, { expiresIn: '1h' });
         res.json({ token, message: 'Login bem-sucedido!' });
 
       } else {
@@ -472,19 +457,19 @@ app.get('/api/personal/me', authenticateToken, async (req, res) => {
 });
 
 app.get('/api/home', authenticateToken, (req, res) => {
-  res.json({ message: `Bem-vindo home, ${req.user.username}!` });
+  res.json({ message: `Bem-vindo home, ${req.user.email}!` });
 });
 
 app.get('/api/agenda', authenticateToken, (req, res) => {
-  res.json({ message: `Bem-vindo agenda, ${req.user.username}!` });
+  res.json({ message: `Bem-vindo agenda, ${req.user.email}!` });
 });
 
 app.get('/api/financeiro', authenticateToken, (req, res) => {
-  res.json({ message: `Bem-vindo financeiro, ${req.user.username}!` });
+  res.json({ message: `Bem-vindo financeiro, ${req.user.email}!` });
 });
 
 app.get('/', authenticateToken, (req, res) => {
-  res.json({ message: `Bem-vindo ???, ${req.user.username}!` });
+  res.json({ message: `Bem-vindo ???, ${req.user.email}!` });
 });
 
 //const port = process.env.PORT || 3000;
@@ -651,7 +636,7 @@ app.put('/api/agendas', authenticateToken, async (req, res) => {
   const { agenda_id, alunoId, localId, data, /*hora,*/ titulo, /*descricao,*/ statusId } = req.body;
   const personalId = req.user.personalId;
   //console.log("req",req);
-  //console.log(req.user.username);
+  //console.log(req.user.email);
   //console.log(req.user.personalId);
   console.log("agenda_id", agenda_id);
   //console.log("alunoId", alunoId);
@@ -758,7 +743,7 @@ app.post('/api/agendas', authenticateToken, async (req, res) => {
   const personalId = req.user.personalId;
 
   //console.log(req);
-  console.log(req.user.username);
+  console.log(req.user.email);
   console.log(req.user.personalId);
     
 
@@ -807,3 +792,83 @@ Espera no body:
 
 */
 
+// Endpoint para registrar um usuário
+app.post('/api/register', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const query = 'INSERT INTO users (username, password) VALUES ($1, $2)';
+    await pool.query(query, [email, password]);
+    res.status(201).json({ message: 'Usuário registrado com sucesso!' });
+  } catch (error) {
+    console.error('Erro ao registrar usuário:', error);
+    res.status(500).json({ error: 'Erro ao registrar usuário' });
+  }
+});
+
+// Cadastro Personal
+app.post('/api/cadastro-personal', async (req, res) => {
+const { nome, email, usuario, senha } = req.body;
+const tipousuario = 2;
+console.log("req.body", req.body);
+console.log("nome", nome);
+console.log("email", email);
+console.log("usuario", usuario);
+console.log("senha", senha);
+
+  try {
+    const user = await sql`
+      INSERT INTO users (username, email, password, tipo_usuario)
+      VALUES (${usuario}, ${email}, crypt(${senha}, gen_salt('bf', 8)), ${tipousuario})
+      RETURNING *`; 
+    const userid  = user[0].id;
+    //res.json("userid:", userid);
+
+    console.log("userid", userid);
+
+    const personal = await sql`
+      INSERT INTO Personals(Personal, PerEmail, PerUserID)
+      VALUES (${nome}, ${email}, ${userid})
+      RETURNING *`; 
+    res.json({personalid: personal[0].personal_id});
+
+    /*
+    console.log('Retornando novo user:', {
+      id: aluno[0].aluno_id,
+      nome: aluno[0].aluno,
+      telefone: aluno[0].alufone,
+      codigo_convite: aluno[0].alucodconvite
+    });*/
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao cadastrar Personal' });
+  }
+
+});
+
+// Cadastro Aluno com código de convite
+app.post('/cadastro-aluno', async (req, res) => {
+  const { nome, email, username, password, codigoConvite } = req.body;
+
+  const alunoPend = await db('alunosPendentes')
+    .where({ codigo_convite: codigoConvite })
+    .first();
+
+  if (!alunoPend) {
+    return res.status(400).send({ message: 'Código de convite inválido' });
+  }
+
+  // Cadastrar aluno vinculado ao Personal
+  await db('alunos').insert({
+    nome,
+    email,
+    username,
+    password_hash: await hash(password),
+    personal_id: alunoPend.personal_id
+  });
+
+  // Opcional: remover código de convite usado
+  await db('alunosPendentes').where({ id: alunoPend.id }).del();
+
+  res.status(201).send({ ok: true });
+});
