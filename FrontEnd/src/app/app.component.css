@@ -2,15 +2,37 @@
    margin-top : 40px;
    margin-bottom : 40px;
 }
-
+/*novo*/
 html, body {
-  height: 100%;
   margin: 0;
-  overflow: hidden; /* isso evita scroll duplo */
+  padding: 0;
+  height: 100%;
+  overflow: visible;
+  background: #000;
+  padding-top: env(safe-area-inset-top, 0px);     /* espaço para barra de status */
+  padding-bottom: env(safe-area-inset-bottom, 0px); /* espaço para botões do Android */
 }
 
+/*teste android*/
+body::before {
+  content: "top: " env(safe-area-inset-top) ", bottom: " env(safe-area-inset-bottom);
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: yellow;
+  color: black;
+  z-index: 9999;
+  font-size: 12px;
+}
+
+/*velho*/
+/*html, body {
+  height: 100%;
+  margin: 0;
+}*/
+
 mat-sidenav-container {
-  height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
 }
@@ -28,28 +50,88 @@ app-top {
   left: 0;
   right: 0;
   height: 40px;
-  background-color: #ffa726; /* amarelo/laranja */
+  padding-top: env(safe-area-inset-top, 0px); /* espaço p/ barra de status Android/iOS */
+  background-color: #ffa726;
   z-index: 1000;
 }
 
-app-footer {
+/*velho*/
+/*app-top {
   position: fixed;
-  bottom: 0;
+  top: 0;
   left: 0;
   right: 0;
   height: 40px;
   background-color: #ffa726;
   z-index: 1000;
+}*/
+
+/*novo teste android*/
+app-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40px; /* aumente se estiver cortando */
+  padding-bottom: 16px; /* ajuste conforme necessário */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffa726;
+  z-index: 1000;
+}
+/*novo anterior*/
+/*app-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  padding-bottom: env(safe-area-inset-bottom, 0px);*/ /* espaço extra p/ botões */ /*
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffa726;
+  z-index: 1000;
+}*/
+/*velho*/
+/*app-footer {
+  position: fixed;
+  bottom: env(safe-area-inset-bottom, 0);
+  width: 100%;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background-color: #ffa726;
+  padding-bottom: env(safe-area-inset-bottom, 0); 
+  box-sizing: border-box;
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}*/
+
+/*novo android*/
+main {
+  padding-bottom: 80px; /* espaço extra pro footer não cobrir nada */
+}
+
+/*novo*/
+main.conteudo {
+  padding-top: calc(40px + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+  overflow-y: auto;
+  height: 100%;
 }
 
 .conteudo {
   padding-top: 40px;   /* altura do topo */
-  padding-bottom: 40px; /* altura do rodapé */
+  /*padding-bottom: 50px;*/ /* altura do rodapé */
+  padding-bottom: env(safe-area-inset-bottom, 40px); 
   /*min-height: 100vh;*/
   background-color: #000; /* fundo da home/preto */
   color: white;
   /*overflow-y: auto;*/
   box-sizing: border-box; /* importante para incluir o padding no cálculo */
-  overflow: hidden; /* evita scroll em conteúdo curto */
+  /*overflow: hidden;*/ /* evita scroll em conteúdo curto */
   min-height: calc(100vh - 80px);  
 }

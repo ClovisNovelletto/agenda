@@ -15,9 +15,6 @@ ajuste na altura das linhas, aumentado de 10 para 30 na propriedade grid-auto-ro
 .agenda-grid {
    min-width: 600px; /* ou a largura que precisar para caber as colunas */
   display: grid;
-  /*grid-template-columns: repeat(7, 1fr);*/
-  /*grid-template-columns: 80px repeat(s, 1fr);*/ /*80px
-  /*grid-auto-rows: auto;*/ /*60px;*/
   grid-auto-rows: minmax(30px, auto); 
   background-color: rgb(48, 10, 214); /* Corrige fundo da grid */
   gap: 0px;
@@ -30,28 +27,6 @@ ajuste na altura das linhas, aumentado de 10 para 30 na propriedade grid-auto-ro
   vertical-align: center;
   background: #0d85b4b4;
 }  
-/*
-.hour-cell {
-  font-size: 12px;
-  border-bottom: 1px solid #ddd;
-  //height: 60px; 
-  width: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}*/
-
-/* Cabeçalhos: da coluna de horas */
-/*.hour-header-cell {
-  font-size: 12px;
-  background-color: #1565c0;
-  color: white;
-  width: 60px;
-  text-align: center;
-  padding: 2px;
-  border: 1px solid #ccc;
-  font-weight: bold;
-}*/
 
 .hour-cell {
   font-size: 14px;
@@ -146,49 +121,7 @@ ajuste na altura das linhas, aumentado de 10 para 30 na propriedade grid-auto-ro
   justify-content: center;
   padding: 0;
   z-index: 10;
-  /*
-   position: absolute;
-  top: 2px;
-  right: 2px;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  font-size: 14px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-  */
-  /*
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  font-size: 14px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-*/  
-/*  position: absolute;
-  bottom: 4px;
-  right: 4px;
-  font-weight: bold;
-  font-size: 18px;
-  color: green;
-  cursor: pointer;
-  z-index: 10;
-  display: none;*/
+  
 }
 
 .agenda-cell:hover .cell-add-button {
@@ -200,14 +133,20 @@ ajuste na altura das linhas, aumentado de 10 para 30 na propriedade grid-auto-ro
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-top: 0.80rem;
+  margin-bottom: 0.80rem;
   /*height: 10px;*/ /*agora*/
 }
 
 .week-label {
   font-weight: bold;
-  font-size: 16px;
+  font-size: 14px;
 }
+
+  .texto_semana {
+    color: "primary";
+    font-size: 14px;
+  } 
 
 /* Responsivo */
 @media (max-width: 768px) {
@@ -217,6 +156,26 @@ ajuste na altura das linhas, aumentado de 10 para 30 na propriedade grid-auto-ro
     min-width: 400px;
     /*grid-auto-rows: 50px;*/
   }
+
+  .header-cell {
+    background-color: #1565c0;
+    color: white;
+    text-align: center;
+    vertical-align: center;
+    padding: 1px;
+    border: 1px solid #ccc;
+    font-weight: normal;
+    font-size: 14px;
+  }
+
+  .week-label {
+    font-weight: normal;
+    font-size: 10px;
+  }
+
+  .texto_semana {
+    font-size: 10px;
+  } 
 
   .appointment {
     font-size: 10px;
@@ -296,14 +255,6 @@ ajuste na altura das linhas, aumentado de 10 para 30 na propriedade grid-auto-ro
   box-shadow: 0 0 6px rgba(0,0,0,0.2);
 }
 
-/*
-.agenda-scroll-wrapper {
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  width: 100%;
-}*/
-
 .agenda-scroll-wrapper {
   width: 100%;
   position: relative;
@@ -314,22 +265,6 @@ ajuste na altura das linhas, aumentado de 10 para 30 na propriedade grid-auto-ro
   scrollbar-width: thin; /* Firefox */
   scrollbar-color: #999 transparent; /* Firefox */
 }
-
-/* Chrome, Edge e Safari */
-/*
-.agenda-scroll-wrapper::-webkit-scrollbar {
-  height: 10px;
-}
-
-.agenda-scroll-wrapper::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.agenda-scroll-wrapper::-webkit-scrollbar-thumb {
-  background-color: #999;
-  border-radius: 4px;
-}
-*/
 
 .agenda-wrapper::-webkit-scrollbar {
   height: 8px;

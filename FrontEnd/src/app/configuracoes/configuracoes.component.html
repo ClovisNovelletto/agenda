@@ -1,52 +1,68 @@
+<mat-toolbar color="primary">
+  <button mat-icon-button style="border-radius: 50%; display: flex; width: 20px !important; height: 20px !important; align-items: center !important; justify-content: center !important; background-color: black; padding: 7px; margin-right: 10px;" (click)="fechar()">
+    <mat-icon style="display: flex; align-items: center !important; justify-content: center !important;">arrow_back</mat-icon>
+  </button>
+  <span style="font-size: 16px !important; padding: 2px;">Configurações da agenda</span>
+</mat-toolbar>
 
- <h2 *ngIf="configSelecionada" class="titulo-config">⚙️ Configurações da Agenda</h2>
+<mat-card *ngIf="configSelecionada">
+  <!--<mat-card-title style="font-size: 14px !important; padding-bottom: 5px;">⚙️ Configurações da Agenda</mat-card-title>-->
+  <mat-card-content>
 
-<form *ngIf="configSelecionada" (ngSubmit)="salvarConfiguracoes()" class="form-config">
-  <div class="form-group">
-    <label class="form-label">Dias de atendimento:</label>
+    <!-- Dias da semana -->
+    <label class="form-label">Dias de Atendimento:</label>
     <div class="dias-checkboxes">
-      <label *ngFor="let dia of diasSemana" class="checkbox-dia">
-        <input type="checkbox"
-               [checked]="configSelecionada.diasAtendimento.includes(dia.valor)"
-               (change)="toggleDia(dia.valor)"
-               name="diasAtendimento{{dia.valor}}">
-           {{ dia.nome }}
-        </label>
-    </div>
-  </div>
-  <div class="titulo-config">
-    <label class="form-label">Horário de Início dia:</label>
-        <select [(ngModel)]="configSelecionada.horaInicio" name="horaInicio" class="input-config">
-        <option *ngFor="let h of horasPossiveis" [value]="h">{{ h }}:00</option>
-        </select>
+      <mat-checkbox *ngFor="let dia of diasSemana"
+                    [checked]="configSelecionada.diasAtendimento.includes(dia.valor)"
+                    (change)="toggleDia(dia.valor)">
+        {{ dia.nome }}
+      </mat-checkbox>
     </div>
 
-  <div class="titulo-config">
-    <label class="form-label">Horário de Final dia.:</label>
-    <select [(ngModel)]="configSelecionada.horaFim" name="horaFim" class="input-config">
-    <option *ngFor="let h of horasPossiveis" [value]="h">{{ h }}:00</option>
-    </select>
-  </div>
+    <!-- Hora início -->
+    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+      <mat-label>Hora Início</mat-label>
+      <mat-select [(ngModel)]="configSelecionada.horaInicio" name="horaInicio">
+        <mat-option *ngFor="let h of horasPossiveis" [value]="h">{{ h }}:00</mat-option>
+      </mat-select>
+    </mat-form-field>
 
-  <div class="titulo-config">
-    <label class="form-label">Início de aula a cada:</label>
-    <select [(ngModel)]="configSelecionada.intervaloMinutos" name="intervaloMinutos" class="input-config">
-      <option [value]="10">10 min</option>
-      <option [value]="15">15 min</option>
-      <option [value]="30">30 min</option>
-      <option [value]="60">1h</option>
-    </select>
-  </div>
+    <!-- Hora fim -->
+    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+      <mat-label>Hora Fim</mat-label>
+      <mat-select [(ngModel)]="configSelecionada.horaFim" name="horaFim">
+        <mat-option *ngFor="let h of horasPossiveis" [value]="h">{{ h }}:00</mat-option>
+      </mat-select>
+    </mat-form-field>
 
-  <button type="submit" class="btn-salvar">💾 Salvar</button>
+    <!-- Tempo aula -->
+    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+      <mat-label>Início da Aula a cada</mat-label>
+      <mat-select [(ngModel)]="configSelecionada.intervaloMinutos" name="intervaloMinutos">
+        <mat-option [value]="10">10 min</mat-option>
+        <mat-option [value]="15">15 min</mat-option>
+        <mat-option [value]="30">30 min</mat-option>
+        <mat-option [value]="60">1h</mat-option>
+      </mat-select>
+    </mat-form-field>
 
-  <div *ngIf="isSaving" class="mensagem salvando">
-  ⏳ Salvando configurações...
-  </div>
+    <!-- Botões -->
+    <div class="botoes-config">
 
-  <div *ngIf="mensagem" class="mensagem">{{ mensagem }}</div>
+      <button mat-raised-button color="primary" type="submit" (click)="salvarConfiguracoes()">
+        Salvar
+      </button>
 
-  <button type="button" class="fechar-btn" (click)="fechar()">Fechar</button>
+      <!--
+      <button mat-raised-button color="warn" type="button" (click)="fechar()">
+        Fechar
+      </button>
+    -->
+    </div>
 
-</form>
+    <!-- Mensagens -->
+    <mat-hint *ngIf="isSaving">⏳ Salvando configurações...</mat-hint>
+    <mat-hint *ngIf="mensagem">{{ mensagem }}</mat-hint>
 
+  </mat-card-content>
+</mat-card>

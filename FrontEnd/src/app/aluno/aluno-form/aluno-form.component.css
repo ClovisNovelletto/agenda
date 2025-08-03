@@ -3,6 +3,7 @@
   flex-direction: column;
   gap: 8px;
   padding: 8px;
+  overflow: visible;
 }
 
 .aluno-item {
@@ -13,12 +14,14 @@
   padding: 12px;
   border-radius: 8px;
   box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  overflow: visible;
 }
 
 .aluno-info {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  overflow: visible;
 }
 
 .aluno-acoes {
@@ -35,6 +38,7 @@
   padding: 0 !important;
   border-radius: 0;
   height: 100vh;
+  overflow: visible;
 }
 
 .form-wrapper {
@@ -42,5 +46,25 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  overflow: visible;
+}
+.custom-toolbar-title {
+  font-size: 14px !important;
 }
 
+.campo-de-edicao {
+  width: 80%;
+  margin-bottom: 5px;
+  margin-left: 3px;
+}
+
+button {
+  padding: 0.7rem 1.2rem;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}

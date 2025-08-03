@@ -1,0 +1,39 @@
+<div class="login-container">
+  <h2>H2u Agenda, Bem-vindo !</h2>
+
+  <form (ngSubmit)="onLogin()" #loginForm="ngForm" class="login-form">
+    <input
+      type="text"
+      placeholder="E-mail"
+      [(ngModel)]="email"
+      name="email"
+      required
+    />
+    <div *ngIf="loginForm.submitted && !email">
+      <small>O campo e-mail é obrigatório.</small>
+    </div>
+
+    <input
+      type="password"
+      placeholder="Senha"
+      [(ngModel)]="password"
+      name="password"
+      required
+    />
+    <div *ngIf="loginForm.submitted && !password">
+      <small>O campo senha é obrigatório.</small>
+    </div>
+
+    <button type="submit" [disabled]="isLoading">
+      <span *ngIf="!isLoading">Entrar</span>
+      <span *ngIf="isLoading">Carregando...</span>
+    </button>
+
+    <p *ngIf="loginFailed" class="error-msg">Credenciais inválidas. Tente novamente!</p>
+  </form>
+
+  <div class="login-links">
+    <a routerLink="/esqueci-senha">Esqueci minha senha</a>
+    <a routerLink="/register">Criar nova conta</a>
+  </div>
+</div>

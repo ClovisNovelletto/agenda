@@ -37,9 +37,9 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router) {this.setaStatusLogin();}
 
-  login(username: string, password: string): void {
+  login(email: string, password: string): void {
     console.log('AS login');
-    this.http.post<{ token: string }>(`${environment.apiUrl}/login`, { username, password })
+    this.http.post<{ token: string }>(`${environment.apiUrl}/login`, { email, password })
       .subscribe({
         next: (response) => {
           localStorage.setItem('jwt-token', response.token); // Armazena o token

@@ -1,0 +1,56 @@
+{
+    "title": "Título da solicitação, cotação do pedido: 8952878",
+    "description": "Descrição da solicitação, cotação do pedido: 8952878",
+    "callback": "",
+    "organization": {
+        "identifier": "B2936FA89EED4FE6BADC",
+        "folder": "DCB3CAC29D"
+    },
+    "files": [
+        {
+            "name": "CotacaoPedido_8952878.pdf",
+            "type": "application/pdf",
+            "tempIdentifier": "ea43906cb234e92857b6"
+        }
+    ],
+    "participants": [
+        {
+            "name": "Lauro",
+            "email": "lauro.lockmann@mazer.com.br",
+            "cpf": "98650963072",
+            "signatureType": 2
+        }
+    ],
+    "Settings": {
+        "SendEmail": true
+    }
+}
+
+
+{
+    "title": "Título da solicitação, cotação do pedido: 8990373",
+    "description": "Descrição da solicitação, cotação do pedido: 8990373",
+    "callback": "",
+    "organization": {
+        "identifier": "B2936FA89EED4FE6BADC",
+        "folder": "DCB3CAC29D"
+    },
+    "files": [
+        {
+            "name": "CotacaoPedido_8990373.pdf",
+            "type": "application/pdf",
+            "tempIdentifier": "0eec6a78939447a9c9a0"
+        }
+    ],
+    "participants": [
+        {
+            "name": "Lauro Lockmann",
+            "email": "lauro.lockmann@mazer.com.br",
+            "cpf": "98650963072",
+            "signatureType": 2
+        }
+    ],
+    "Settings": {
+        "SendEmail": true
+    }
+}

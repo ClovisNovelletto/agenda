@@ -16,12 +16,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatMenuModule } from '@angular/material/menu';
+//import { IonicModule } from '@ionic/angular';
 
 @Component({
   selector: 'app-aluno-lista',
-   imports: [CommonModule, MatIconModule, MatNativeDateModule, MatSlideToggleModule, MatButtonToggleModule, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatSelectModule, MatMenuModule] , // Adicione o RouterModule aqui]
+  standalone: true,
+   imports: [CommonModule, MatIconModule, MatNativeDateModule, MatSlideToggleModule, MatButtonToggleModule, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatSelectModule, MatMenuModule /*,IonicModule*/] , // Adicione o RouterModule aqui]
   templateUrl: './aluno-lista.component.html',
-  styleUrls: ['./aluno-lista.component.css'] 
+  styleUrls: ['./aluno-lista.component.css'], 
 })
 export class AlunoListaComponent implements OnInit {
   filtroTexto: string = "";

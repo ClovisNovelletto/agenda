@@ -1,0 +1,129 @@
+<mat-toolbar color="primary">
+  <button mat-icon-button style="border-radius: 50%; display: flex; width: 20px !important; height: 20px !important; align-items: center !important; justify-content: center !important; background-color: black; padding: 7px; margin-right: 10px;" (click)="fechar()">
+    <mat-icon style="display: flex; align-items: center !important; justify-content: center !important;">arrow_back</mat-icon>
+  </button>
+  <span style="font-size: 16px !important; padding: 2px;">Cadastro</span>
+</mat-toolbar>
+
+<!--<h2 style="margin-top: 0px; margin-bottom: 10px;">Cadastro</h2>-->
+<form [formGroup]="formData" (ngSubmit)="onRegister()" class="form-container">
+<div class="form-wrapper">
+  <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 0px; width: 100%;">
+    <mat-label>Tipo de usuário</mat-label>
+    <mat-select formControlName="tipoUsuario" required>
+      <mat-option value="">Selecione...</mat-option>
+      <mat-option value="aluno">Aluno</mat-option>
+      <mat-option value="personal">Personal</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 0px; width: 100%;">
+    <mat-label>Nome completo</mat-label>
+    <input matInput formControlName="nome" required>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 0px; width: 100%;">
+    <mat-label>Email</mat-label>
+    <input matInput formControlName="email" type="email" required>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 0px; width: 100%;">
+    <mat-label>Usuário</mat-label>
+    <input matInput formControlName="usuario" required>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 0px; width: 100%;">
+    <mat-label>Senha</mat-label>
+    <input matInput formControlName="senha" type="password" required>
+  </mat-form-field>
+  
+  <div *ngIf="tipoUsuario === 'aluno'">
+    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 0spx; width: 100%;">
+      <mat-label>Código do convite</mat-label>
+      <input matInput formControlName="codigoConvite">
+    </mat-form-field>
+  </div>
+
+  <button mat-raised-button color="primary" type="submit" [disabled]="formData.invalid">
+    Cadastrar
+  </button>
+</div>
+</form>
+
+<!--
+<h2>Cadastro</h2>
+<form (ngSubmit)="onRegister()" [formGroup]="formData">
+  <label for="tipoUsuario">Tipo de usuário:</label>
+  <select id="tipoUsuario" formControlName="tipoUsuario">
+    <option value="">Selecione...</option>
+    <option value="aluno">Aluno</option>
+    <option value="personal">Personal</option>
+  </select>
+
+  <label for="nome">Nome completo:</label>
+  <input id="nome" type="text" formControlName="nome">
+
+  <label for="email">Email:</label>
+  <input id="email" type="email" formControlName="email">
+
+  <label for="usuario">Usuário:</label>
+  <input id="usuario" type="text" formControlName="usuario">
+
+  <label for="senha">Senha:</label>
+  <input id="senha" type="password" formControlName="senha">
+
+  <button type="submit" [disabled]="formData.invalid || isLoading">Cadastrar</button>
+
+</form>
+-->
+
+<!--
+<h2>Cadastro</h2>
+
+<form #registerForm="ngForm" (ngSubmit)="onRegister()">
+  <label>
+    Tipo de usuário:
+    <select [(ngModel)]="userType" name="userType" required>
+      <option value="">Selecione...</option>
+      <option value="personal">Personal Trainer</option>
+      <option value="aluno">Aluno</option>
+    </select>
+  </label>
+
+  <label>
+    Nome completo:
+    <input type="text" name="nome" [(ngModel)]="formData.nome" required />
+  </label>
+
+  <label>
+    Email:
+    <input type="email" name="email" [(ngModel)]="formData.email" required />
+  </label>
+
+  <label>
+    Usuário:
+    <input type="text" name="username" [(ngModel)]="formData.username" required />
+  </label>
+
+  <label>
+    Senha:
+    <input type="password" name="password" [(ngModel)]="formData.password" required />
+  </label>
+-->
+  <!-- Campo do código de convite para aluno -->
+<!--   
+  <div *ngIf="userType === 'aluno'">
+    <label>
+      Código do convite:
+      <input type="text" name="codigoConvite" [(ngModel)]="formData.codigoConvite" required />
+    </label>
+  </div>
+
+  <button type="submit" [disabled]="registerForm.invalid || isLoading">
+    <span *ngIf="!isLoading">Cadastrar</span>
+    <span *ngIf="isLoading">Enviando...</span>
+  </button>
+</form>
+
+<p *ngIf="erro">{{ erro }}</p>
+-->

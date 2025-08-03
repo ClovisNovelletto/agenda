@@ -1,8 +1,6 @@
-
 <div class="tela-container">
-
   <div class="filtros">
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px;">
       <mat-label>Pesquisar</mat-label>
       <input matInput [(ngModel)]="filtroTexto" (keyup.enter)="aplicarFiltro()" />
       <button mat-icon-button matSuffix (click)="aplicarFiltro()">
@@ -10,7 +8,7 @@
       </button>
     </mat-form-field>
 
-    <mat-form-field appearance="fill">
+    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px;">
       <mat-label>Status</mat-label>
       <mat-select [(value)]="filtroStatus" (selectionChange)="aplicarFiltro()">
         <mat-option value="Todos">Todos</mat-option>
@@ -19,17 +17,14 @@
       </mat-select>
     </mat-form-field>
     <!--
-    <button mat-icon-button [matMenuTriggerFor]="menuOrdenar" aria-label="Ordenar">
-      <mat-icon>sort</mat-icon>
-    </button>
-
     <mat-menu #menuOrdenar="matMenu">
       <button mat-menu-item (click)="ordenarPor('nome')">Nome</button>
       <button mat-menu-item (click)="ordenarPor('telefone')">Telefone</button>
     </mat-menu>
     -->
-    <button mat-mini-fab class="botao-verde" (click)="novoAluno()" aria-label="Novo Aluno">
-      <mat-icon>add</mat-icon>
+    
+    <button mat-mini-fab style="display: flex; align-items: center !important; justify-content: center !important; background-color: #28a745;" (click)="novoAluno()" aria-label="Novo Aluno">
+      <mat-icon style="display: flex; align-items: center !important; justify-content: center !important;">add</mat-icon>
     </button>
   </div>
 
@@ -44,69 +39,11 @@
           {{ aluno.ativo ? 'Ativo' : 'Inativo' }}
         </span>
       </div>
-      <button mat-icon-button color="primary" (click)="onEditar(aluno)">
+
+      <button mat-icon-button class="mat-icon-button__icon" color="primary" (click)="onEditar(aluno)">
         <mat-icon>edit</mat-icon>
       </button>
     </div>
   </div>
 </div>
 
-<!--
-<div class="filtros">
-  <div class="filtros" style="display: flex; flex-wrap: wrap; gap: 2px; align-items: center;">
-
-    <mat-form-field class="campo-pesquisa" appearance="outline" style="flex: 1; min-width: 150px;">
-      <mat-label>Pesquisar</mat-label>
-      <input matInput [(ngModel)]="filtroTexto" (keyup.enter)="aplicarFiltro()" />
-      <button mat-icon-button matSuffix aria-label="Pesquisar" (click)="aplicarFiltro()">
-        <mat-icon>search</mat-icon>
-      </button>
-    </mat-form-field>
-
-    <mat-form-field appearance="fill" style="width: 100px;">
-      <mat-label>Status</mat-label>
-      <mat-select [(value)]="filtroStatus" (selectionChange)="aplicarFiltro()">
-        <mat-option value="Todos">Todos</mat-option>
-        <mat-option value="Ativos">Ativos</mat-option>
-        <mat-option value="Inativos">Inativos</mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <button mat-icon-button [matMenuTriggerFor]="menuOrdenar" aria-label="Ordenar">
-      <mat-icon>sort</mat-icon>
-    </button>
-
-    <mat-menu #menuOrdenar="matMenu">
-      <button mat-menu-item (click)="ordenarPor('nome')">Nome</button>
-      <button mat-menu-item (click)="ordenarPor('telefone')">Telefone</button>
-    </mat-menu>
-
-
-    <button mat-mini-fab (click)="novoAluno()" aria-label="Novo Aluno"
-        [ngStyle]="{'background-color': '#28a745', 'color': '#fff'}">
-      <mat-icon>add</mat-icon>
-    </button>
-  -->
-    <!--    
-    <button mat-mini-fab color="accent" background-color="#28a745" (click)="novoAluno()" aria-label="Novo Aluno">
-      <mat-icon>add</mat-icon>
-    </button>
-  -->
-<!--
-</div>
-  
-</div>
-
-<div class="aluno-item" *ngFor="let aluno of alunosFiltrados">
-  <div class="aluno-info">
-    <span class="nome">{{ aluno.nome }}</span>
-    <span class="telefone">{{ aluno.telefone }}</span>
-    <span class="status" [class.ativo]="aluno.ativo" [class.inativo]="!aluno.ativo">
-      {{ aluno.ativo ? 'Ativo' : 'Inativo' }}
-    </span>
-  </div>
-  <button mat-icon-button color="primary" (click)="onEditar(aluno)">
-    <mat-icon>edit</mat-icon>
-  </button>
-</div>
--->

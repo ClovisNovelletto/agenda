@@ -16,20 +16,9 @@ form {
 }
 
 .form-label {
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-  color: #222; /* contraste maior */
-}
-
-.input-config,
-select {
-  padding: 0.5rem;
-  border: 1px solid #999;
-  border-radius: 5px;
-  background-color: #fff;
-  color: #111; /* texto visível */
-  font-size: 1rem;
-  appearance: auto; /* ativa os botões + e - no input[type=number] */
+  /*font-weight: bold;*/
+  color: white#222; /* contraste maior */
+  padding: 0px 15px; 
 }
 
 select {
@@ -51,19 +40,26 @@ button:hover {
   background-color: #0056b3;
 }
 
+.container-config {
+  max-width: 400px !important;
+  max-height: 200px !important;
+  margin: 0 auto;
+  padding: 16px;
+}
+
 /* Responsivo para telas menores */
-@media (max-width: 600px) {
+@media (max-width: 400px) {
   form {
-    width: 95%;
+    width: 75%;
     padding: 1rem 0.5rem;
   }
-
-  .input-config,
-  select,
-  button {
-    font-size: 0.95rem;
+  .input-config {
+    width: 80px;
+    font-size: 0.8rem;
   }
 }
+
+
 
 
 
@@ -80,50 +76,14 @@ button:hover {
   text-align: center;
   margin-top: 0rem;
   margin-bottom: 0.5rem;
-  font-size: 1.2rem;
+  font-size: 1.0rem;
   color: #b7aeae;
 }
 
-/*
-.form-group {
-  margin-bottom: 0.5rem;
-}
-
-.form-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: #444;
-}
-
 .input-config {
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  font-size: 1rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  transition: border-color 0.3s;
-}
-*/
-
-/*
-.input-config {
-  width: 100%;
-  max-width: 120px; // limita a largura pra não estourar 
-  box-sizing: border-box; // pra padding não aumentar largura total 
-  padding: 6px 12px 6px 20px; // top 6px, right 12px, bottom 6px, left 20px 
-  font-size: 1rem;
-*/
-
-.input-config {
-  width: 100%;           /* ocupa toda largura do container pai */
-  max-width: 150px;      /* limite confortável */
-  padding: 6px 8px;      /* padding razoável */
-  font-size: 1rem;       /* tamanho legível */
-  box-sizing: border-box; /* padding não aumenta a largura total */
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  appearance: auto;      /* garante que o spinner apareça */
+  width: 80px; 
+  padding: 4px;
+  font-size: 0.9rem;
 }
 
 
@@ -250,3 +210,22 @@ body, html {
   padding-left: 10px;  /* padding menor lateral */
   padding-right: 10px;
 }
+
+/*
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+*/
+.dias-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  margin-bottom: 16px;
+}
+/*
+.botoes-config {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+}*/

@@ -1,17 +1,17 @@
 <div class="week-navigation">
-  <button mat-raised-button color="primary" (click)="previousWeek()">← Semana Anterior</button>
+  <button mat-raised-button class="texto_semana" (click)="previousWeek()">← Sem Ant</button>
   <!--<span class="week-label">{{ week[0] | date:'dd/MM/yyyy' }} - {{ week[6] | date:'dd/MM/yyyy' }}</span>-->
+  
   <span class="week-label">
     {{ week[0] | date:'dd/MM/yyyy' }} - {{ week[week.length - 1] | date:'dd/MM/yyyy' }}
   </span>
 
   <!-- botão para abrir o seletor -->
-  <button mat-raised-button color="primary" (click)="abrirDialogoGerarAgenda()">
-    Gerar agenda mensal
+  <button mat-raised-button class="texto_semana" (click)="abrirDialogoGerarAgenda()">
+    Gerar Agenda
   </button>
-  
 
-  <button mat-raised-button color="primary" (click)="nextWeek()">Próxima Semana →</button>
+  <button mat-raised-button class="texto_semana" (click)="nextWeek()">Sem Próx →</button>
 </div>
 
 

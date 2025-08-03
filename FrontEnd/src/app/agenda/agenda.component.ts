@@ -43,7 +43,7 @@ import { DialogGerarAgendaComponent } from './dialog-gerar-agenda/dialog-gerar-a
 import { BehaviorSubject } from 'rxjs';
 import { AppointmentsFiltradosPorPipe } from '../pipes/appointments-filtrados-por.pipe';
 import { ChangeDetectorRef } from '@angular/core';
-
+import { Pipe, PipeTransform } from '@angular/core';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -94,6 +94,7 @@ export class AgendaComponent implements OnInit, AfterViewInit {
   minutes: number[]=[];
   hoveredCell: string | null = null;
   isDragging = false;
+  carregamentosFeitos: { dataInicio: Date, dataFim: Date }[] = [];
   
   mostrarSeletorMes = false;
   anoSelecionado: Date | null = null;
@@ -179,15 +180,6 @@ export class AgendaComponent implements OnInit, AfterViewInit {
         this.cd.markForCheck();
       });
     });
-    //this.loadPersonals();
-    //console.warn('configAgenda init:', this.configAgenda);
-    //this.loadAppointments();    
-    //this.loadAlunos();
-    //this.loadLocals();
-    //setTimeout(() => {
-    //  this.cd.markForCheck();
-    //});
-    //console.log('Horários de compromissos completos:', this.appointments);
   }
 
   gerarListaMeses() {
@@ -243,6 +235,7 @@ export class AgendaComponent implements OnInit, AfterViewInit {
   }
 
   generateWeek(): void {
+    console.log('entrou generateWeek');
     //const baseDate = new Date(this.currentDate);
     const baseDate = dayjs.utc(this.currentDate).tz('America/Sao_Paulo').toDate();
     //const startOfWeek = new Date(baseDate);
@@ -256,6 +249,11 @@ export class AgendaComponent implements OnInit, AfterViewInit {
       date.setHours(0, 0, 0, 0);
       return date;
     });
+    //this.appointments$.next(this.appointments$.value);
+    this.appointments$.next([...this.appointments$.value]);
+    //    this.appointments$.subscribe(appts => {
+    //      console.log('Quantidade de compromissos:', appts.length);
+    //    });
   }
 
   generateHours() {
@@ -276,8 +274,21 @@ export class AgendaComponent implements OnInit, AfterViewInit {
       });
   }
 
-  
   loadAppointments() {
+    const semanas = [-14, -7, 0, 7, 14]; // dias de deslocamento
+
+    for (const dias of semanas) {
+      const base = dayjs(this.currentDate).add(dias, 'day');
+      const inicio = base.startOf('week').toDate();
+      const fim = base.endOf('week').toDate();
+
+      if (!this.periodoJaCarregado(inicio, fim)) {
+        this.carregarAgendaPeriodo(inicio, fim);
+      }
+    }
+  }
+
+  /*loadAppointments() {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({Authorization: `Bearer ${token}` });
     this.http.get<any[]>(`${environment.apiUrl}/agendas`, {headers}).subscribe((data) => {
@@ -296,36 +307,8 @@ export class AgendaComponent implements OnInit, AfterViewInit {
       }));
       this.appointments$.next(mapped); // Agora dispara re-render
     });
-  }
-
-  /*loadAppointments() {
-
-    console.log('Iniciando requisição HTTP...');
-    const token = localStorage.getItem('jwt-token');
-    const headers = new HttpHeaders({Authorization: `Bearer ${token}` });    
-    this.http.get<any[]>(`${environment.apiUrl}/agendas`, {headers}).subscribe((data) => {
-      console.log('data: ', data);
-      this.appointments = data.map((item) => ({
-        agenda_id: item.agenda_id,
-        date: dayjs(item.date).toDate(),
-        start: dayjs(item.start).toDate(),
-        hour: item.hour,
-        titulo: item.titulo,
-        alunoId: item.alunoid,
-        aluno: item.aluno,
-        localId: item.localid,
-        local: item.local,
-        personalId: item.personalid,
-        statusId: item.statusid ?? 1
-      }));
-      
-      console.log('Dados recebidos: ', this.appointments);
-      console.log('Horários de compromissos:', this.appointments.map(a => a.start.toISOString()));
-      console.log('Appointments mapeados:', this.appointments);
-    });
   }*/
 
-  
   loadAlunos(): void {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({Authorization: `Bearer ${token}` });    
@@ -347,15 +330,31 @@ export class AgendaComponent implements OnInit, AfterViewInit {
   }
 
   nextWeek() {
+    console.log('entrou nextWeek');
     this.currentDate.setDate(this.currentDate.getDate() + 7);
-    //this.week = this.generateWeek(this.currentDate); // ✅ atribuição correta
-    this.generateWeek(); // ✅ atribuição correta
+    this.generateWeek();
+
+    const inicioSemana = this.week[0];
+    const fimSemana = this.week[this.week.length - 1];
+
+    if (!this.periodoJaCarregado(inicioSemana, fimSemana)) {
+      //this.appointments$.next(this.appointments$.value);
+      this.carregarAgendaPeriodo(inicioSemana, fimSemana);
+    }
   }
 
   previousWeek() {
+    console.log('entrou previousWeek');
     this.currentDate.setDate(this.currentDate.getDate() - 7);
-    //this.week = this.generateWeek(this.currentDate); // ✅ atribuição correta
-    this.generateWeek(); // ✅ atribuição correta
+    this.generateWeek();
+    
+    const inicioSemana = this.week[0];
+    const fimSemana = this.week[this.week.length - 1];
+
+    if (!this.periodoJaCarregado(inicioSemana, fimSemana)) {
+      //this.appointments$.next(this.appointments$.value);
+      this.carregarAgendaPeriodo(inicioSemana, fimSemana);
+    }
   }
 
   getAppointments(day: Date, hour: string, minute: number): Appointment[] {
@@ -794,6 +793,65 @@ export class AgendaComponent implements OnInit, AfterViewInit {
 
     this.appointments.push(newAppointment);
     console.log('Novo compromisso salvo:', newAppointment);
+  }
+
+  periodoJaCarregado(inicio: Date, fim: Date): boolean {
+    //console.log("inicio: ", inicio);
+    //console.log("fim: ", fim);
+    //console.log(" this.carregamentosFeitos.some(p => inicio >= p.dataInicio && fim <= p.dataFim): ", this.carregamentosFeitos.some(p => inicio >= p.dataInicio && fim <= p.dataFim));
+    return this.carregamentosFeitos.some(p => inicio >= p.dataInicio && fim <= p.dataFim);
+  }
+
+  carregarAgendaPeriodo(inicio: Date, fim: Date) {
+    const token = localStorage.getItem('jwt-token');
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+
+    const payload = {
+      data_inicio: dayjs(inicio).format('YYYY-MM-DD'),
+      data_fim: dayjs(fim).format('YYYY-MM-DD')
+    };
+
+    this.http.post<any[]>(`${environment.apiUrl}/agendaPorPeriodo`, payload, {headers}).subscribe(dados => {
+      const novos = dados.map(item =>  ({
+        agenda_id: item.agenda_id,
+        date: dayjs(item.date).toDate(),
+        start: dayjs(item.start).toDate(),
+        hour: item.hour,
+        titulo: item.titulo,
+        alunoId: item.alunoid,
+        aluno: item.aluno,
+        localId: item.localid,
+        local: item.local,
+        personalId: item.personalid,
+        statusId: item.statusid ?? 1
+      }));
+      const atuais = this.appointments$.value;
+
+      const mesclados = [
+        ...atuais.filter(a => !novos.some(n => n.agenda_id === a.agenda_id)),
+        ...novos
+      ];
+
+      this.appointments$.next(mesclados);
+
+      //this.appointments$.next(novos); // Agora dispara re-render
+      //this.appointmentsSubject.next([
+      //  ...this.appointmentsSubject.value,
+      //  ...novos
+      //]);
+      
+      //this.carregamentosFeitos.push({ dataInicio: inicio, dataFim: fim });
+      const jaCarregado = this.carregamentosFeitos.some(p =>
+        dayjs(inicio).isSame(p.dataInicio, 'day') &&
+        dayjs(fim).isSame(p.dataFim, 'day')
+      );
+
+      if (jaCarregado) {
+        return; // já foi carregado antes
+      }
+      this.cd.markForCheck();
+      //console.log("this.carregamentosFeitos: ", this.carregamentosFeitos);
+    });
   }
 }
 

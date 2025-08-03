@@ -1,27 +1,120 @@
+body {
+  /*padding-bottom: 40px;*/ /* mesmo valor da altura do footer */
+  padding-bottom: env(safe-area-inset-bottom, 40px); 
+  overflow: visible;
+}
+
 .footer {
-    position: fixed;
-    display:flex;
-    bottom: 0;
-    width: 100%;
-    height: 40px;
-    background-color: rgb(221, 148, 13);
-    color: rgb(9, 2, 24);
-    text-align: center;
-    margin: 0px;
-    z-index: 1000;
-    }
-    .content {
-    position: absolute;
-    background-color: blueviolet;
-    width: 98%;
-    border: 1px solid rgb(18, 141, 38);
-    margin: 5px;
-    /* bottom: -50px; */
-    height: 80%;
-    max-height: 100%;
-    overflow: auto;
-    }
-    .sidenavstyle{
-    background-color: rgb(4, 61, 21);
-    color: rgb(208, 206, 216);
-    }
+  position: fixed;
+  bottom: env(safe-area-inset-bottom, 0);
+  left: 0;
+  width: 100%;
+  height: 40px;
+  background-color: rgb(221, 148, 13);
+  color: rgb(9, 2, 24);
+  z-index: 1000;
+  display: flex;
+  align-items: center;     /* Centraliza verticalmente */
+  justify-content: center; /* Centraliza horizontalmente (opcional) */
+  padding: 0;
+  z-index: 9999 !important;
+  border-top: 0px solid red;
+  border-bottom: 0px solid red;
+  padding-bottom: env(safe-area-inset-bottom);
+  overflow: visible;
+}
+
+.footer-menu {
+  display: flex;
+  flex: 1;
+  height: 100%;
+  overflow: visible;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.footer-menu button {
+  height: 100%;
+  width: 40px;
+  display: flex;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  align-self: stretch;
+  /*border: 1px dashed white;*/
+  overflow: visible;
+}
+
+.footer-menu mat-icon {
+  font-size: 24px;
+  line-height: 24px;
+  overflow: visible;
+}
+
+.tituloh2u {
+  padding: 0 8px;
+  font-size: 11px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.mat-icon-button__icon_xxx {
+  display: flex;
+  min-height: 20px;
+  min-width: 20px;
+  height: 20px;
+  width: 20px;
+}
+
+mat-icon {
+  font-size: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+  line-height: 20px !important;
+}
+
+.mat-icon-button {
+  width: 24px !important;
+  height: 24px !important;
+  padding: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 600px) {
+
+  .mat-icon-button__icon_xxx {
+    display: flex;
+    min-height: 20px;
+    min-width: 20px;
+    height: 20px;
+    width: 20px;
+  }
+}
+
+::ng-deep .mat-icon-button .mat-ripple-element {
+  /*background-color: rgba(255, 255, 255, 0.3);*/ /* cor do efeito*/
+  background-color: rgba(255, 0, 255, 0.3); /* cor do efeito*/
+}
+
+::ng-deep .footer-menu button.mat-icon-button.active {
+  /*background-color: rgba(255, 255, 255, 0.2);*/ /* leve destaque*/
+  background-color: #c88064ec; /* leve destaque*/
+}
+
+::ng-deep .mat-icon-button {
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+  min-height: 24px !important;
+  padding: 4px !important;
+}
+
+::ng-deep .mat-icon-button .mat-icon {
+  font-size: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+  line-height: 20px !important;
+}

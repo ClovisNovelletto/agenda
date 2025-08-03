@@ -2,7 +2,10 @@
 import { NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 import { AgendaComponent } from './agenda/agenda.component';
-import { LoginComponent } from './login/login.component';
+import { LoginComponent } from './login/login/login.component';
+import { RegisterComponent } from './login/register/register.component';
+import { EsqueciSenhaComponent } from './login/esqueci-senha/esqueci-senha.component';
+import { ResetarSenhaComponent } from './login/resetar-senha/resetar-senha.component';
 import { FinanceiroComponent } from './financeiro/financeiro.component';
 import { AlunoListaComponent } from './aluno/aluno-lista/aluno-lista.component';
 import { HomeComponent } from './home/home.component';
@@ -19,6 +22,9 @@ export const routes: Routes = [
   { path: 'alunoLista',  canActivate: [AuthGuard], loadComponent: () => import('./aluno/aluno-lista/aluno-lista.component').then(m => m.AlunoListaComponent)},
   { path: 'financeiro', component: FinanceiroComponent, canActivate: [AuthGuard]},
   { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
+  { path: 'esqueci-senha', component: EsqueciSenhaComponent },
+  { path: 'resetar-senha', component: ResetarSenhaComponent },
 ];
 
 
