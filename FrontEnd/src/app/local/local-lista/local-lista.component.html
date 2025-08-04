@@ -1,0 +1,47 @@
+<div class="tela-container">
+  <div class="filtros">
+    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px;">
+      <mat-label>Pesquisar</mat-label>
+      <input matInput [(ngModel)]="filtroTexto" (keyup.enter)="aplicarFiltro()" />
+      <button mat-icon-button matSuffix (click)="aplicarFiltro()">
+        <mat-icon>search</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px;">
+      <mat-label>Status</mat-label>
+      <mat-select [(value)]="filtroStatus" (selectionChange)="aplicarFiltro()">
+        <mat-option value="Todos">Todos</mat-option>
+        <mat-option value="Ativos">Ativos</mat-option>
+        <mat-option value="Inativos">Inativos</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <!--
+    <mat-menu #menuOrdenar="matMenu">
+      <button mat-menu-item (click)="ordenarPor('nome')">Nome</button>
+      <button mat-menu-item (click)="ordenarPor('telefone')">Telefone</button>
+    </mat-menu>
+    -->
+    
+    <button mat-mini-fab style="display: flex; align-items: center !important; justify-content: center !important; background-color: #28a745;" (click)="novoLocal()" aria-label="Novo local">
+      <mat-icon style="display: flex; align-items: center !important; justify-content: center !important;">add</mat-icon>
+    </button>
+  </div>
+
+  <div class="lista-scroll">
+    <div class="local-item" *ngFor="let local of localsFiltrados">
+      <div class="local-info">
+        <span class="nome">{{ local.nome }}</span>
+        <span class="endereco">{{ local.endereco }}</span>
+        <span class="status" [class.ativo]="local.ativo" [class.inativo]="!local.ativo">
+          {{ local.ativo ? 'Ativo' : 'Inativo' }}
+        </span>
+      </div>
+
+      <button mat-icon-button class="mat-icon-button__icon" color="primary" (click)="onEditar(local)">
+        <mat-icon>edit</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>
+

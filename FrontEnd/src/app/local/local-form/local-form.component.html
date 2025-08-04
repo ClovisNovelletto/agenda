@@ -1,0 +1,31 @@
+<mat-toolbar color="primary" style="margin-bottom: 10px;">
+  <button mat-icon-button style="display: flex; width: 20px !important; height: 20px !important; align-items: center !important; justify-content: center !important; background-color: black; padding: 7px; margin-right: 10px;" (click)="fechar()">
+    <mat-icon style="display: flex; align-items: center !important; justify-content: center !important;">arrow_back</mat-icon>
+  </button>
+  <span style="font-size: 16px !important; padding: 2px;">Cadastro de Local</span>
+</mat-toolbar>
+
+<div style="margin-bottom: 5px; margin-left: 5px;" class="form-wrapper">
+  <form *ngIf="form" [formGroup]="form" (ngSubmit)="salvar()">
+
+    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px; width: 80%;" >
+      <mat-label>Nome</mat-label>
+      <input matInput formControlName="nome" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+      <mat-label>Endereco</mat-label>
+      <input matInput formControlName="endereco" />
+    </mat-form-field>
+
+    <div style="margin-left: 3px; margin-top: 5px; margin-bottom: 5px">
+        <mat-slide-toggle formControlName="ativo" style="margin-left: 3px; margin-bottom: 5px">Local ativo</mat-slide-toggle>
+    </div>
+
+    <div>
+      <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+        Salvar
+      </button>
+    </div>
+  </form>
+</div>
