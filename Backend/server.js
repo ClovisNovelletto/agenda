@@ -122,8 +122,8 @@ app.use((req, res, next) => {
 app.post('/api/login', async (req, res) => {
   const email = req.body.email?.trim();;
   const password = req.body.password;
-console.log("email", email);
-console.log("password", password);
+//console.log("email", email);
+//console.log("password", password);
   try {
     const query = 'SELECT id, password, tipo_usuario FROM users WHERE username = $1';
     //    const result = await pool.query(query, [username]);
@@ -192,6 +192,19 @@ const authenticateToken = (req, res, next) => {
 };
 
 /*----------------------------------------------------------*/
+app.get('/api/localLista', authenticateToken, async (req, res) => {
+  try {
+    console.log("carrega locais");
+    const personalId = req.user.personalId;
+    const local = await sql`SELECT Local_ID id, Local nome, LocEndereco endereco, LocAtivo ativo FROM Locals WHERE LocPersonalID = ${personalId}`;
+    res.json(local);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao buscar locais');
+  }
+});
+
+/*----------------------------------------------------------*/
 app.get('/api/alunoLista', authenticateToken, async (req, res) => {
   try {
     console.log("carrega alunos");
@@ -256,8 +269,8 @@ app.put('/api/alunoSave', authenticateToken, async (req, res) => {
     `;    
     res.status(201).json(aluno);
     } catch (err) {
-      console.error('Erro ao atualizar agenda:', err);
-      res.status(500).json({ error: 'Erro ao atualizar agenda' });
+      console.error('Erro ao atualizar aluno:', err);
+      res.status(500).json({ error: 'Erro ao atualizar aluno' });
     }
 });
 
@@ -316,6 +329,50 @@ app.post('/api/alunoInsert', authenticateToken, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ erro: 'Erro ao cadastrar aluno' });
+  }
+});
+
+
+app.put('/api/localSave', authenticateToken, async (req, res) => {
+  const {id, nome, endereco, ativo} = req.body;
+
+  try {
+    const local = await sql`
+      UPDATE Locals SET local = ${nome}, LocEndereco = ${endereco}, LocAtivo = ${ativo}
+      WHERE local_id = ${id}
+      RETURNING *`; 
+    res.status(201).json(local);
+  } catch (err) {
+    console.error('Erro ao atualizar aluno:', err);
+    res.status(500).json({ erro: 'Erro ao cadastrar local' });
+  }
+});
+
+app.post('/api/localInsert', authenticateToken, async (req, res) => {
+  const personalId = req.user.personalId;
+
+  const {id, nome, endereco, ativo} = req.body;
+
+  try {
+    const local = await sql`
+      INSERT INTO Locals (local, LocEndereco, LocAtivo, LocPersonalID)
+      VALUES (${nome}, ${endereco}, ${ativo}, ${personalId})
+      RETURNING *`; 
+    res.json({
+      id: local[0].local_id,                         
+      nome: local[0].local,                          
+      endereco: local[0].locendereco,                
+      ativo: local[0].locativo
+    });
+    console.log('Retornando novo local:', {
+      id: local[0].local_id,
+      nome: local[0].local,
+      endereco: local[0].locendereco,
+      ativo: local[0].locativo
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao cadastrar local' });
   }
 });
 
