@@ -112,6 +112,10 @@ salvarConfiguracoes(): void {
       setTimeout(() => this.mensagem = null, 4000);
     }
   });
+  setTimeout(() => {
+      this.fechar();
+    }, 500);
+  
 }
 
 

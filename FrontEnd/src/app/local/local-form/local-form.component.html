@@ -5,21 +5,21 @@
   <span style="font-size: 16px !important; padding: 2px;">Cadastro de Local</span>
 </mat-toolbar>
 
-<div style="margin-bottom: 5px; margin-left: 5px;" class="form-wrapper">
+<div style="margin-bottom: 25px; margin-left: 5px;" class="form-wrapper">
   <form *ngIf="form" [formGroup]="form" (ngSubmit)="salvar()">
 
-    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px; width: 80%;" >
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 15px; width: 80%;" >
       <mat-label>Nome</mat-label>
       <input matInput formControlName="nome" />
     </mat-form-field>
 
-    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 25px; width: 80%;">
       <mat-label>Endereco</mat-label>
       <input matInput formControlName="endereco" />
     </mat-form-field>
 
-    <div style="margin-left: 3px; margin-top: 5px; margin-bottom: 5px">
-        <mat-slide-toggle formControlName="ativo" style="margin-left: 3px; margin-bottom: 5px">Local ativo</mat-slide-toggle>
+    <div style="margin-left: 3px; margin-top: 5px; margin-bottom: 15px">
+        <mat-slide-toggle formControlName="ativo" style="margin-left: 3px; margin-bottom: 15px">Local ativo</mat-slide-toggle>
     </div>
 
     <div>

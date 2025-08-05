@@ -16,7 +16,7 @@
 
 
 <!-- MatDatepicker só para mês/ano -->
- <mat-form-field appearance="outline" *ngIf="mostrarSeletorMes">
+ <mat-form-field appearance="fill" *ngIf="mostrarSeletorMes">
   <mat-label>Escolha o mês</mat-label>
   <mat-select [value]="mesSelecionado" (selectionChange)="gerarListaMeses()">
     <mat-option *ngFor="let mes of mesesDisponiveis" [value]="mes">
@@ -69,6 +69,7 @@
               <ng-container *ngIf="appointments$ | async as appointments">
                 <div *ngFor="let appt of (appointments | appointmentsFiltradosPor: day : hour : minute); trackBy: trackByAppt"
                   cdkDrag
+                  [cdkDragStartDelay]="{ touch: 300, mouse: 0 }"
                   (cdkDragStarted)="isDragging = true"
                   (cdkDragEnded)="isDragging = false"
                   [cdkDragData]="{ appointment: appt, fromDay: day, fromHour: hour, fromMinute: minute }"

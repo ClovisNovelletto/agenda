@@ -23,6 +23,7 @@
     "@angular/platform-browser-dynamic": "^19.2.11",
     "@angular/router": "^19.2.3",
     "@capacitor/android": "^7.4.2",
+    "@capacitor/app": "^7.0.2",
     "@capacitor/cli": "^7.4.2",
     "@capacitor/core": "^7.4.2",
     "cors": "^2.8.5",

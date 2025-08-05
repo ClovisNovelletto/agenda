@@ -5,30 +5,30 @@
   <span style="font-size: 16px !important; padding: 2px;">Cadastro de Aluno</span>
 </mat-toolbar>
 
-<div style="margin-bottom: 5px; margin-left: 5px;" class="form-wrapper">
+<div style="margin-bottom: 25px; margin-left: 5px;" class="form-wrapper">
   <form *ngIf="form" [formGroup]="form" (ngSubmit)="salvar()">
 
-    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px; width: 80%;" >
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;" >
       <mat-label>Nome</mat-label>
       <input matInput formControlName="nome" />
     </mat-form-field>
 
-    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
       <mat-label>Telefone</mat-label>
       <input matInput formControlName="telefone" />
     </mat-form-field>
 
-    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
       <mat-label>Email</mat-label>
       <input matInput type="email" formControlName="email" />
     </mat-form-field>
 
-    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
       <mat-label>CPF</mat-label>
       <input matInput formControlName="cpf" />
     </mat-form-field>
 
-    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
       <mat-label>Nascimento</mat-label>
 
       <input matInput [matDatepicker]="picker" formControlName="datanasc">
@@ -36,7 +36,7 @@
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
 
-    <mat-form-field appearance="fill" class="w-full" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 25px; width: 80%;">
       <mat-label>Local</mat-label>
       <input type="text" matInput [formControl]="localCtrl" [matAutocomplete]="autoLocal" required>
       <mat-autocomplete #autoLocal="matAutocomplete" (optionSelected)="onLocalSelected($event.option.value)">
@@ -52,7 +52,7 @@
 
     <!--dias horas-->
     <div style="margin-top: 16px; margin-bottom: 16px;">
-      <label style="font-weight: 500;">Dias de Aula:</label>
+      <label style="color: white !important; margin-left: 8px; font-weight: 50;">Dias de Aula:</label>
 
       <div formArrayName="diasAula">
         <ng-container *ngFor="let grupo of diasAulaArray.controls; let j = index">
@@ -62,7 +62,7 @@
               {{ diasSemana[j] }}
             </mat-checkbox>
 
-            <mat-form-field appearance="outline" style="width: 150px;">
+            <mat-form-field appearance="fill" style="width: 150px;">
               <mat-label>Horário</mat-label>
               <mat-select formControlName="hora">
                 <mat-option *ngFor="let h of horasPossiveis" [value]="h">{{ h }}</mat-option>

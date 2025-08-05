@@ -1,6 +1,6 @@
 <mat-toolbar color="primary">
   <button mat-icon-button style="border-radius: 50%; display: flex; width: 20px !important; height: 20px !important; align-items: center !important; justify-content: center !important; background-color: black; padding: 7px; margin-right: 10px;" (click)="fechar()">
-    <mat-icon style="display: flex; align-items: center !important; justify-content: center !important;">arrow_back</mat-icon>
+    <mat-icon style="color: white; display: flex; align-items: center !important; justify-content: center !important;">arrow_back</mat-icon>
   </button>
   <span style="font-size: 16px !important; padding: 2px;">Configurações da agenda</span>
 </mat-toolbar>
@@ -20,7 +20,7 @@
     </div>
 
     <!-- Hora início -->
-    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%; max-width: 200px;">
       <mat-label>Hora Início</mat-label>
       <mat-select [(ngModel)]="configSelecionada.horaInicio" name="horaInicio">
         <mat-option *ngFor="let h of horasPossiveis" [value]="h">{{ h }}:00</mat-option>
@@ -28,7 +28,7 @@
     </mat-form-field>
 
     <!-- Hora fim -->
-    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%; max-width: 200px;">
       <mat-label>Hora Fim</mat-label>
       <mat-select [(ngModel)]="configSelecionada.horaFim" name="horaFim">
         <mat-option *ngFor="let h of horasPossiveis" [value]="h">{{ h }}:00</mat-option>
@@ -36,7 +36,7 @@
     </mat-form-field>
 
     <!-- Tempo aula -->
-    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%; max-width: 200px;">
       <mat-label>Início da Aula a cada</mat-label>
       <mat-select [(ngModel)]="configSelecionada.intervaloMinutos" name="intervaloMinutos">
         <mat-option [value]="10">10 min</mat-option>
@@ -46,23 +46,14 @@
       </mat-select>
     </mat-form-field>
 
-    <!-- Botões -->
-    <div class="botoes-config">
-
-      <button mat-raised-button color="primary" type="submit" (click)="salvarConfiguracoes()">
+      <button styles="overflow: hidden;" mat-raised-button color="primary" type="submit" (click)="salvarConfiguracoes()" class="btn-salvar">
         Salvar
       </button>
 
-      <!--
-      <button mat-raised-button color="warn" type="button" (click)="fechar()">
-        Fechar
-      </button>
-    -->
-    </div>
-
     <!-- Mensagens -->
-    <mat-hint *ngIf="isSaving">⏳ Salvando configurações...</mat-hint>
-    <mat-hint *ngIf="mensagem">{{ mensagem }}</mat-hint>
+    <!--<mat-hint *ngIf="isSaving">Salvando configurações...</mat-hint>-->
+<!--    <mat-hint *ngIf="mensagem">{{ mensagem }}</mat-hint>-->
 
   </mat-card-content>
 </mat-card>
+

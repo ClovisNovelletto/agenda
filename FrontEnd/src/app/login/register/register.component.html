@@ -11,7 +11,7 @@
 <!--<h2 style="margin-top: 0px; margin-bottom: 10px;">Cadastro</h2>-->
 <form [formGroup]="formData" (ngSubmit)="onRegister()" class="form-container">
 <div class="form-wrapper">
-  <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 0px; width: 100%;">
+  <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 0px; width: 100%;">
     <mat-label>Tipo de usuário</mat-label>
     <mat-select formControlName="tipoUsuario" required>
       <mat-option value="">Selecione...</mat-option>
@@ -20,28 +20,28 @@
     </mat-select>
   </mat-form-field>
 
-  <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 0px; width: 100%;">
+  <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 0px; width: 100%;">
     <mat-label>Nome completo</mat-label>
     <input matInput formControlName="nome" required>
   </mat-form-field>
 
-  <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 0px; width: 100%;">
+  <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 0px; width: 100%;">
     <mat-label>Email</mat-label>
     <input matInput formControlName="email" type="email" required>
   </mat-form-field>
 
-  <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 0px; width: 100%;">
+  <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 0px; width: 100%;">
     <mat-label>Usuário</mat-label>
     <input matInput formControlName="usuario" required>
   </mat-form-field>
 
-  <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 0px; width: 100%;">
+  <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 0px; width: 100%;">
     <mat-label>Senha</mat-label>
     <input matInput formControlName="senha" type="password" required>
   </mat-form-field>
   
   <div *ngIf="tipoUsuario === 'aluno'">
-    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 0spx; width: 100%;">
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 0spx; width: 100%;">
       <mat-label>Código do convite</mat-label>
       <input matInput formControlName="codigoConvite">
     </mat-form-field>

@@ -195,7 +195,7 @@ ajuste na altura das linhas, aumentado de 10 para 30 na propriedade grid-auto-ro
   }
   .btn-float-add {
     position: fixed;
-    bottom: 16px;
+    bottom: 80px;
     right: 16px;
     width: 48px;
     height: 48px;

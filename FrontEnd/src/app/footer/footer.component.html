@@ -1,14 +1,17 @@
 <ng-container *ngIf="isLoggedIn">
   <mat-toolbar class="footer mat-elevation-z8">
     <div class="tituloh2u">h2u Agenda</div>
-    <div class="footer-menu">
-      <button mat-icon-button class="mat-icon-button__icon" routerLink="/agenda" routerLinkActive="active" matTooltip="Agenda">
+    <div class="footer-menu" >
+      <button mat-icon-button class="mat-icon-button__icon" style="display: flex; align-items: center !important; justify-content: center !important;"
+              routerLink="/agenda" routerLinkActive="active" matTooltip="Agenda">
         <mat-icon>calendar_month</mat-icon>
       </button>
-      <button mat-icon-button class="mat-icon-button__icon" routerLink="/financeiro" routerLinkActive="active" matTooltip="Financeiro">
+      <button mat-icon-button class="mat-icon-button__icon" style="display: flex; align-items: center !important; justify-content: center !important;"
+              routerLink="/financeiro" routerLinkActive="active" matTooltip="Financeiro">
         <mat-icon>attach_money</mat-icon>
       </button>
-      <button mat-icon-button class="mat-icon-button__icon" [matMenuTriggerFor]="menu" routerLinkActive="active" matTooltip="Mais">
+      <button mat-icon-button class="mat-icon-button__icon" style="display: flex; align-items: center !important; justify-content: center !important;"
+              [matMenuTriggerFor]="menu" routerLinkActive="active" matTooltip="Mais">
         <mat-icon>menu</mat-icon>
       </button>
       <mat-menu #menu="matMenu">
@@ -17,10 +20,11 @@
         <button mat-menu-item>Equipamentos</button>
         <button mat-menu-item>Rodízio</button>
       </mat-menu>
-      <button mat-icon-button class="mat-icon-button__icon" routerLink="/configuracoes" routerLinkActive="active" matTooltip="Configurações">
+      <button mat-icon-button class="mat-icon-button__icon" style="display: flex; align-items: center !important; justify-content: center !important;"
+               routerLink="/configuracoes" routerLinkActive="active" matTooltip="Configurações">
         <mat-icon>settings</mat-icon>
       </button>
-      <button mat-icon-button class="mat-icon-button__icon" (click)="logout()" matTooltip="Sair">
+      <button mat-icon-button class="mat-icon-button__icon" style="display: flex; align-items: center !important; justify-content: center !important;" (click)="logout()" matTooltip="Sair">
         <mat-icon>logout</mat-icon>
       </button>
     </div>

@@ -84,6 +84,7 @@ export class LocalFormComponent implements OnInit {
 
       console.log('updated:', updated);
       this.dialogRef.close(updated);
+
     }
   }
   

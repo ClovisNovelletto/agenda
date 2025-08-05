@@ -1,7 +1,7 @@
 
 <form [formGroup]="form">
   <mat-dialog-content>
-    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px; width: 95%;">
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 95%;">
       <mat-label>Título</mat-label>
       <input matInput formControlName="titulo" required />
       <mat-error *ngIf="form.get('titulo')?.hasError('required') && form.get('titulo')?.touched">
@@ -9,7 +9,7 @@
       </mat-error>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
       <mat-label>Data</mat-label>
       <input matInput
             [matDatepicker]="picker"
@@ -23,7 +23,7 @@
       </mat-error>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
       <mat-label>Hora</mat-label>
       <mat-select formControlName="hour" required>
         <mat-option *ngFor="let h of horasPossiveis" [value]="h">{{ h }}</mat-option>
@@ -34,7 +34,7 @@
       </mat-error>
     </mat-form-field>  
 
-    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px; width: 95%;">
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 95%;">
       <mat-label>Aluno</mat-label>
       <input type="text" matInput [formControl]="alunoCtrl" [matAutocomplete]="autoAluno" required>
       <mat-autocomplete #autoAluno="matAutocomplete" (optionSelected)="onAlunoSelected($event.option.value)">
@@ -54,7 +54,7 @@
       + Adicionar novo aluno
     </button>
 
-    <mat-form-field appearance="outline" style="margin-left: 3px; margin-bottom: 5px; width: 80%;" class="w-full">
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 95%;" class="w-full">
       <mat-label>Local</mat-label>
       <input type="text" matInput [formControl]="localCtrl" [matAutocomplete]="autoLocal" required>
       <mat-autocomplete #autoLocal="matAutocomplete" (optionSelected)="onLocalSelected($event.option.value)">

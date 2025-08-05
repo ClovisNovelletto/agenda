@@ -24,7 +24,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { AuthService } from '..//auth.service';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
-
+import { App } from '@capacitor/app';
 
 @Component({
   selector: 'app-footer',
@@ -46,12 +46,24 @@ export class FooterComponent {
     });
   }
 
+  isMobile(): boolean {
+    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  }
+
   logout() {
+    if (this.isMobile()) {
+      App.exitApp();
+    } else {
+      alert('Feche a aba manualmente para sair do sistema.');      
+    }
+    //manter logado e apenas fechar o app
+    /*
     this.authService.logout();
     localStorage.removeItem('token'); // Remove o token
     localStorage.removeItem('jwt-token');
     this.router.navigate(['/login']); // Redireciona para o login
     this.authService.logout(); // Chama o logout do AuthService
+    */
   }
 
   onTabChange(event: any): void {
