@@ -158,7 +158,7 @@ app.post('/api/login', async (req, res) => {
         }
 
         // Gera o token JWT com informações do usuário
-        const token = jwt.sign({ email, tipo, personalId, alunoId  }, SECRET_KEY, { expiresIn: '1h' });
+        const token = jwt.sign({ email, tipo, personalId, alunoId  }, SECRET_KEY, { expiresIn: '180d' });
         res.json({ token, message: 'Login bem-sucedido!' });
 
       } else {
@@ -766,6 +766,13 @@ app.post('/api/agendaGerar', authenticateToken, async (req, res) => {
   console.error('personalId:', personalId);
   console.error('data_inicio:', data_inicio);
   console.error('data_fim:', data_fim);
+  try {
+    await sql`DELETE FROM Agendas WHERE AgPersonalID=${personalId} AND AgData>=${data_inicio} AND AgData<=${data_fim} AND AgStatus IN(1,3); /*Pedente ou Cancelado*/`;
+  } catch (err) {
+    console.error('Erro ao apagar agenda do mês:', err);
+    res.status(500).json({ error: 'Erro ao apagar agenda' });
+  }
+
   try {
     const agenda = await sql`
     INSERT INTO Agendas(Agenda, AgPersonalID, AgAlunoID, AgLocalID, AgData, AgStatus) --ON CONFLICT DO NOTHING
