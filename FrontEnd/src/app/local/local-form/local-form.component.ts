@@ -36,7 +36,8 @@ import { startWith } from 'rxjs/operators';
   imports: [MatInputModule, MatNativeDateModule, MatSlideToggleModule, CommonModule, MatCheckboxModule,
             ReactiveFormsModule, MatFormFieldModule, MatInputModule,  MatSlideToggleModule, MatOptionModule, MatSelectModule,
             MatButtonModule, MatDialogModule, MatIconModule, MatToolbarModule, MatDatepickerModule, MatFormField, MatAutocompleteModule], // Adicione o RouterModule aqui]
-  templateUrl: './local-form.component.html'
+  templateUrl: './local-form.component.html',
+  styleUrls: ['./local-form.component.css'],
 })
 export class LocalFormComponent implements OnInit {
   form!: FormGroup;

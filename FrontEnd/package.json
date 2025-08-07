@@ -27,6 +27,7 @@
     "@capacitor/cli": "^7.4.2",
     "@capacitor/core": "^7.4.2",
     "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "jwt-decode": "^3.1.2",
     "material-design-icons": "^3.0.1",

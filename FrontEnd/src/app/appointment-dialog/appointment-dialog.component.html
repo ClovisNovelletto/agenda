@@ -9,20 +9,20 @@
       </mat-error>
     </mat-form-field>
 
+   
     <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
       <mat-label>Data</mat-label>
-      <input matInput
-            [matDatepicker]="picker"
-            formControlName="data"
-            required>
+
+      <input matInput [matDatepicker]="picker" formControlName="dataCompr" [readonly]="true">
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
-
-      <mat-error *ngIf="form.get('data')?.hasError('required') && form.get('data')?.touched">
+  
+      <mat-error *ngIf="form.get('dataCompr')?.hasError('required') && form.get('dataCompr')?.touched">
         Campo obrigatório
       </mat-error>
-    </mat-form-field>
 
+    </mat-form-field>
+  
     <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
       <mat-label>Hora</mat-label>
       <mat-select formControlName="hour" required>
@@ -72,7 +72,7 @@
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-button (click)="cancel()">Cancelar</button>
-      <button mat-raised-button color="primary" (click)="save()" [disabled]="form.invalid">Salvar</button>
+      <button mat-button class="btn-salvar" (click)="cancel()">Cancelar</button>
+      <button mat-raised-button class="btn-salvar" color="primary" (click)="save()" [disabled]="form.invalid">Salvar</button>
   </mat-dialog-actions>
 </form>

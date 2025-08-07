@@ -1,17 +1,24 @@
 <div class="week-navigation">
-  <button mat-raised-button class="texto_semana" (click)="previousWeek()">← Sem Ant</button>
+  <button mat-raised-button class="btn-salvar" (click)="previousWeek()">
+    <mat-icon>arrow_back</mat-icon>Anterior
+  </button>
   <!--<span class="week-label">{{ week[0] | date:'dd/MM/yyyy' }} - {{ week[6] | date:'dd/MM/yyyy' }}</span>-->
-  
+<!--  
   <span class="week-label">
     {{ week[0] | date:'dd/MM/yyyy' }} - {{ week[week.length - 1] | date:'dd/MM/yyyy' }}
   </span>
-
+-->
   <!-- botão para abrir o seletor -->
-  <button mat-raised-button class="texto_semana" (click)="abrirDialogoGerarAgenda()">
+  <button mat-raised-button class="btn-salvar" (click)="abrirDialogoGerarAgenda()">
     Gerar Agenda
   </button>
 
-  <button mat-raised-button class="texto_semana" (click)="nextWeek()">Sem Próx →</button>
+  <button mat-raised-button class="btn-salvar" (click)="nextWeek()">
+    <div style="display: flex; align-items: center; gap: 6px;">
+    Próxima<mat-icon>arrow_forward</mat-icon>
+    </div>
+  </button>
+
 </div>
 
 
@@ -37,16 +44,7 @@
       <!-- Corpo -->
       <ng-container *ngFor="let hour of hours; trackBy: trackByHour">
         <ng-container *ngFor="let minute of minutes; let i = index; trackBy: trackByMinute">
-          <!-- Coluna da hora -->
-           <!--
-          <div class="hour-cell">
-            {{ hour }}<span *ngIf="minute > 0">:{{ minute | number: '2.0' }}</span>
-          </div>-->
-        <!--  
-          <div *ngIf="i === 0" class="hour-cell" [attr.style]="'grid-row: span 6;'">
-            {{ hour }}
-          </div>
-        -->
+
           <div *ngIf="i === 0" class="hour-cell" [style.grid-row]="'span ' + minutes.length">
             {{ hour }}
           </div>
@@ -63,31 +61,39 @@
             <div cdkDropList
                 [cdkDropListData]="getDropListData(day, hour, minute)"
                 class="appointment-dropzone"
-                (cdkDropListDropped)="onDrop($event)">
+                (cdkDropListDropped)="onDrop($event)"
+                [cdkDropListSortingDisabled]="true">
               <!--<div *ngFor="let appt of getAppointments(day, hour, minute); trackBy: trackByAppt"-->
               <!--<div *ngFor="let appt of (appointments$ | async) | appointmentsFiltradosPor(day, hour, minute); trackBy: trackByAppt"-->
+
               <ng-container *ngIf="appointments$ | async as appointments">
-                <div *ngFor="let appt of (appointments | appointmentsFiltradosPor: day : hour : minute); trackBy: trackByAppt"
-                  cdkDrag
-                  [cdkDragStartDelay]="{ touch: 300, mouse: 0 }"
-                  (cdkDragStarted)="isDragging = true"
-                  (cdkDragEnded)="isDragging = false"
-                  [cdkDragData]="{ appointment: appt, fromDay: day, fromHour: hour, fromMinute: minute }"
-                  class="appointment" [style.backgroundColor]="getStatusCor(appt.statusId)"
-                  (click)="abrirMenuStatus(appt, day, hour, minute); $event.stopPropagation()">
-                  
-                  <!--teste arrastar compromisso-->
-                  <ng-template cdkDragPreview>
-                    <div class="drag-preview">
-                      <strong>{{ appt.aluno }}</strong><br />
-                      <strong>{{ appt.local }}</strong>
-                    </div>
-                  </ng-template>
-                  <ng-template cdkDragPlaceholder>
-                    <div class="invisible-placeholder"></div>
-                  </ng-template>
-                  <strong>{{ appt.aluno }} </strong><br />
-                  <strong>{{ appt.local }} </strong><br />
+                <div *ngFor="let appt of (appointments | appointmentsFiltradosPor: day : hour : minute); trackBy: trackByAppt">
+                  <div
+                    cdkDrag
+                    [cdkDragStartDelay]="{ touch: 300, mouse: 0 }"
+                    (cdkDragStarted)="draggedAppointment = appt"
+                    (cdkDragEnded)="draggedAppointment = null"
+                    [cdkDragData]="{ appointment: appt, fromDay: day, fromHour: hour, fromMinute: minute }"
+                    class="appointment"
+                    [style.backgroundColor]="getStatusCor(appt.statusId)"
+                    (click)="abrirMenuStatus(appt, day, hour, minute); $event.stopPropagation()">
+
+                    <!-- Preview que aparece durante o drag -->
+                    <ng-template cdkDragPreview>
+                      <div class="drag-preview">
+                        <strong>{{ appt.aluno }}</strong><br />
+                        <strong>{{ appt.local }}</strong>
+                      </div>
+                    </ng-template>
+
+                    <!-- Placeholder que substitui o item no lugar de origem -->
+                    <ng-template cdkDragPlaceholder>
+                      <div class="appointment-placeholder"></div>
+                    </ng-template>
+
+                    <strong>{{ appt.aluno }} </strong><br />
+                    <strong>{{ appt.local }} </strong><br />
+                  </div>
                 </div>
               </ng-container>
             </div>

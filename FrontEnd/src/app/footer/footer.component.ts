@@ -25,6 +25,7 @@ import { AuthService } from '..//auth.service';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { App } from '@capacitor/app';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-footer',
@@ -35,7 +36,7 @@ import { App } from '@capacitor/app';
 export class FooterComponent {
   isLoggedIn: boolean = false; // Inicialmente o usuário não está logado
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router, private snackBar: MatSnackBar) {}
 
   ngOnInit() {
     // Subscribing ao estado de login
@@ -54,7 +55,8 @@ export class FooterComponent {
     if (this.isMobile()) {
       App.exitApp();
     } else {
-      alert('Feche a aba manualmente para sair do sistema.');      
+      this.snackBar.open('Feche a aba manualmente para sair do sistema!', 'Fechar', { duration: 3000 });
+      //alert('Feche a aba manualmente para sair do sistema.');      
     }
     //manter logado e apenas fechar o app
     /*

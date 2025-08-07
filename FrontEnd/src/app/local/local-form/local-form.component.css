@@ -1,3 +1,25 @@
+.btn-salvarxxx {
+  display: block;
+  /*width: 98%;*/
+  /*padding: 0.75rem;*/
+  /*font: robolt;*/
+  font-size: 0.8rem;
+  background-color: #4d494d;
+  color: rgb(226, 155, 226);
+  border: none;
+  border-radius: 18px;
+  cursor: pointer;
+  /*font-weight: bold;*/
+  transition: background-color 0.5s ease;
+  overflow: hidden;
+}
+
+.btn-salvarxxx:hover {
+  background-color: #6d5266;
+  border-radius: 18px;
+  transition: background-color 0.2s ease;
+}
+
 .local-lista-container {
   display: flex;
   flex-direction: column;
@@ -56,15 +78,4 @@
   width: 80%;
   margin-bottom: 5px;
   margin-left: 3px;
-}
-
-buttonxxx {
-  padding: 0.7rem 1.2rem;
-  background-color: #007BFF;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
 }

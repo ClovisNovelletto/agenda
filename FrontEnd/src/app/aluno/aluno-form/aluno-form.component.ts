@@ -39,7 +39,8 @@ import { startWith } from 'rxjs/operators';
   imports: [MatInputModule, MatNativeDateModule, MatSlideToggleModule, CommonModule, MatCheckboxModule,
             ReactiveFormsModule, MatFormFieldModule, MatInputModule,  MatSlideToggleModule, MatOptionModule, MatSelectModule,
             MatButtonModule, MatDialogModule, MatIconModule, MatToolbarModule, MatDatepickerModule, MatFormField, MatAutocompleteModule], // Adicione o RouterModule aqui]
-  templateUrl: './aluno-form.component.html'
+  templateUrl: './aluno-form.component.html',
+  styleUrls: ['./aluno-form.component.css'],
 })
 export class AlunoFormComponent implements OnInit {
   form!: FormGroup;
@@ -151,6 +152,7 @@ export class AlunoFormComponent implements OnInit {
       const localSelecionado = this.locals?.find(l => l.id === this.data.aluno.localId);
       console.log("localSelecionado:", localSelecionado);
 
+      console.log("this.data.aluno.datanasc:", this.data.aluno.datanasc);
       if (this.data?.aluno) {
         this.form.patchValue({
           nome: this.data.aluno.nome,

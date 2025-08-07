@@ -30,8 +30,8 @@ import { MatButtonModule } from '@angular/material/button';
       </mat-form-field>
 
       <div class="flex justify-end mt-4">
-        <button mat-button (click)="cancelar()">Cancelar</button>
-        <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">Salvar</button>
+        <button mat-button class="btn-salvar" (click)="cancelar()">Cancelar</button>
+        <button mat-flat-button class="btn-salvar" type="submit" [disabled]="form.invalid">Salvar</button>
       </div>
     </form>
   `,

@@ -97,7 +97,7 @@ ajuste na altura das linhas, aumentado de 10 para 30 na propriedade grid-auto-ro
   color: white;
   font-size: 24px;
   border: none;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 1px  rgba(221, 219, 219, 0.719);
   z-index: 1000;
 }
 
@@ -142,11 +142,28 @@ ajuste na altura das linhas, aumentado de 10 para 30 na propriedade grid-auto-ro
   font-weight: bold;
   font-size: 14px;
 }
-
+/*
+background-color: #5a475f73 !important;
+color: rgb(226, 155, 226) !important;
+*/
   .texto_semana {
-    color: "primary";
     font-size: 14px;
-  } 
+    display: block;
+    background-color: #5a475f73 !important;
+    color: rgb(226, 155, 226) !important;
+    border: none;
+    border-radius: 18px;
+    cursor: pointer;
+    /*font-weight: bold;*/
+    transition: background-color 0.5s ease;
+    overflow: hidden;
+  }
+
+  .texto_semana:hover {
+    background-color: #6d5266 !important;
+    border-radius: 18px;
+    transition: background-color 0.2s ease;
+  }
 
 /* Responsivo */
 @media (max-width: 768px) {
@@ -174,10 +191,30 @@ ajuste na altura das linhas, aumentado de 10 para 30 na propriedade grid-auto-ro
   }
 
   .texto_semana {
-    font-size: 10px;
-  } 
+    display: block;
+    /*width: 98%;*/
+    /*padding: 0.75rem;*/
+    /*font: robolt;*/
+    font-size: 1rem;
+        background-color: #5a475f73 !important;
+    color: rgb(226, 155, 226) !important;
+/*    background-color: #4d494d !important;
+    color: rgb(226, 155, 226) !important;*/
+    border: none;
+    border-radius: 18px;
+    cursor: pointer;
+    /*font-weight: bold;*/
+    transition: background-color 0.5s ease;
+    overflow: hidden;
+  }
 
-  .appointment {
+  .texto_semana:hover {
+    background-color: #6d5266 !important;
+    border-radius: 18px;
+    transition: background-color 0.2s ease;
+  }
+
+ .appointment {
     font-size: 10px;
     padding: 2px 4px;
   }
@@ -204,7 +241,7 @@ ajuste na altura das linhas, aumentado de 10 para 30 na propriedade grid-auto-ro
     color: white;
     font-size: 24px;
     border: none;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 1px 1px  rgba(221, 219, 219, 0.719);
     z-index: 1000;
   }
 }
@@ -212,14 +249,6 @@ ajuste na altura das linhas, aumentado de 10 para 30 na propriedade grid-auto-ro
 .invisible-placeholder {
   visibility: hidden;
   height: 100%;
-  /*
-  display: block;
-  height: 0;
-  width: 0;
-  overflow: hidden;
-  visibility: hidden;
-  font-size: 0;
-  line-height: 0;*/
 }
 
 .evento {
@@ -237,8 +266,26 @@ ajuste na altura das linhas, aumentado de 10 para 30 na propriedade grid-auto-ro
   width: 01;
 }
 
+.appointment-placeholderxxx {
+  /*display: none; */
+  height: 45px;
+  width: 100%;
+  border: 2px dashed #ccc;
+  border-radius: 4px;
+  margin-top: 4px;
+}
+
 .appointment-placeholder {
-  display: none; /* ou min-height: 0 */
+  height: 100%;
+  width: 100%;
+  background: rgba(0,0,0,0.05);
+  border: 1px dashed #ccc;
+  border-radius: 4px;
+}
+
+.invisible {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .appointment.dragging {
@@ -248,6 +295,8 @@ ajuste na altura das linhas, aumentado de 10 para 30 na propriedade grid-auto-ro
 }
 
 .drag-preview {
+  /*height: 45px;
+  width: 65px;*/
   padding: 6px;
   background-color: rgba(0, 123, 255, 0.85);
   color: white;

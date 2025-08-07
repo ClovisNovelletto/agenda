@@ -44,6 +44,7 @@ import { BehaviorSubject } from 'rxjs';
 import { AppointmentsFiltradosPorPipe } from '../pipes/appointments-filtrados-por.pipe';
 import { ChangeDetectorRef } from '@angular/core';
 import { Pipe, PipeTransform } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -69,6 +70,7 @@ dayjs.extend(timezone);
     MatOptionModule,
     MatSelectModule,
     AppointmentsFiltradosPorPipe,
+    MatIconModule,
   //  Configuracoes,
   ],
   providers: [MatDatepickerModule]
@@ -94,6 +96,7 @@ export class AgendaComponent implements OnInit, AfterViewInit {
   minutes: number[]=[];
   hoveredCell: string | null = null;
   isDragging = false;
+  draggedAppointment: any = null
   carregamentosFeitos: { dataInicio: Date, dataFim: Date }[] = [];
   
   mostrarSeletorMes = false;
@@ -111,7 +114,7 @@ export class AgendaComponent implements OnInit, AfterViewInit {
     intervaloMinutos: 10
     
   };
-
+  
   //appointments: { date: string; hour: string; titulo: string }[] = [];
 
   selectedDay: Date | null = null;
@@ -338,6 +341,8 @@ export class AgendaComponent implements OnInit, AfterViewInit {
     const fimSemana = this.week[this.week.length - 1];
 
     if (!this.periodoJaCarregado(inicioSemana, fimSemana)) {
+      console.log('vai chamar carregamento ini', inicioSemana);
+      console.log('vai chamar carregamento fim', fimSemana);
       //this.appointments$.next(this.appointments$.value);
       this.carregarAgendaPeriodo(inicioSemana, fimSemana);
     }
@@ -441,7 +446,7 @@ export class AgendaComponent implements OnInit, AfterViewInit {
         const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
         console.log('entrou salvarCompromisso!');
 
-    console.log('comp', comp);
+    //console.log('comp', comp);
 
       // Cria um objeto Date com a data que já está no formato correto
       //const dataCompleta = new Date(comp.date);
@@ -460,7 +465,7 @@ export class AgendaComponent implements OnInit, AfterViewInit {
     };
 
     console.log('Compromisso dados enviados!');
-    console.log(compromisso);
+    //console.log(compromisso);
 
     if (comp.agenda_id) {
       /*this.http.put('/api/agendas', compromisso, { headers }).subscribe({*/
@@ -468,6 +473,24 @@ export class AgendaComponent implements OnInit, AfterViewInit {
         next: () => {
           console.log('Compromisso atualizado com sucesso!');
           // Aqui você pode recarregar a agenda ou dar feedback ao usuário
+          // Atualiza localmente:
+          
+          // Atualiza tela sem carregar dados
+          const atual = this.appointments$.getValue();
+          const idx = atual.findIndex(a => a.agenda_id === comp.agenda_id);
+          if (idx !== -1) {
+            atual[idx] = {
+              ...atual[idx],
+              date: comp.date, 
+              start: comp.date, 
+              alunoId: comp.alunoId,
+              localId: comp.localId,
+              titulo: comp.titulo,
+              statusId: comp.statusId
+            };
+            this.appointments$.next([...atual]);
+          }
+
           this.loadAppointments();
         },
         error: (err) => {
@@ -605,18 +628,15 @@ export class AgendaComponent implements OnInit, AfterViewInit {
   
   onDrop(event: CdkDragDrop<any>) {
 
-  const appt = event.item.data.appointment;
-  //const toDay = new Date(event.container.data.day); // já é uma Date
-  const toDay = dayjs.utc(event.container.data.day).tz('America/Sao_Paulo').toDate();
-  const hour = event.container.data.hour;
-  const minute = event.container.data.minute;
+    const appt = event.item.data.appointment;
+    const toDay = dayjs.utc(event.container.data.day).tz('America/Sao_Paulo').toDate();
+    const hour = event.container.data.hour;
+    const minute = event.container.data.minute;
 
-  //const fromDate = new Date(event.item.data.appointment.start); // ou .date
-  const fromDate = dayjs.utc(event.item.data.appointment.start).tz('America/Sao_Paulo').toDate();
-  const toDate = buildDateWithTime(toDay, event.container.data.hour, event.container.data.minute);
-  console.log("From:", fromDate, "|", fromDate.getTime());
-  console.log("To:", toDate, "|", toDate.getTime());
-
+    const fromDate = dayjs.utc(event.item.data.appointment.start).tz('America/Sao_Paulo').toDate();
+    const toDate = buildDateWithTime(toDay, event.container.data.hour, event.container.data.minute);
+    console.log("From:", fromDate, "|", fromDate.getTime());
+    console.log("To:", toDate, "|", toDate.getTime());
 
     const sameDay = fromDate.toDateString() === toDate.toDateString();
     const sameTime = fromDate.getHours() === toDate.getHours() && fromDate.getMinutes() === toDate.getMinutes();
@@ -626,25 +646,16 @@ export class AgendaComponent implements OnInit, AfterViewInit {
       return;
     }
 
-
-    // Atualiza o compromisso com nova data e hora
-    //appointment.date = toDate;
-    //appointment.hour = this.formatHour(toDate); // ex: '08:30'
-
-        const updated = {
-          agenda_id: appt.agenda_id,
-          alunoId: appt.alunoId,
-          localId: appt.localId,
-          date: toDate,
-          titulo: appt.titulo,
-          statusId: appt.statusId ?? 1,
-          //alunos: this.alunos,     // 👈 passa a lista
-          //locals: this.locals,
-          /*personalId: result.personalId*/
-        };
-        console.log('appt y:', appt );
-        console.log('updated y:', updated );
-        this.salvarCompromisso(updated); // mesma função que salva novo ou atualiza      console.log('updated:', updated );
+    const updated = {
+      agenda_id: appt.agenda_id,
+      alunoId: appt.alunoId,
+      localId: appt.localId,
+      date: toDate,
+      titulo: appt.titulo,
+      statusId: appt.statusId ?? 1,
+    };
+    //console.log('appt y:', appt );
+    //console.log('updated y:', updated );
 
     this.salvarCompromisso(updated);
   }
@@ -738,6 +749,8 @@ export class AgendaComponent implements OnInit, AfterViewInit {
     this.http.post(`${environment.apiUrl}/agendaGerar`, payload, { headers }).subscribe({
       next: () => {
         this.snackBar.open('Agenda gerada com sucesso!', 'Fechar', { duration: 3000 });
+        this.appointments$.next([]);
+        //this.appointments$ = new BehaviorSubject<Appointment[]>([]);
         this.loadAppointments(); // ⬅️ recarrega os dados após sucesso
       },
       error: err => {
@@ -798,6 +811,7 @@ export class AgendaComponent implements OnInit, AfterViewInit {
   periodoJaCarregado(inicio: Date, fim: Date): boolean {
     //console.log("inicio: ", inicio);
     //console.log("fim: ", fim);
+    //console.log("this.carregamentosFeitos", this.carregamentosFeitos);
     //console.log(" this.carregamentosFeitos.some(p => inicio >= p.dataInicio && fim <= p.dataFim): ", this.carregamentosFeitos.some(p => inicio >= p.dataInicio && fim <= p.dataFim));
     return this.carregamentosFeitos.some(p => inicio >= p.dataInicio && fim <= p.dataFim);
   }
@@ -840,7 +854,7 @@ export class AgendaComponent implements OnInit, AfterViewInit {
       //  ...novos
       //]);
       
-      //this.carregamentosFeitos.push({ dataInicio: inicio, dataFim: fim });
+      this.carregamentosFeitos.push({ dataInicio: inicio, dataFim: fim });
       const jaCarregado = this.carregamentosFeitos.some(p =>
         dayjs(inicio).isSame(p.dataInicio, 'day') &&
         dayjs(fim).isSame(p.dataFim, 'day')
@@ -852,6 +866,16 @@ export class AgendaComponent implements OnInit, AfterViewInit {
       this.cd.markForCheck();
       //console.log("this.carregamentosFeitos: ", this.carregamentosFeitos);
     });
+  }
+
+  onDragStarted(appt: any) {
+  this.draggedAppointment = appt;
+  this.isDragging = true;
+  }
+
+  onDragEnded() {
+    this.draggedAppointment = null;
+    this.isDragging = false;
   }
 }
 

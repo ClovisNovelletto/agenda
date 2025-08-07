@@ -23,7 +23,9 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { ChangeDetectorRef } from '@angular/core';
 
-   
+import { parse } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+
 @Component({
   standalone: true,
   selector: 'app-appointment-dialog',
@@ -77,7 +79,7 @@ export class AppointmentDialogComponent {
   intervalo: number = 10; // valor padrão
   horaInicio: number = 6; // valor padrão
   horaFim: number = 22; // valor padrão
-
+  /* any =null;*/
   constructor(
     public dialogRef: MatDialogRef<AppointmentDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any, 
@@ -98,6 +100,8 @@ export class AppointmentDialogComponent {
   }
 
   ngOnInit() {
+    /*datateste = new Date();*/
+    /*datateste = now();*/
     console.log('this.data:', this.data);
     this.atualizouAlunos = false;
     this.atualizouLocals = false;
@@ -105,18 +109,57 @@ export class AppointmentDialogComponent {
     console.log('this.data.intervalo', this.data.intervalo);
     this.horasPossiveis = this.gerarHorasPossiveis(this.horaInicio, this.horaFim, this.intervalo);
     this.form = this.fb.group({
-      data: [null, Validators.required],
+      dataCompr: [null, Validators.required],
       hour: ['', Validators.required],
       titulo: ['', Validators.required],
       descricao: [''],
       alunoId: ['', Validators.required],
       localId: ['', Validators.required],
+      datateste: [null],
     });
 
+    /* Tratamento para não mudar 08/05/2025 para 05/08/2025
+    Isso escuta apenas o campo "data" do seu FormGroup.
+    Se o valor for uma string com /, ele tenta montar uma data no formato dd/MM/yyyy.
+    Se for válida, ele substitui o valor do campo pelo Date corretamente interpretado.
+    */
+    /*this.form.get('dataCompr')?.valueChanges.subscribe(value => {
+      if (typeof value === 'string' && value.includes('/')) {
+        const data = parse(value, 'dd/MM/yyyy', new Date(), { locale: ptBR });
+        if (!isNaN(data.getTime())) {
+          console.log('Corrigido com date-fns:', data);
+          this.form.get('dataCompr')?.setValue(data, { emitEvent: false });
+        }
+      }
+    });*/
+    /*
+    this.form.get('data')?.valueChanges.subscribe(value => {
+      console.log('teste this.data:', this.data);
+      console.log('value:', value);
+      if (typeof value === 'string' && value.includes('/')) {
+        const partes = value.split('/');
+        if (partes.length === 3) {
+          const dia = parseInt(partes[0], 10);
+          const mes = parseInt(partes[1], 10) - 1;
+          const ano = parseInt(partes[2], 10);
+          const data = new Date(ano, mes, dia);
+
+          if (!isNaN(data.getTime())) {
+            this.form.get('data')?.setValue(data, { emitEvent: false });
+          }
+        }
+      }
+    });*/
+
+    console.log('this.data.date.toISOString():', this.data.date.toISOString());
     this.form.patchValue({
-      data: this.data.date || null,
+      /*dataCompr: this.data.date || null,*/
+        dataCompr: this.data.date
+          ? new Date(this.data.date instanceof Date ? this.data.date.toISOString() : this.data.date)
+          : null,
       hour: this.formatarHora(this.data.date),
     });
+
     this.cdr.detectChanges();
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
@@ -126,14 +169,17 @@ export class AppointmentDialogComponent {
 
       const alunoSelecionado = this.alunos?.find(a => a.id === comp.alunoId);
       const localSelecionado = this.locals?.find(l => l.id === comp.localId);
-
+    console.log('comp.date.toISOString():', comp.date.toISOString());
       this.form.patchValue({
         titulo: comp.titulo,
         descricao: comp.descricao, // se existir no form
         alunoId: alunoSelecionado?.id || null,
         localId: localSelecionado?.id || null,
-        data: comp.date ? new Date(comp.date) : null,
+        dataCompr: comp.date
+          ? new Date(comp.date instanceof Date ? comp.date.toISOString() : comp.date)
+          : null,
         hour: this.formatarHora(comp.date),
+        datateste: new Date(),
       });
 
       // Só para exibir no campo de autocomplete:
@@ -329,7 +375,7 @@ export class AppointmentDialogComponent {
 
       // Cria um objeto Date com a data que já está no formato correto
       //const dataCompleta = new Date(this.data.date);
-      const dataCompleta = new Date(this.form.value.data);
+      const dataCompleta = new Date(this.form.value.dataCompr);
 
       if (!this.form.value.hour) {
         console.error('Hora não preenchida');
