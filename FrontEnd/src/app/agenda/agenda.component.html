@@ -1,5 +1,5 @@
 <div class="week-navigation">
-  <button mat-raised-button class="btn-salvar" (click)="previousWeek()">
+  <button mat-raised-button class="btn-salvar" style="margin-left: 4px; margin-right: 3px;" (click)="previousWeek()">
     <mat-icon>arrow_back</mat-icon>Anterior
   </button>
   <!--<span class="week-label">{{ week[0] | date:'dd/MM/yyyy' }} - {{ week[6] | date:'dd/MM/yyyy' }}</span>-->
@@ -9,11 +9,11 @@
   </span>
 -->
   <!-- botão para abrir o seletor -->
-  <button mat-raised-button class="btn-salvar" (click)="abrirDialogoGerarAgenda()">
+  <button mat-raised-button class="btn-salvar" style="margin-left: 2px; margin-right: 3px;" (click)="abrirDialogoGerarAgenda()">
     Gerar Agenda
   </button>
 
-  <button mat-raised-button class="btn-salvar" (click)="nextWeek()">
+  <button mat-raised-button class="btn-salvar" style="margin-left: 2px; margin-right: 3px;" (click)="nextWeek()">
     <div style="display: flex; align-items: center; gap: 6px;">
     Próxima<mat-icon>arrow_forward</mat-icon>
     </div>

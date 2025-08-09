@@ -1,7 +1,3 @@
-/*
-ajuste na altura das linhas, aumentado de 10 para 30 na propriedade grid-auto-rows
-*/
-
 
 /* Wrapper geral da agenda */
 .agenda-wrapper {
@@ -18,7 +14,6 @@ ajuste na altura das linhas, aumentado de 10 para 30 na propriedade grid-auto-ro
   grid-auto-rows: minmax(30px, auto); 
   background-color: rgb(48, 10, 214); /* Corrige fundo da grid */
   gap: 0px;
-  /*grid-template-rows: repeat(12, 40px);*/  /* 12 horários, cada linha com 40px */
 }
 
 /*lateral*/
@@ -31,7 +26,6 @@ ajuste na altura das linhas, aumentado de 10 para 30 na propriedade grid-auto-ro
 .hour-cell {
   font-size: 14px;
   border-bottom: 1px solid #ddd;
-  /*height: 60px;*/ /* ou mesmo valor das outras linhas */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -53,9 +47,7 @@ ajuste na altura das linhas, aumentado de 10 para 30 na propriedade grid-auto-ro
   min-height: 10px; 
   position: relative;
   padding: 2px;
-  /*border: 0.5px solid #ccc;*/
   box-shadow: inset 0 0 0 0.5px #ccc;
-  /*border: 1px solid rgba(0, 0, 0, 0.1);*/
   background: #fff;
   text-align: center;
  }
@@ -133,8 +125,8 @@ ajuste na altura das linhas, aumentado de 10 para 30 na propriedade grid-auto-ro
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 0.80rem;
-  margin-bottom: 0.80rem;
+  margin-top: 0.30rem;
+  margin-bottom: 0.30rem;
   /*height: 10px;*/ /*agora*/
 }
 
@@ -142,28 +134,6 @@ ajuste na altura das linhas, aumentado de 10 para 30 na propriedade grid-auto-ro
   font-weight: bold;
   font-size: 14px;
 }
-/*
-background-color: #5a475f73 !important;
-color: rgb(226, 155, 226) !important;
-*/
-  .texto_semana {
-    font-size: 14px;
-    display: block;
-    background-color: #5a475f73 !important;
-    color: rgb(226, 155, 226) !important;
-    border: none;
-    border-radius: 18px;
-    cursor: pointer;
-    /*font-weight: bold;*/
-    transition: background-color 0.5s ease;
-    overflow: hidden;
-  }
-
-  .texto_semana:hover {
-    background-color: #6d5266 !important;
-    border-radius: 18px;
-    transition: background-color 0.2s ease;
-  }
 
 /* Responsivo */
 @media (max-width: 768px) {

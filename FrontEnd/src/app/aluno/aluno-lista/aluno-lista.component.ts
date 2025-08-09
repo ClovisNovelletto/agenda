@@ -50,8 +50,8 @@ export class AlunoListaComponent implements OnInit {
     console.log('aluno: ', aluno);
     const dialogRef = this.dialog.open(AlunoFormComponent, {
       data: {aluno},
-      width: isMobile ? '100vw' : '500px',
-      height: isMobile ? '100vh' : 'auto',
+      width: isMobile ? '90vw' : '500px',
+      height: isMobile ? '90vh' : 'auto',
       panelClass: isMobile ? 'full-screen-dialog' : ''
     });
 

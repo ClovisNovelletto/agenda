@@ -50,8 +50,8 @@ export class LocalListaComponent implements OnInit {
     console.log('local: ', local);
     const dialogRef = this.dialog.open(LocalFormComponent, {
       data: {local},
-      width: isMobile ? '100vw' : '500px',
-      height: isMobile ? '100vh' : 'auto',
+      width: isMobile ? '90vw' : '500px',
+      height: isMobile ? '90vh' : 'auto',
       panelClass: isMobile ? 'full-screen-dialog' : ''
     });
 
