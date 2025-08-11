@@ -721,6 +721,19 @@ export class AgendaComponent implements OnInit, AfterViewInit {
           next: () => {
             console.log('Compromisso atualizado com sucesso!');
             // Aqui você pode recarregar a agenda ou dar feedback ao usuário
+            //Atualizar status da tela sem carregar
+                      // Atualiza tela sem carregar dados
+            const atual = this.appointments$.getValue();
+            const idx = atual.findIndex(a => a.agenda_id === updated.agenda_id);
+            console.log('idx:', idx);
+            if (idx !== -1) {
+              atual[idx] = {
+                ...atual[idx],
+                statusId: updated.statusId
+              };
+              this.appointments$.next([...atual]);
+            }
+            //
             this.loadAppointments();
           },
           error: (err) => {

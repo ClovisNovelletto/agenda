@@ -86,10 +86,10 @@ export class AlunoFormComponent implements OnInit {
 
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-
+console.log('ON INIT:'); // agora sim!
     this.http.get<any[]>(`${environment.apiUrl}/locals`, { headers }).subscribe(data => {    
       this.locals = data;
-
+console.log('locals 1:', this.locals); // agora sim!
       this.localCtrl.valueChanges
         .pipe(
           startWith(''),
@@ -148,11 +148,10 @@ export class AlunoFormComponent implements OnInit {
       
       console.log("this.data?.aluno:", this.data?.aluno);
       
-
+      console.log("locals:", this.locals);
       const localSelecionado = this.locals?.find(l => l.id === this.data.aluno.localId);
       console.log("localSelecionado:", localSelecionado);
 
-      console.log("this.data.aluno.datanasc:", this.data.aluno.datanasc);
       if (this.data?.aluno) {
         this.form.patchValue({
           nome: this.data.aluno.nome,
