@@ -87,7 +87,7 @@ export class AlunoFormComponent implements OnInit {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
 console.log('ON INIT:'); // agora sim!
-    this.http.get<any[]>(`${environment.apiUrl}/locals`, { headers }).subscribe(data => {    
+/*    this.http.get<any[]>(`${environment.apiUrl}/locals`, { headers }).subscribe(data => {    
       this.locals = data;
 console.log('locals 1:', this.locals); // agora sim!
       this.localCtrl.valueChanges
@@ -105,8 +105,41 @@ console.log('locals 1:', this.locals); // agora sim!
         });
     });
 
+    */
     //const localSelecionado = this.locals?.find(l => l.id === comp.localId);
 
+      this.http.get<any[]>(`${environment.apiUrl}/locals`, { headers })
+        .subscribe(localsData => {
+        this.locals = localsData;
+        console.log('locals carregados:', this.locals);
+
+        // Aqui você já pode preencher o campo, porque os dados chegaram
+        if (this.data?.aluno?.localId) {
+          const localEncontrado = this.locals.find(l => l.id === this.data.aluno.localId);
+          if (localEncontrado) {
+            this.localCtrl.setValue(localEncontrado.nome);
+            this.localSelecionado = localEncontrado;
+          }
+        }
+
+        // Configuração do autocomplete
+        this.localCtrl.valueChanges
+          .pipe(
+            startWith(''),
+            map(value => value?.toLowerCase()),
+            map(nome => {
+              const filtrado = this.locals.filter(a =>
+                a.nome.toLowerCase().includes(nome)
+              );
+              this.localEncontrado = filtrado.length > 0;
+              return filtrado;
+            })
+          )
+          .subscribe(result => {
+            this.localsFiltrados = result;
+          });
+      });
+        
     this.loadPersonal().subscribe(config => {
       this.configAgenda = config;
       console.log('diasAtendimento:', this.configAgenda.diasAtendimento); // agora sim!
@@ -149,8 +182,8 @@ console.log('locals 1:', this.locals); // agora sim!
       console.log("this.data?.aluno:", this.data?.aluno);
       
       console.log("locals:", this.locals);
-      const localSelecionado = this.locals?.find(l => l.id === this.data.aluno.localId);
-      console.log("localSelecionado:", localSelecionado);
+      //const localSelecionado = this.locals?.find(l => l.id === this.data.aluno.localId);
+      console.log("this.localSelecionado:", this.localSelecionado);
 
       if (this.data?.aluno) {
         this.form.patchValue({
@@ -162,7 +195,7 @@ console.log('locals 1:', this.locals); // agora sim!
           datanasc: this.data.aluno.datanasc
             ? new Date(this.data.aluno.datanasc)
             : null,
-          localId: localSelecionado?.id /*this.data.aluno.localId*/
+          localId: this.localSelecionado?.id /*this.data.aluno.localId*/
         });
 
       
@@ -185,9 +218,9 @@ console.log('locals 1:', this.locals); // agora sim!
  
 
       /**/
-      this.localSelecionado = this.locals?.find(l => l.id ===  this.data.aluno.localId);
+      //this.localSelecionado = this.locals?.find(l => l.id ===  this.data.aluno.localId);
       if (this.localSelecionado) {
-        this.localCtrl.setValue(this.localSelecionado.nome);
+//        this.localCtrl.setValue(this.localSelecionado.nome);
         this.form.get('localId')?.setValue(this.localSelecionado.id);
       }
 
