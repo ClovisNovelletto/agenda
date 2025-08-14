@@ -36,12 +36,22 @@
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
 
-    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 25px; width: 80%;">
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
       <mat-label>Local</mat-label>
       <input type="text" matInput [formControl]="localCtrl" [matAutocomplete]="autoLocal" required>
       <mat-autocomplete #autoLocal="matAutocomplete" (optionSelected)="onLocalSelected($event.option.value)">
         <mat-option *ngFor="let local of localsFiltrados" [value]="local.nome">
           {{ local.nome }} — {{ local.endereco }}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 25px; width: 80%;">
+      <mat-label>Serviço</mat-label>
+      <input type="text" matInput [formControl]="servicoCtrl" [matAutocomplete]="autoServico" required>
+      <mat-autocomplete #autoServico="matAutocomplete" (optionSelected)="onServicoSelected($event.option.value)">
+        <mat-option *ngFor="let servico of servicosFiltrados" [value]="servico.nome">
+          {{ servico.nome }}
         </mat-option>
       </mat-autocomplete>
     </mat-form-field>

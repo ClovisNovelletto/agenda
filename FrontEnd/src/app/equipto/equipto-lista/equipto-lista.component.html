@@ -23,25 +23,22 @@
     </mat-menu>
     -->
     
-    <button mat-mini-fab style="display: flex; align-items: center !important; justify-content: center !important; background-color: #28a745;" (click)="novoAluno()" aria-label="Novo Aluno">
+    <button mat-mini-fab style="display: flex; align-items: center !important; justify-content: center !important; background-color: #28a745;" (click)="novoEquipto()" aria-label="Novo equipto">
       <mat-icon style="display: flex; align-items: center !important; justify-content: center !important;">add</mat-icon>
     </button>
   </div>
 
   <div class="lista-scroll">
-    <div class="aluno-item" *ngFor="let aluno of alunosFiltrados">
-      <div class="aluno-info">
-        <span class="nome">{{ aluno.nome }}</span>
-        <span class="telefone">{{ aluno.telefone }}</span>
-        <span class="aludias">{{ aluno.aludias }}</span>
-        <span class="local">{{ aluno.local }}</span>
-        <span class="local">{{ aluno.servico }}</span>
-        <span class="status" [class.ativo]="aluno.ativo" [class.inativo]="!aluno.ativo">
-          {{ aluno.ativo ? 'Ativo' : 'Inativo' }}
+    <div class="local-item" *ngFor="let equipto of equiptosFiltrados">
+      <div class="local-info">
+        <span class="nome">{{ equipto.nome }}</span>
+        <span class="ordem">{{ equipto.ordem }}</span>
+        <span class="status" [class.ativo]="equipto.ativo" [class.inativo]="!equipto.ativo">
+          {{ equipto.ativo ? 'Ativo' : 'Inativo' }}
         </span>
       </div>
 
-      <button mat-icon-button class="mat-icon-button__icon" color="primary" (click)="onEditar(aluno)">
+      <button mat-icon-button class="mat-icon-button__icon" color="primary" (click)="onEditar(equipto)">
         <mat-icon>edit</mat-icon>
       </button>
     </div>

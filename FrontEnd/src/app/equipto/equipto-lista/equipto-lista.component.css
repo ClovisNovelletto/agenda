@@ -1,0 +1,209 @@
+
+html, body {
+  height: 100%;
+  margin: 0;
+  box-sizing: border-box;
+  overflow: visible;
+  padding-bottom: env(safe-area-inset-bottom, 40px); 
+}
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+.local-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid #ddd;
+  overflow: visible;
+}
+
+.local-info {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  font-size: 14px;
+  overflow: visible;
+}
+
+.nome {
+  font-weight: 500;
+  font-weight: normal;
+}
+
+.telefone {
+  color: #f0ecec;
+  font-weight: normal;
+}
+
+.aludias {
+  color: #f0ecec;
+  font-weight: normal;
+}
+
+.local {
+  color: #f0ecec;
+  font-weight: normal;
+}
+
+.status {
+  font-weight: bold;
+}
+
+.status.ativo {
+  color: green;
+}
+
+.status.inativo {
+  color:#ff6b6b
+}
+
+
+/*tirar espaço logo abaixo dos campos de pesquisa e status - ativo/inativo*/
+::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+  overflow: visible;
+}
+
+/*novos filtros*/
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  overflow: visible;
+}
+
+.campo-pesquisa {
+  min-width: 150px;
+  flex: 1 1 auto;
+  overflow: visible;
+}
+
+.grupo-toggle {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 2px;
+  font-size: 10px;
+}
+
+mat-icon {
+  font-size: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+  line-height: 20px !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.mat-icon-button {
+  width: 24px !important;
+  height: 24px !important;
+  padding: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button.mat-mini-fab mat-icon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 auto;
+  font-size: 24px;
+}
+
+@media (max-width: 600px) {
+  .grupo-toggle {
+    font-size: 8px;
+    transform: scale(0.4);
+  }
+
+  .local-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 4px;
+    border-bottom: 1px solid #ddd;
+    overflow: visible;
+  }
+
+  .local-info {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+    font-size: 11px;
+  }
+
+  .nome {
+    font-weight: 500;
+  }
+}
+
+.mat-icon-button__icon {
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+
+/*rolagem*/
+.tela-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; 
+  /*border: 2px solid red;*/
+  overflow: visible;
+}
+
+.lista-scroll {
+  flex: 1;
+  overflow-y: auto;
+  /* padding: 8px;*/
+  min-height: 0; 
+  overflow: visible;
+}
+
+/*filtro*/
+/*filtro 3*/
+
+.filtros {
+  position: sticky;
+  top: 2px; /* abaixo da barra top */
+  /*top: 0;*/
+  background: #494646;
+  z-index: 10;
+  padding: 6px;
+  border-bottom: 1px solid #ccc;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+.filtros mat-form-field {
+  flex: 1 1 100px;
+  min-width: 90px;
+  overflow: visible;
+}
+
+mat-sidenav-container,
+main.conteudo {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: visible !important;;
+}
+
+.mat-drawer-content {
+  overflow: visible !important;
+}
+
+.mat-drawer-container {
+  overflow: visible !important;
+}
+

@@ -82,7 +82,9 @@
                     <ng-template cdkDragPreview>
                       <div class="drag-preview">
                         <strong>{{ appt.aluno }}</strong><br />
-                        <strong>{{ appt.local }}</strong>
+                        <ng-container *ngIf="configAgenda.mostrarLocal"> <strong> {{ appt.local }}</strong><br/> </ng-container>
+                        <ng-container *ngIf="configAgenda.mostrarServico"> <strong>{{ appt.servico }}</strong><br/> </ng-container>
+                        <ng-container *ngIf="configAgenda.mostrarEquipto"> <strong>{{ appt.equipto }}</strong><br/> </ng-container>
                       </div>
                     </ng-template>
 
@@ -92,7 +94,9 @@
                     </ng-template>
 
                     <strong>{{ appt.aluno }} </strong><br />
-                    <strong>{{ appt.local }} </strong><br />
+                    <ng-container *ngIf="configAgenda.mostrarLocal"> <strong> {{ appt.local }}</strong><br/> </ng-container>
+                    <ng-container *ngIf="configAgenda.mostrarServico"> <strong>{{ appt.servico }}</strong><br/> </ng-container>
+                    <ng-container *ngIf="configAgenda.mostrarEquipto"> <strong>{{ appt.equipto }}</strong><br/> </ng-container>
                   </div>
                 </div>
               </ng-container>

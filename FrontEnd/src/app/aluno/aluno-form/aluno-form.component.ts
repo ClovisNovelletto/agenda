@@ -49,6 +49,13 @@ export class AlunoFormComponent implements OnInit {
   localsFiltrados: any[] = [];
   localSelecionado: any = null;
   localEncontrado: boolean = true;
+
+  servicos: any[] = [];
+  servicoCtrl = new FormControl('');
+  servicosFiltrados: any[] = [];
+  servicoSelecionado: any = null;
+  servicoEncontrado: boolean = true;
+
   horasPossiveis: string[] = [];
   intervalo: number = 10; // valor padrão
   horaInicio: number = 6; // valor padrão
@@ -59,7 +66,10 @@ export class AlunoFormComponent implements OnInit {
     diasAtendimento: [],
     horaInicio: 8,
     horaFim: 18,
-    intervaloMinutos: 10
+    intervaloMinutos: 10,
+    mostrarLocal: true, 
+    mostrarServico: true,
+    mostrarEquipto: true
     
   };
 
@@ -81,6 +91,7 @@ export class AlunoFormComponent implements OnInit {
       cpf: [''],
       datanasc: [null],
       localId: ['', Validators.required],
+      servicoId: [],
       diasAula: this.fb.array([])
     });
 
@@ -139,6 +150,38 @@ console.log('locals 1:', this.locals); // agora sim!
             this.localsFiltrados = result;
           });
       });
+
+      this.http.get<any[]>(`${environment.apiUrl}/servicos`, { headers })
+        .subscribe(servicosData => {
+        this.servicos = servicosData;
+        console.log('servicos carregados:', this.servicos);
+
+        // Aqui você já pode preencher o campo, porque os dados chegaram
+        if (this.data?.aluno?.servicoId) {
+          const servicoEncontrado = this.servicos.find(l => l.id === this.data.aluno.servicoId);
+          if (servicoEncontrado) {
+            this.servicoCtrl.setValue(servicoEncontrado.nome);
+            this.servicoSelecionado = servicoEncontrado;
+          }
+        }
+
+        // Configuração do autocomplete
+        this.servicoCtrl.valueChanges
+          .pipe(
+            startWith(''),
+            map(value => value?.toLowerCase()),
+            map(nome => {
+              const filtrado = this.servicos.filter(a =>
+                a.nome.toLowerCase().includes(nome)
+              );
+              this.servicoEncontrado = filtrado.length > 0;
+              return filtrado;
+            })
+          )
+          .subscribe(result => {
+            this.servicosFiltrados = result;
+          });
+      });
         
     this.loadPersonal().subscribe(config => {
       this.configAgenda = config;
@@ -195,7 +238,8 @@ console.log('locals 1:', this.locals); // agora sim!
           datanasc: this.data.aluno.datanasc
             ? new Date(this.data.aluno.datanasc)
             : null,
-          localId: this.localSelecionado?.id /*this.data.aluno.localId*/
+          localId: this.localSelecionado?.id, /*this.data.aluno.localId*/
+          servicolId: this.servicoSelecionado?.id 
         });
 
       
@@ -224,6 +268,9 @@ console.log('locals 1:', this.locals); // agora sim!
         this.form.get('localId')?.setValue(this.localSelecionado.id);
       }
 
+      if (this.servicoSelecionado) {
+        this.form.get('servicoId')?.setValue(this.servicoSelecionado.id);
+      }
 
       /**/
     });
@@ -242,6 +289,7 @@ console.log('locals 1:', this.locals); // agora sim!
         email: formValue.email,
         cpf: formValue.cpf,
         localId: this.localSelecionado?.id,
+        servicoId: this.servicoSelecionado?.id,
         datanasc: formValue.datanasc,
       };
 
@@ -268,7 +316,10 @@ console.log('locals 1:', this.locals); // agora sim!
         diasAtendimento: [0,1,2,3,4,5,6].filter(i => (personal as any)[`dia${i}`]),
         horaInicio: personal.hora_inicio,
         horaFim: personal.hora_fim,
-        intervaloMinutos: personal.intervalo_minutos
+        intervaloMinutos: personal.intervalo_minutos,
+        mostrarLocal: personal.mostrarLocal,
+        mostrarServico: personal.mostrarServico,
+        mostrarEquipto: personal.mostrarEquipto
       }))
     );
   }
@@ -313,43 +364,18 @@ console.log('horas possíveis:', horas);
       this.form.patchValue({ localId: '' });
     }
   }
-  /*
-  abrirModalNovoLocal() {
-    const nome = this.localCtrl.value;
+  
+  onServicoSelected(nome: string) {
+    console.log('onServicoSelected...');
+    const servico = this.servicos.find(a => a.nome === nome);
+    if (servico) {
+      console.log('servicoId: ', servico.id);
+      this.form.patchValue({ servicoId: servico.id });
+      this.servicoSelecionado = servico;
+      console.log('servicoSelecionado: ', this.servicoSelecionado);
+    } else {
+      this.form.patchValue({ servicoId: '' });
+    }
+  }
 
-    // Abre o modal para pedir o endereco do novo local
-    const dialogRef = this.dialog.open(AddLocalDialogComponent, {
-      width: '400px',
-      height: '300px',
-      panelClass: 'custom-local-dialog',
-      data: { nomeParcial: this.localCtrl.value || '' } // Passa o nome do local já digitado para preencher o campo no modal
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      // Quando o modal é fechado e temos o endereco, fazemos a requisição
-      if (result?.nome && result?.endereco) {
-        const token = localStorage.getItem('jwt-token');
-        const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-        const body = { nome: result.nome, endereco: result.endereco };
-
-        /*this.http.post('/api/locals', body, { headers }).subscribe((novoLocal: any) => {*/
-     /*   this.http.post(`${environment.apiUrl}/locals`, body, { headers }).subscribe((novoLocal: any) => {
-          // Adiciona o novo local à lista e atualiza o campo de seleção
-          console.log('Novo local recebido do backend:', novoLocal);
-          //this.locals.push(novoLocal);
-          const jaExiste = this.locals.some(a => a.id == novoLocal.id);
-          if (!jaExiste) {
-            this.locals.push(novoLocal);
-            this.novoLocalRetorno= novoLocal;
-            this.atualizouLocals = true;
-          }
-          console.log('novoLocal.nome: ', novoLocal.nome);
-          console.log('novoLocal.id: ', novoLocal.id);
-          this.localCtrl.setValue(novoLocal.nome);
-          this.form.patchValue({ localId: novoLocal.id });
-          this.localSelecionado = novoLocal;
-        });
-      }
-    });
-  }*/
 }

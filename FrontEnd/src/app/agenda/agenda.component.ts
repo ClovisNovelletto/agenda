@@ -12,6 +12,7 @@ import {  } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Aluno } from '../models/aluno.model';
 import { Local } from '../models/local.model';
+import { Equipto } from '../models/equipto.model';
 import { Personal } from '../models/personal.model';
 import { ConfigAgenda } from '../models/configAgenda.model';
 import { HttpHeaders } from '@angular/common/http';
@@ -84,6 +85,7 @@ export class AgendaComponent implements OnInit, AfterViewInit {
   hours: string[] = [];
   alunos: Aluno[] = [];
   locals: Local[] = [];
+  equiptos: Equipto[] = [];
   personals: Personal[] = [];
   personal?:  Personal;
   agendaStatus: AgendaStatus[] = [];
@@ -111,8 +113,10 @@ export class AgendaComponent implements OnInit, AfterViewInit {
     diasAtendimento: [],
     horaInicio: 8,
     horaFim: 18,
-    intervaloMinutos: 10
-    
+    intervaloMinutos: 10,
+    mostrarLocal: true,
+    mostrarServico: true,
+    mostrarEquipto: true,    
   };
   
   //appointments: { date: string; hour: string; titulo: string }[] = [];
@@ -179,6 +183,7 @@ export class AgendaComponent implements OnInit, AfterViewInit {
       this.loadAppointments();    
       this.loadAlunos();
       this.loadLocals();
+      this.loadEquiptos();
       setTimeout(() => {
         this.cd.markForCheck();
       });
@@ -209,7 +214,10 @@ export class AgendaComponent implements OnInit, AfterViewInit {
         diasAtendimento: [0,1,2,3,4,5,6].filter(i => (personal as any)[`dia${i}`]),
         horaInicio: personal.hora_inicio,
         horaFim: personal.hora_fim,
-        intervaloMinutos: personal.intervalo_minutos
+        intervaloMinutos: personal.intervalo_minutos,
+        mostrarLocal: personal.mostrarLocal,
+        mostrarServico: personal.mostrarServico,
+        mostrarEquipto: personal.mostrarEquipto
       }))
     );
   }
@@ -328,6 +336,14 @@ export class AgendaComponent implements OnInit, AfterViewInit {
     });
   }
 
+  loadEquiptos(): void {
+    const token = localStorage.getItem('jwt-token');
+    const headers = new HttpHeaders({Authorization: `Bearer ${token}` });    
+    this.http.get<Equipto[]>(`${environment.apiUrl}/equiptos`, {headers}).subscribe((equiptos) => {
+      this.equiptos = equiptos;
+    });
+  }
+
   generateDropListId(day: Date, hour: string, minute: number): string {
     return `${day.toDateString()}-${hour}-${minute}`;
   }
@@ -382,6 +398,10 @@ export class AgendaComponent implements OnInit, AfterViewInit {
     const start = dayjs.utc(day).tz('America/Sao_Paulo').toDate();
     start.setHours(+h, minute, 0, 0);
 
+console.log("this.locals ag: ", this.locals)            
+console.log("this.equiptos ag: ", this.equiptos)      
+
+
     console.log('this.configAgenda.intervaloMinutos antess', this.configAgenda.intervaloMinutos);
     const dialogRef = this.dialog.open(AppointmentDialogComponent, {
       width: '300px',
@@ -390,6 +410,8 @@ export class AgendaComponent implements OnInit, AfterViewInit {
         hour: hour, // 👈 Adicione isso!
         alunos: this.alunos,
         locals: this.locals,
+        equiptos: this.equiptos,
+        mostrarEquipto: this.configAgenda.mostrarEquipto,
         personalId: 1,//this.personalId // ajuste conforme o nome do id do personal
         intervalo: this.configAgenda?.intervaloMinutos ?? 10,  // 👈 Aqui passa o intervalo
         horaInicio: this.configAgenda.horaInicio,
@@ -431,6 +453,10 @@ export class AgendaComponent implements OnInit, AfterViewInit {
           result.localId,
           result.local,
           result.statusId ?? 1,
+          result.servicoId,
+          result.servico,
+          result.equiptoId,
+          result.equipto,
           /*result.personalId,*/
           start
         );
@@ -461,7 +487,9 @@ export class AgendaComponent implements OnInit, AfterViewInit {
       /*hora: comp.hour,*/
       titulo: comp.titulo,
       //descricao: comp.descricao,
-      statusId: comp.statusId ?? 1/*'agendado' // padrão*/
+      statusId: comp.statusId ?? 1,/*'agendado' // padrão*/
+      servicoId: comp.servicoId,
+      equiptoId: comp.equiptoId,
     };
 
     console.log('Compromisso dados enviados!');
@@ -486,7 +514,9 @@ export class AgendaComponent implements OnInit, AfterViewInit {
               alunoId: comp.alunoId,
               localId: comp.localId,
               titulo: comp.titulo,
-              statusId: comp.statusId
+              statusId: comp.statusId,
+              servicoId: comp.servicoId,
+              equiptoId: comp.equiptoId
             };
             this.appointments$.next([...atual]);
           }
@@ -575,6 +605,8 @@ export class AgendaComponent implements OnInit, AfterViewInit {
         compromisso: appt,  // envia todos os dados do compromisso
         alunos: this.alunos,     // 👈 passa a lista
         locals: this.locals,     // 👈 passa a lista
+        equiptos: this.equiptos,
+        mostrarEquipto: this.configAgenda.mostrarEquipto,
         intervalo: this.configAgenda?.intervaloMinutos ?? 10,  // 👈 Aqui passa o intervalo
         horaInicio: this.configAgenda.horaInicio,
         horaFim: this.configAgenda.horaFim,
@@ -610,6 +642,8 @@ export class AgendaComponent implements OnInit, AfterViewInit {
           date: result.date,
           titulo: result.titulo,
           statusId: appt.statusId ?? 1,
+          servicoId: appt.servicoId,
+          equiptoId: appt.equiptoId,
         };
         console.log('appt z:', appt );
         console.log('updated z:', updated );
@@ -653,6 +687,8 @@ export class AgendaComponent implements OnInit, AfterViewInit {
       date: toDate,
       titulo: appt.titulo,
       statusId: appt.statusId ?? 1,
+      servicoId: appt.servicoId,
+      equiptoId: appt.equiptoId,
     };
     //console.log('appt y:', appt );
     //console.log('updated y:', updated );
@@ -796,6 +832,10 @@ export class AgendaComponent implements OnInit, AfterViewInit {
     localId: number,
     local: string,
     statusId: number,
+    servicoId: number,
+    servico: string,
+    equiptoId: number,
+    equipto: string,
     /*personalId: number,*/
     start: Date
   ): void {
@@ -814,6 +854,10 @@ export class AgendaComponent implements OnInit, AfterViewInit {
       localId,
       local,
       statusId,
+      servicoId,
+      servico,
+      equiptoId,
+      equipto,
       /*personalId*/
     };
 
@@ -850,7 +894,11 @@ export class AgendaComponent implements OnInit, AfterViewInit {
         localId: item.localid,
         local: item.local,
         personalId: item.personalid,
-        statusId: item.statusid ?? 1
+        statusId: item.statusid ?? 1,
+        servicoId: item.servicoid,
+        servico: item.servico,
+        equiptoId: item.equiptoid,
+        equipto: item.equipto,
       }));
       const atuais = this.appointments$.value;
 

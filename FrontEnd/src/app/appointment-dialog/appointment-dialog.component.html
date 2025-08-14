@@ -64,6 +64,16 @@
       </mat-autocomplete>
     </mat-form-field>
 
+    <mat-form-field *ngIf="mostrarEquipto && alunoSelecionado?.mostrarEquipto" appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 95%;" class="w-full">
+      <mat-label>Equipamento</mat-label>
+      <input type="text" matInput [formControl]="equiptoCtrl" [matAutocomplete]="autoEquipto">
+      <mat-autocomplete #autoEquipto="matAutocomplete" (optionSelected)="onEquiptoSelected($event.option.value)">
+        <mat-option *ngFor="let equipto of equiptosFiltrados" [value]="equipto.nome">
+          {{ equipto.nome }} 
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+
     <!-- Botão de adicionar novo -->
     <button mat-button color="primary" (click)="abrirModalNovoLocal()" *ngIf="!localEncontrado">
       + Adicionar novo local

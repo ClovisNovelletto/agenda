@@ -22,6 +22,9 @@ interface ConfigPersonal {
   horaInicio: number;
   horaFim: number;
   intervaloMinutos: number;
+  mostrarLocal: boolean;
+  mostrarServico: boolean;
+  mostrarEquipto: boolean;
 }
 
 @Component({
@@ -69,7 +72,10 @@ export class ConfiguracoesComponent {
           diasAtendimento: [0,1,2,3,4,5,6].filter(i => (configSelecionada as any)[`dia${i}`]),
           horaInicio: configSelecionada?.hora_inicio,
           horaFim: configSelecionada?.hora_fim,
-          intervaloMinutos: configSelecionada.intervalo_minutos
+          intervaloMinutos: configSelecionada.intervalo_minutos,
+          mostrarLocal: configSelecionada.mostrarLocal, 
+          mostrarServico: configSelecionada.mostrarServico,
+          mostrarEquipto: configSelecionada.mostrarEquipto
         };
       })
     ).subscribe(config => {
@@ -83,7 +89,10 @@ export class ConfiguracoesComponent {
       diasAtendimento: [0,1,2,3,4,5,6].filter(i => (configSelecionada as any)[`dia${i}`]),
       horaInicio: configSelecionada.hora_inicio,
       horaFim: configSelecionada.hora_fim,
-      intervaloMinutos: configSelecionada.intervalo_minutos
+      intervaloMinutos: configSelecionada.intervalo_minutos,
+      mostrarLocal: configSelecionada.mostrarLocal,
+      mostrarServico: configSelecionada.mostrarServico,
+      mostrarEquipto: configSelecionada.mostrarEquipto,
     }))
   ).subscribe(config => {
     this.configSelecionada = config;

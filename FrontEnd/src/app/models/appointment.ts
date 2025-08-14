@@ -10,5 +10,9 @@ export interface Appointment {
   localId: number;
   local: string;
   statusId: number;
+  servicoId: number;
+  servico: string;
+  equiptoId: number;
+  equipto: string;
   /*personalId: number;*/
 }

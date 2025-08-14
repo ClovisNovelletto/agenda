@@ -5,55 +5,70 @@
   <span style="font-size: 16px !important; padding: 2px;">Configurações da agenda</span>
 </mat-toolbar>
 
-<mat-card *ngIf="configSelecionada">
-  <!--<mat-card-title style="font-size: 14px !important; padding-bottom: 5px;">⚙️ Configurações da Agenda</mat-card-title>-->
-  <mat-card-content>
+<div style="max-width: 500px; align-items: center; align-content: center; align-self: center; alignment-baseline: center;" >
+  <mat-card *ngIf="configSelecionada" >
+    <!--<mat-card-title style="font-size: 14px !important; padding-bottom: 5px;">⚙️ Configurações da Agenda</mat-card-title>-->
+    <mat-card-content>
 
-    <!-- Dias da semana -->
-    <label class="form-label">Dias de Atendimento:</label>
-    <div class="dias-checkboxes">
-      <mat-checkbox *ngFor="let dia of diasSemana"
-                    [checked]="configSelecionada.diasAtendimento.includes(dia.valor)"
-                    (change)="toggleDia(dia.valor)">
-        {{ dia.nome }}
+      <!-- Dias da semana -->
+      <label class="form-label">Dias de Atendimento:</label>
+      <div class="dias-checkboxes">
+        <mat-checkbox *ngFor="let dia of diasSemana"
+                      [checked]="configSelecionada.diasAtendimento.includes(dia.valor)"
+                      (change)="toggleDia(dia.valor)">
+          {{ dia.nome }}
+        </mat-checkbox>
+      </div>
+
+      <!-- Hora início -->
+      <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%; max-width: 200px;">
+        <mat-label>Hora Início</mat-label>
+        <mat-select [(ngModel)]="configSelecionada.horaInicio" name="horaInicio">
+          <mat-option *ngFor="let h of horasPossiveis" [value]="h">{{ h }}:00</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Hora fim -->
+      <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%; max-width: 200px;">
+        <mat-label>Hora Fim</mat-label>
+        <mat-select [(ngModel)]="configSelecionada.horaFim" name="horaFim">
+          <mat-option *ngFor="let h of horasPossiveis" [value]="h">{{ h }}:00</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Tempo aula -->
+      <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%; max-width: 200px;">
+        <mat-label>Início da Aula a cada</mat-label>
+        <mat-select [(ngModel)]="configSelecionada.intervaloMinutos" name="intervaloMinutos">
+          <mat-option [value]="10">10 min</mat-option>
+          <mat-option [value]="15">15 min</mat-option>
+          <mat-option [value]="30">30 min</mat-option>
+          <mat-option [value]="60">1h</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Mostrar local -->
+
+      <mat-checkbox [(ngModel)]="configSelecionada.mostrarLocal">
+        Mostrar Local
       </mat-checkbox>
-    </div>
 
-    <!-- Hora início -->
-    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%; max-width: 200px;">
-      <mat-label>Hora Início</mat-label>
-      <mat-select [(ngModel)]="configSelecionada.horaInicio" name="horaInicio">
-        <mat-option *ngFor="let h of horasPossiveis" [value]="h">{{ h }}:00</mat-option>
-      </mat-select>
-    </mat-form-field>
+      <mat-checkbox [(ngModel)]="configSelecionada.mostrarServico">
+        Mostrar Serviço
+      </mat-checkbox>
 
-    <!-- Hora fim -->
-    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%; max-width: 200px;">
-      <mat-label>Hora Fim</mat-label>
-      <mat-select [(ngModel)]="configSelecionada.horaFim" name="horaFim">
-        <mat-option *ngFor="let h of horasPossiveis" [value]="h">{{ h }}:00</mat-option>
-      </mat-select>
-    </mat-form-field>
+      <mat-checkbox [(ngModel)]="configSelecionada.mostrarEquipto">
+        Mostrar Equipto
+      </mat-checkbox>
 
-    <!-- Tempo aula -->
-    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%; max-width: 200px;">
-      <mat-label>Início da Aula a cada</mat-label>
-      <mat-select [(ngModel)]="configSelecionada.intervaloMinutos" name="intervaloMinutos">
-        <mat-option [value]="10">10 min</mat-option>
-        <mat-option [value]="15">15 min</mat-option>
-        <mat-option [value]="30">30 min</mat-option>
-        <mat-option [value]="60">1h</mat-option>
-      </mat-select>
-    </mat-form-field>
+        <button mat-raised-button type="submit" (click)="salvarConfiguracoes()" class="btn-salvar">
+          Salvar
+        </button>
 
-      <button mat-raised-button type="submit" (click)="salvarConfiguracoes()" class="btn-salvar">
-        Salvar
-      </button>
+      <!-- Mensagens -->
+      <!--<mat-hint *ngIf="isSaving">Salvando configurações...</mat-hint>-->
+  <!--    <mat-hint *ngIf="mensagem">{{ mensagem }}</mat-hint>-->
 
-    <!-- Mensagens -->
-    <!--<mat-hint *ngIf="isSaving">Salvando configurações...</mat-hint>-->
-<!--    <mat-hint *ngIf="mensagem">{{ mensagem }}</mat-hint>-->
-
-  </mat-card-content>
-</mat-card>
-
+    </mat-card-content>
+  </mat-card>
+</div>

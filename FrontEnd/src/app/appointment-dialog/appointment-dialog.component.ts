@@ -25,6 +25,7 @@ import { ChangeDetectorRef } from '@angular/core';
 
 import { parse } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+//import { ConfigAgenda } from '../models/configAgenda.model';
 
 @Component({
   standalone: true,
@@ -55,9 +56,11 @@ export class AppointmentDialogComponent {
   descricao: string = '';
   selectedAluno: number | null = null;
   selectedLocal: number | null = null;
+  selectedEquipto: number | null = null;
   selectedPersonal: number | null = null;
   alunos: any[] = [];
   locals: any[] = [];
+  equiptos: any[] = [];
   personals: any[] = [];
   date: Date;
   hour: string;
@@ -71,14 +74,22 @@ export class AppointmentDialogComponent {
   localsFiltrados: any[] = [];
   localSelecionado: any = null;
   localEncontrado: boolean = true;
+  equiptoCtrl = new FormControl('');
+  equiptosFiltrados: any[] = [];
+  equiptoSelecionado: any = null;
+  equiptoEncontrado: boolean = true;
+
   novoAlunoRetorno: any[] = [];
   atualizouAlunos: boolean = false;
   novoLocalRetorno: any[] = [];
   atualizouLocals: boolean = false;
+  atualizouEquiptos: boolean = false;
   horasPossiveis: string[] = [];
   intervalo: number = 10; // valor padrão
   horaInicio: number = 6; // valor padrão
   horaFim: number = 22; // valor padrão
+  mostrarEquipto: boolean = false;
+
   /* any =null;*/
   constructor(
     public dialogRef: MatDialogRef<AppointmentDialogComponent>,
@@ -92,6 +103,8 @@ export class AppointmentDialogComponent {
     this.hour = data.hour || '';
     this.alunos = data.alunos || [];
     this.locals = data.locals || [];
+    this.equiptos = data.equiptos || [];
+    this.mostrarEquipto = data.mostrarEquipto;
     this.selectedPersonal = data.personalId || null;
     this.intervalo = data.intervalo ?? 10; // 👈 Aqui está certo
     this.horaInicio = data.horaInicio
@@ -100,11 +113,10 @@ export class AppointmentDialogComponent {
   }
 
   ngOnInit() {
-    /*datateste = new Date();*/
-    /*datateste = now();*/
     console.log('this.data:', this.data);
     this.atualizouAlunos = false;
     this.atualizouLocals = false;
+    this.atualizouEquiptos = false;
     this.intervalo = this.data.intervalo || 10; // fallback para 10 min se não vier
     console.log('this.data.intervalo', this.data.intervalo);
     this.horasPossiveis = this.gerarHorasPossiveis(this.horaInicio, this.horaFim, this.intervalo);
@@ -115,6 +127,7 @@ export class AppointmentDialogComponent {
       descricao: [''],
       alunoId: ['', Validators.required],
       localId: ['', Validators.required],
+      equiptoId: [],
       datateste: [null],
     });
 
@@ -169,12 +182,14 @@ export class AppointmentDialogComponent {
 
       const alunoSelecionado = this.alunos?.find(a => a.id === comp.alunoId);
       const localSelecionado = this.locals?.find(l => l.id === comp.localId);
+      const equiptoSelecionado = this.equiptos?.find(l => l.id === comp.equiptoId);
     console.log('comp.date.toISOString():', comp.date.toISOString());
       this.form.patchValue({
         titulo: comp.titulo,
         descricao: comp.descricao, // se existir no form
         alunoId: alunoSelecionado?.id || null,
         localId: localSelecionado?.id || null,
+        equiptoId: equiptoSelecionado?.id || null,
         dataCompr: comp.date
           ? new Date(comp.date instanceof Date ? comp.date.toISOString() : comp.date)
           : null,
@@ -194,6 +209,23 @@ export class AppointmentDialogComponent {
         this.localCtrl.setValue(this.localSelecionado.nome);
         this.form.get('localId')?.setValue(this.localSelecionado.id);
       }
+
+      this.equiptoSelecionado = this.equiptos?.find(l => l.id === this.data.compromisso.equiptoId);
+      if (this.equiptoSelecionado) {
+        this.equiptoCtrl.setValue(this.equiptoSelecionado.nome);
+        this.form.get('equiptoId')?.setValue(this.equiptoSelecionado.id);
+      }
+
+      
+console.log("this.locals: ", this.locals)      
+console.log("local: ", this.data.compromisso.localId)
+console.log("this.localSelecionado: ", this.localSelecionado)
+      
+console.log("this.equiptos: ", this.equiptos)      
+console.log("equipto: ", this.data.compromisso.equiptoId)
+console.log("this.equiptoSelecionado: ", this.equiptoSelecionado)
+console.log("this.alunoSelecionado: ", this.alunoSelecionado)
+
 
       /*desabilitar botão de salvar se limpar o aluno*/ 
       this.alunoCtrl.valueChanges.subscribe(value => {
@@ -258,6 +290,29 @@ export class AppointmentDialogComponent {
           this.localsFiltrados = result;
         });
     });
+
+    this.http.get<any[]>(`${environment.apiUrl}/equiptos`, { headers }).subscribe(data => {    
+      this.equiptos = data;
+
+      this.equiptoCtrl.valueChanges
+        .pipe(
+          startWith(''),
+          map(value => value?.toLowerCase()),
+          map(nome => {
+            const filtrado = this.equiptos.filter(a => a.nome.toLowerCase().includes(nome));
+            this.equiptoEncontrado = filtrado.length > 0;
+            return filtrado;
+          })
+        )
+        .subscribe(result => {
+          this.equiptosFiltrados = result;
+        });
+    });
+
+          
+console.log("equiptosFiltrados: ", this.equiptosFiltrados)      
+console.log("this.equiptoEncontrado: ", this.equiptoEncontrado)
+
   }
   
   onAlunoSelected(nome: string) {
@@ -283,6 +338,20 @@ export class AppointmentDialogComponent {
       console.log('localSelecionado: ', this.localSelecionado);
     } else {
       this.form.patchValue({ localId: '' });
+    }
+  }
+
+  
+  onEquiptoSelected(nome: string) {
+    console.log('onEquiptoSelected...');
+    const equipto = this.equiptos.find(a => a.nome === nome);
+    if (equipto) {
+      console.log('equiptoId: ', equipto.id);
+      this.form.patchValue({ equiptoId: equipto.id });
+      this.equiptoSelecionado = equipto;
+      console.log('equiptoSelecionado: ', this.equiptoSelecionado);
+    } else {
+      this.form.patchValue({ equiptoId: '' });
     }
   }
 
@@ -398,6 +467,7 @@ export class AppointmentDialogComponent {
       descricao: this.descricao,
       alunoId: this.alunoSelecionado?.id,
       localId: this.localSelecionado?.id,
+      equiptoId: this.equiptoSelecionado?.id,
       //alunoId: this.selectedAluno,
       //localId: this.selectedLocal,
       personalId: this.selectedPersonal,

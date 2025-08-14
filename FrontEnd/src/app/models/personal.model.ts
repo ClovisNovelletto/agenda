@@ -11,4 +11,7 @@ export interface Personal {
   dia4?: boolean;
   dia5?: boolean;
   dia6?: boolean;
+  mostrarLocal: boolean;
+  mostrarServico: boolean;
+  mostrarEquipto: boolean;
 }
