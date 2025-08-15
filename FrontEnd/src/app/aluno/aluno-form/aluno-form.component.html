@@ -38,14 +38,40 @@
 
     <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
       <mat-label>Local</mat-label>
-      <input type="text" matInput [formControl]="localCtrl" [matAutocomplete]="autoLocal" required>
-      <mat-autocomplete #autoLocal="matAutocomplete" (optionSelected)="onLocalSelected($event.option.value)">
+      <input
+        type="text"
+        matInput
+        [formControl]="localCtrl"
+        [matAutocomplete]="autoLocal"
+        (blur)="onLocalBlur()"
+        required>
+      <mat-autocomplete
+        #autoLocal="matAutocomplete"
+        (optionSelected)="onLocalSelecionado($event)">
         <mat-option *ngFor="let local of localsFiltrados" [value]="local.nome">
           {{ local.nome }} — {{ local.endereco }}
         </mat-option>
       </mat-autocomplete>
     </mat-form-field>
 
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+      <mat-label>Servico</mat-label>
+      <input
+        type="text"
+        matInput
+        [formControl]="servicoCtrl"
+        [matAutocomplete]="autoServico"
+        (blur)="onServicoBlur()"
+        required>
+      <mat-autocomplete
+        #autoServico="matAutocomplete"
+        (optionSelected)="onServicoSelecionado($event)">
+        <mat-option *ngFor="let servico of servicosFiltrados" [value]="servico.nome">
+          {{ servico.nome }} 
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>    
+<!--    
     <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 25px; width: 80%;">
       <mat-label>Serviço</mat-label>
       <input type="text" matInput [formControl]="servicoCtrl" [matAutocomplete]="autoServico" required>
@@ -55,6 +81,7 @@
         </mat-option>
       </mat-autocomplete>
     </mat-form-field>
+  -->
 
     <div style="margin-left: 3px; margin-top: 5px; margin-bottom: 5px">
         <mat-slide-toggle formControlName="ativo" style="margin-left: 3px; margin-bottom: 5px">Aluno ativo</mat-slide-toggle>
@@ -85,7 +112,7 @@
     </div>
 
     <div>
-      <button mat-raised-button type="submit" [disabled]="form.invalid" class="btn-salvar">
+      <button mat-raised-button type="submit" [disabled]="form.invalid || form.pristine" class="btn-salvar">
         Salvar
       </button>
     </div>
