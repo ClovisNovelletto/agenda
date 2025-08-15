@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
-
+import { forkJoin } from 'rxjs';
 
 /*import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -43,8 +43,17 @@ export class ConfiguracoesServicosComponent implements OnInit {
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
 //    const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
 
+
+    forkJoin({
+      todos: this.http.get<any[]>(`${environment.apiUrl}/configuracoesServicos`, { headers }),
+      selecionados: this.http.get<number[]>(`${environment.apiUrl}/personals/me/configuracoesServicos`, { headers })
+    }).subscribe(({ todos, selecionados }) => {
+      this.servicos = todos;
+      this.servicosSelecionados = selecionados;
+    });
+      
     // Carrega lista de todos os serviços
-    this.http.get<any[]>(`${environment.apiUrl}/configuracoesServicos`, { headers })
+/*    this.http.get<any[]>(`${environment.apiUrl}/configuracoesServicos`, { headers })
       .subscribe(data => {
         this.servicos = data;
 
@@ -53,7 +62,7 @@ export class ConfiguracoesServicosComponent implements OnInit {
           .subscribe(ids => {
             this.servicosSelecionados = ids;
           });
-      });
+      });*/
   }
 
   salvarServicos() {

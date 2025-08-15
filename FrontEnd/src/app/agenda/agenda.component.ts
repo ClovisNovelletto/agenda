@@ -175,15 +175,15 @@ export class AgendaComponent implements OnInit, AfterViewInit {
       this.configAgenda = config;
       console.log('configAgenda init dentro loald:', this.configAgenda);
       console.log('this.configAgenda.diasAtendimento.length:', this.configAgenda.diasAtendimento.length);
+      this.loadAgendaStatus();
       this.generateMinutes(); // gerar os minutos corretamente
       this.generateAllDropListIds(); // agora com os minutos corretos
       this.generateWeek();           // se também depende disso
       this.generateHours();
-      this.loadAgendaStatus();
-      this.loadAppointments();    
       this.loadAlunos();
       this.loadLocals();
       this.loadEquiptos();
+      this.loadAppointments();      
       setTimeout(() => {
         this.cd.markForCheck();
       });

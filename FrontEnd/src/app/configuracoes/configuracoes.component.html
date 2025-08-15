@@ -8,7 +8,7 @@
 <div style="max-width: 500px; align-items: center; align-content: center; align-self: center; alignment-baseline: center;" >
   <mat-card *ngIf="configSelecionada" >
     <!--<mat-card-title style="font-size: 14px !important; padding-bottom: 5px;">⚙️ Configurações da Agenda</mat-card-title>-->
-    <mat-card-content>
+    <mat-card-content style="display: flex; flex-direction: column; gap: 8px;">
 
       <!-- Dias da semana -->
       <label class="form-label">Dias de Atendimento:</label>
@@ -58,7 +58,7 @@
       </mat-checkbox>
 
       <mat-checkbox [(ngModel)]="configSelecionada.mostrarEquipto">
-        Mostrar Equipto
+        Mostrar Equipamento
       </mat-checkbox>
 
         <button mat-raised-button type="submit" (click)="salvarConfiguracoes()" class="btn-salvar">
