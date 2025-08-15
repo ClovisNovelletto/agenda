@@ -367,7 +367,7 @@ app.post('/api/alunoInsert', authenticateToken, async (req, res) => {
     const aluno = await sql`
       INSERT INTO Alunos (aluno, AluCPF, AluDataNasc, AluEmail, AluAtivo, alufone, alupersonalid, alucodconvite, alulocalid, aluservicoid,
       aludia0, aludia1, aludia2, aludia3, aludia4, aludia5, aludia6, aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6)
-      VALUES (${nome}, ${cpf}, ${datanasc}, ${email}, ${ativo}, ${telefone}, ${personalId}, ${codigoConvite}, ${localId}, , ${servicoId},
+      VALUES (${nome}, ${cpf}, ${datanasc}, ${email}, ${ativo}, ${telefone}, ${personalId}, ${codigoConvite}, ${localId}, ${servicoId},
       ${aludia0}, ${aludia1}, ${aludia2}, ${aludia3}, ${aludia4}, ${aludia5}, ${aludia6},
       ${aluhora0}, ${aluhora1}, ${aluhora2}, ${aluhora3}, ${aluhora4}, ${aluhora5}, ${aluhora6})
       RETURNING *`; 
