@@ -561,7 +561,11 @@ app.get('/api/configuracoes', authenticateToken, async (req, res) => {
 
 app.get('/api/configuracoesServicos', authenticateToken, async (req, res) => {
   try {
-    const result = await sql`SELECT Servico_id id, Servico nome FROM Servicos WHERE seativo = true`;
+    const result = await sql`SELECT id, nome FROM (SELECT DISTINCT Servico_id id, Servico nome, CAST(CASE WHEN PSServicoID IS NOT NULL THEN ' ' ELSE '' END AS VARCHAR) || Servico AS "ordem"
+    FROM Servicos 
+      LEFT JOIN PersonalsServicos ON PSServicoID=Servico_ID
+    WHERE seativo = true) X
+    ORDER BY X.ordem  `;
     res.json(result);
   } catch(err) {
       console.error(err);
