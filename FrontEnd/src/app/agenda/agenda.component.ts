@@ -46,6 +46,8 @@ import { AppointmentsFiltradosPorPipe } from '../pipes/appointments-filtrados-po
 import { ChangeDetectorRef } from '@angular/core';
 import { Pipe, PipeTransform } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
+import { forkJoin } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -173,6 +175,56 @@ export class AgendaComponent implements OnInit, AfterViewInit {
 
     this.loadPersonal().subscribe(config => {
       this.configAgenda = config;
+
+      console.log('configAgenda init dentro loald:', this.configAgenda);
+      console.log('this.configAgenda.diasAtendimento.length:', this.configAgenda.diasAtendimento.length);
+
+      // Gera dados dependentes da configAgenda
+      //this.generateMinutes();
+      //this.generateAllDropListIds();
+      //this.generateWeek();
+      //this.generateHours();
+
+      // Carrega todos os dados da agenda juntos
+      
+      forkJoin({
+        /*config: this.loadPersonal(),*/
+        status: this.loadAgendaStatus(),
+        alunos: this.loadAlunos(),
+        locais: this.loadLocals(),
+        equips: this.loadEquiptos()
+      }).subscribe(() => {
+        this.generateMinutes();
+        this.generateAllDropListIds();
+        this.generateWeek();
+        this.generateHours();
+
+        this.loadAppointments(); // não precisa retornar nada
+        setTimeout(() => this.cd.markForCheck());
+      });
+      
+      /*forkJoin({
+        alunos: this.loadAlunos(),
+        locais: this.loadLocals(),
+        equiptos: this.loadEquiptos(),
+        status: this.loadAgendaStatus(),
+        appointments: this.loadAppointments()
+      }).subscribe(results => {
+        this.alunos = results.alunos;
+        this.locals = results.locais;
+        this.equiptos = results.equiptos;
+        this.statusList = results.status;
+        this.appointments = results.appointments;
+
+        // Garante que o OnPush renderize tudo com cores
+        this.cd.detectChanges();
+      });*/
+    });
+    
+
+/*
+    this.loadPersonal().subscribe(config => {
+      this.configAgenda = config;
       console.log('configAgenda init dentro loald:', this.configAgenda);
       console.log('this.configAgenda.diasAtendimento.length:', this.configAgenda.diasAtendimento.length);
       this.loadAgendaStatus();
@@ -187,7 +239,7 @@ export class AgendaComponent implements OnInit, AfterViewInit {
       setTimeout(() => {
         this.cd.markForCheck();
       });
-    });
+    });*/
   }
 
   gerarListaMeses() {
@@ -278,12 +330,25 @@ export class AgendaComponent implements OnInit, AfterViewInit {
     }
   }
 
-  loadAgendaStatus(): void {
-        this.agendaStatusService.getStatus().subscribe(res => {
-        this.agendaStatus = res;
-      console.warn('agendaStatus load :', this.agendaStatus);    
-      });
+/*
+  loadAppointments(): Observable<any> {
+  const semanas = [-14, -7, 0, 7, 14];
+  const requests: Observable<any>[] = [];
+
+  for (const dias of semanas) {
+    const base = dayjs(this.currentDate).add(dias, 'day');
+    const inicio = base.startOf('week').toDate();
+    const fim = base.endOf('week').toDate();
+
+    if (!this.periodoJaCarregado(inicio, fim)) {
+      requests.push(this.carregarAgendaPeriodo(inicio, fim));
+    }
   }
+
+  // retorna um único observable que só completa quando todos terminarem
+  return forkJoin(requests);
+}
+*/
 
   loadAppointments() {
     const semanas = [-14, -7, 0, 7, 14]; // dias de deslocamento
@@ -320,6 +385,29 @@ export class AgendaComponent implements OnInit, AfterViewInit {
     });
   }*/
 
+  loadAgendaStatus(): Observable<any[]> {
+    return  this.agendaStatusService.getStatus().pipe(
+      tap(data => this.agendaStatus = data) // atualiza a variável
+    );
+  }
+
+  /*    
+  loadAgendaStatus(): void {
+        this.agendaStatusService.getStatus().subscribe(res => {
+        this.agendaStatus = res;
+      console.warn('agendaStatus load :', this.agendaStatus);    
+      });
+  }
+  */
+  loadAlunos(): Observable<any[]> {
+    const token = localStorage.getItem('jwt-token');
+    const headers = new HttpHeaders({Authorization: `Bearer ${token}` });    
+  return this.http.get<any[]>(`${environment.apiUrl}/alunos`, { headers })
+    .pipe(
+      tap(data => this.alunos = data) // atualiza a variável
+    );
+  }
+/*    
   loadAlunos(): void {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({Authorization: `Bearer ${token}` });    
@@ -327,22 +415,44 @@ export class AgendaComponent implements OnInit, AfterViewInit {
       this.alunos = alunos;
     });
   }
+*/
 
-  loadLocals(): void {
+  loadLocals(): Observable<any[]> {
+    const token = localStorage.getItem('jwt-token');
+    const headers = new HttpHeaders({Authorization: `Bearer ${token}` });    
+    return this.http.get<Local[]>(`${environment.apiUrl}/locals`, {headers})
+    .pipe(
+      tap(data => this.locals = data)
+    );
+  }
+/*
+loadLocals(): void {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({Authorization: `Bearer ${token}` });    
     this.http.get<Local[]>(`${environment.apiUrl}/locals`, {headers}).subscribe((locals) => {
       this.locals = locals;
     });
   }
+*/
 
-  loadEquiptos(): void {
+  loadEquiptos(): Observable<any[]> {
+    const token = localStorage.getItem('jwt-token');
+    const headers = new HttpHeaders({Authorization: `Bearer ${token}` });    
+    return this.http.get<Equipto[]>(`${environment.apiUrl}/equiptos`, {headers})
+        .pipe(
+      tap(data => this.equiptos = data)
+    );
+  }
+
+/*
+loadEquiptos(): void {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({Authorization: `Bearer ${token}` });    
     this.http.get<Equipto[]>(`${environment.apiUrl}/equiptos`, {headers}).subscribe((equiptos) => {
       this.equiptos = equiptos;
     });
   }
+*/
 
   generateDropListId(day: Date, hour: string, minute: number): string {
     return `${day.toDateString()}-${hour}-${minute}`;
