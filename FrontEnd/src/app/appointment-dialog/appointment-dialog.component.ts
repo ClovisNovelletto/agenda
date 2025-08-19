@@ -462,12 +462,14 @@ console.log("this.equiptoEncontrado: ", this.equiptoEncontrado)
       atualizouAlunos: this.atualizouAlunos,     // ✅ indica que houve inclusão de aluno
       aluno: this.novoAlunoRetorno,              // ✅ o novo aluno criado no dialog
       atualizouLocals: this.atualizouLocals,     // ✅ indica que houve inclusão de local
-      local: this.novoLocalRetorno,              // ✅ o novo local criado no dialog
+      //local: this.novoLocalRetorno,              // ✅ o novo local criado no dialog
       titulo: dados.titulo,
       descricao: this.descricao,
       alunoId: this.alunoSelecionado?.id,
       localId: this.localSelecionado?.id,
+      local: this.localSelecionado?.nome,
       equiptoId: this.equiptoSelecionado?.id,
+      equipto: this.equiptoSelecionado?.nome,
       //alunoId: this.selectedAluno,
       //localId: this.selectedLocal,
       personalId: this.selectedPersonal,

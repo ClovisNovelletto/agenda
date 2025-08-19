@@ -593,6 +593,7 @@ console.log("this.equiptos ag: ", this.equiptos)
       agenda_id: comp.agenda_id,
       alunoId: comp.alunoId,
       localId: comp.localId,
+      local: comp.local,
       data: comp.date,
       /*hora: comp.hour,*/
       titulo: comp.titulo,
@@ -600,6 +601,7 @@ console.log("this.equiptos ag: ", this.equiptos)
       statusId: comp.statusId ?? 1,/*'agendado' // padrão*/
       servicoId: comp.servicoId,
       equiptoId: comp.equiptoId,
+      equipto: comp.equipto,
     };
 
     console.log('Compromisso dados enviados!');
@@ -615,23 +617,28 @@ console.log("this.equiptos ag: ", this.equiptos)
           
           // Atualiza tela sem carregar dados
           const atual = this.appointments$.getValue();
-          const idx = atual.findIndex(a => a.agenda_id === comp.agenda_id);
+          const idx = atual.findIndex(a => a.agenda_id === compromisso.agenda_id);
+          console.log('idx edit:', idx);
+          console.log('compromisso:', compromisso);
           if (idx !== -1) {
             atual[idx] = {
               ...atual[idx],
-              date: comp.date, 
-              start: comp.date, 
-              alunoId: comp.alunoId,
-              localId: comp.localId,
-              titulo: comp.titulo,
-              statusId: comp.statusId,
-              servicoId: comp.servicoId,
-              equiptoId: comp.equiptoId
+              date: compromisso.data, 
+              start: compromisso.data, 
+              alunoId: compromisso.alunoId,
+              localId: compromisso.localId,
+              local: compromisso.local,
+              titulo: compromisso.titulo,
+              statusId: compromisso.statusId,
+              servicoId: compromisso.servicoId,
+              equiptoId: compromisso.equiptoId,
+              equipto: compromisso.equipto,
             };
             this.appointments$.next([...atual]);
           }
 
           this.loadAppointments();
+          setTimeout(() => this.cd.markForCheck());
         },
         error: (err) => {
           console.error('Erro ao atualizar  compromisso:', err);
@@ -749,11 +756,13 @@ console.log("this.equiptos ag: ", this.equiptos)
           agenda_id: appt.agenda_id,
           alunoId: result.alunoId,
           localId: result.localId,
+          local: result.local,
           date: result.date,
           titulo: result.titulo,
           statusId: appt.statusId ?? 1,
           servicoId: appt.servicoId,
-          equiptoId: appt.equiptoId,
+          equiptoId: result.equiptoId,
+          equipto: result.equipto,
         };
         console.log('appt z:', appt );
         console.log('updated z:', updated );
