@@ -112,7 +112,8 @@ export class AlunoFormComponent implements OnInit {
       // --- Inicializa autocomplete ---
       this.setupLocalAutocomplete();
       this.setupServicoAutocomplete();
-
+      this.horasPossiveis = this.gerarHorasPossiveis(this.configAgenda.horaInicio, this.configAgenda.horaFim, this.configAgenda.intervaloMinutos);
+      
       // --- Inicializa formArray diasAula ---
       const formArray = this.form.get('diasAula') as FormArray;
       for (let i = 0; i < 7; i++) {

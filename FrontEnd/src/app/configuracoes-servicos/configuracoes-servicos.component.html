@@ -1,4 +1,4 @@
-<div class="centro" style="max-width: 5000px; justify-content: center !important; padding-bottom: 50px;" >
+<div class="centro" style="max-width: 5000px; justify-content: center !important; padding-bottom: 0px;" >
     <mat-toolbar color="primary">
         <button mat-icon-button style="border-radius: 50%; display: flex; width: 20px !important; height: 20px !important; align-items: center !important; justify-content: center !important; background-color: black; padding: 7px; margin-right: 10px;" (click)="fechar()">
         <mat-icon style="color: white; display: flex; align-items: center !important; justify-content: center !important;">arrow_back</mat-icon>
@@ -6,17 +6,21 @@
         <span style="font-size: 16px !important; padding: 2px;">Meus Serviços</span>
     </mat-toolbar>
 
-
-    <mat-card-content style="max-width: 700px; min-width: 350px; justify-content: center !important; padding-bottom: 20px;">
-        <mat-card>
-            <mat-selection-list [(ngModel)]="servicosSelecionados">
+    <mat-card-content style="max-width: 1000px; min-width: 350px; justify-content: center !important; padding-bottom: 0px;">
+        <mat-card *ngIf="servicos.length > 0">
+             <mat-selection-list [(ngModel)]="servicosSelecionados">
             <mat-list-option *ngFor="let servico of servicos" [value]="servico.id">
                 {{ servico.nome }}
             </mat-list-option>
             </mat-selection-list>
-
-            <button mat-raised-button type="submit" (click)="salvarServicos()" class="btn-salvar">
-            Salvar
+        
+            <button 
+                mat-raised-button 
+                type="submit" 
+                (click)="salvarServicos()" 
+                class="btn-salvar"
+                *ngIf="temConexao">
+                Salvar
             </button>
         </mat-card>
     </mat-card-content>

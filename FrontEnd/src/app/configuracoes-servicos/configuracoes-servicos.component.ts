@@ -30,11 +30,21 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 export class ConfiguracoesServicosComponent implements OnInit {
   servicos: any[] = [];
   servicosSelecionados: number[] = [];
+  temConexao = false;
 
   constructor(private http: HttpClient, private snackBar: MatSnackBar, private router: Router) {}
 
   ngOnInit(): void {
+    this.verificarConexao();
     this.carregarServicos();
+  }
+
+  verificarConexao() {
+    this.temConexao = navigator.onLine;
+
+    // opcional: escutar mudanças de rede
+    window.addEventListener('online', () => this.temConexao = true);
+    window.addEventListener('offline', () => this.temConexao = false);
   }
 
   carregarServicos() {

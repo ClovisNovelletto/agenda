@@ -51,7 +51,7 @@ app-top {
   right: 0;
   height: 40px;
   padding-top: env(safe-area-inset-top, 0px); /* espaço p/ barra de status Android/iOS */
-  background-color: #ffa726;
+  background-color:  rgb(244, 138, 28);
   z-index: 1000;
 }
 
