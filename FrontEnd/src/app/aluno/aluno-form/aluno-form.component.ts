@@ -93,7 +93,7 @@ export class AlunoFormComponent implements OnInit {
       cpf: [''],
       datanasc: [null],
       localId: [null, Validators.required],
-      servicoId: [],
+      servicoId: [null], //null, Validators.required],
       diasAula: this.fb.array([])
     });
 
@@ -113,7 +113,7 @@ export class AlunoFormComponent implements OnInit {
       this.setupLocalAutocomplete();
       this.setupServicoAutocomplete();
       this.horasPossiveis = this.gerarHorasPossiveis(this.configAgenda.horaInicio, this.configAgenda.horaFim, this.configAgenda.intervaloMinutos);
-      
+
       // --- Inicializa formArray diasAula ---
       const formArray = this.form.get('diasAula') as FormArray;
       for (let i = 0; i < 7; i++) {
@@ -542,6 +542,7 @@ onLocalBlur() {
   if (local && local.id) {
     this.localCtrl.setValue(local.nome);
     this.form.get('localId')?.setValue(local.id);
+    this.localSelecionado = local;
 
     // Só marca como alterado se for válido
     this.form.get('localId')?.markAsDirty();
@@ -567,6 +568,7 @@ onLocalBlur() {
   if (servico && servico.id) {
     this.servicoCtrl.setValue(servico.nome);
     this.form.get('servicoId')?.setValue(servico.id);
+    this.servicoSelecionado = servico;
 
     // Só marca como alterado se for válido
     this.form.get('servicoId')?.markAsDirty();

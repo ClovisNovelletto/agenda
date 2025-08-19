@@ -106,14 +106,14 @@ export class AlunoListaComponent implements OnInit {
 
 
 
-ordenarPor(campo: keyof Aluno) {
-  this.alunos.sort((a, b) => {
-    const valorA = a[campo]?.toString().toLowerCase() || '';
-    const valorB = b[campo]?.toString().toLowerCase() || '';
-    return this.ordemCrescente ? valorA.localeCompare(valorB) : valorB.localeCompare(valorA);
-  });
+  ordenarPor(campo: keyof Aluno) {
+    this.alunos.sort((a, b) => {
+      const valorA = a[campo]?.toString().toLowerCase() || '';
+      const valorB = b[campo]?.toString().toLowerCase() || '';
+      return this.ordemCrescente ? valorA.localeCompare(valorB) : valorB.localeCompare(valorA);
+    });
 
-  this.ordemCrescente = !this.ordemCrescente;
-}
+    this.ordemCrescente = !this.ordemCrescente;
+  }
 
 }
