@@ -40,7 +40,7 @@
   height: 100vh;
   overflow: visible;
 }
-
+/*
 .form-wrapper {
   padding: 16px;
   display: flex;
@@ -48,6 +48,16 @@
   gap: 16px;
   overflow: visible;
 }
+*/
+.form-wrapper {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 70vh;   /* limita a altura dentro do dialog */
+  overflow-y: auto;   /* rolagem só no formulário */
+}
+
 .custom-toolbar-title {
   font-size: 14px !important;
 }
@@ -56,6 +66,11 @@
   width: 80%;
   margin-bottom: 5px;
   margin-left: 3px;
+}
+
+.mat-dialog-container {
+  max-height: 90vh !important; /* limita a altura */
+  overflow-y: auto !important; /* ativa rolagem */
 }
 
 buttonxxx {

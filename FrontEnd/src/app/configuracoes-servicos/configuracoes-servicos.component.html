@@ -1,3 +1,31 @@
+<div class="servicos-container">
+  <mat-toolbar color="primary" >
+    <button mat-icon-button disableRipple (click)="fechar()" class="btn-voltar" style="background: black !important; border: 0px; border-radius: 0 !important;">
+      <mat-icon >arrow_back</mat-icon>
+    </button>
+    <span style="font-size: 16px;">Meus Serviços</span>
+  </mat-toolbar>
+
+  <div class="conteudo-servicos">
+    <mat-card *ngIf="servicos.length > 0">
+      <mat-selection-list [(ngModel)]="servicosSelecionados">
+        <mat-list-option *ngFor="let servico of servicos" [value]="servico.id">
+          {{ servico.nome }}
+        </mat-list-option>
+      </mat-selection-list>
+
+      <button 
+        mat-raised-button disableRipple
+        type="submit" 
+        (click)="salvarServicos()" 
+        class="btn-salvar"
+        *ngIf="temConexao">
+        Salvar
+      </button>
+    </mat-card>
+  </div>
+</div>
+<!--
 <div class="centro" style="max-width: 5000px; justify-content: center !important; padding-bottom: 0px;" >
     <mat-toolbar color="primary">
         <button mat-icon-button style="border-radius: 50%; display: flex; width: 20px !important; height: 20px !important; align-items: center !important; justify-content: center !important; background-color: black; padding: 7px; margin-right: 10px;" (click)="fechar()">
@@ -25,4 +53,5 @@
         </mat-card>
     </mat-card-content>
 </div>
+-->
 

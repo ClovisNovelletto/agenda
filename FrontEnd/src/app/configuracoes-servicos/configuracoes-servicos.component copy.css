@@ -1,3 +1,50 @@
+/*
+.servicos-container {
+  display: flex;
+  flex-direction: column;
+  height: 90vh; // ocupa quase a tela toda 
+  max-width: 600px;
+  margin: auto;
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden; // evita barra de rolagem dupla 
+}
+
+.toolbar-servicos {
+  flex-shrink: 0;
+  position: sticky; // fica preso no topo 
+  top: 0;
+  z-index: 10;
+}
+
+.btn-voltar {
+  border-radius: 50%;
+  background-color: black;
+  color: white;
+  margin-right: 10px;
+}
+
+.conteudo-servicos {
+  flex: 1;
+  overflow-y: auto; // só essa parte rola 
+  padding: 16px;
+}
+
+.btn-salvar {
+  margin-top: 16px;
+  background-color: #4d494d;
+  color: rgb(226, 155, 226);
+  border-radius: 18px;
+  font-weight: bold;
+}
+*/
+
+.centro {
+    display: grid;  
+  justify-content: center;
+  padding-top: 20px; /* espaço no topo */
+}
+
 form {
   max-width: 600px;
   margin: 0 auto;
@@ -16,7 +63,6 @@ form {
 }
 
 .form-label {
-  /*font-weight: bold;*/
   color: white#222; /* contraste maior */
   padding: 0px 15px; 
 }
@@ -54,6 +100,10 @@ button {
     font-size: 0.8rem;
   }
 }
+
+
+
+
 
 .form-config {
   max-width: 600px;
@@ -107,16 +157,6 @@ button {
 
 .checkbox-dia:hover {
   background-color: #c8f0d3;
-}
-
-.btn-arredondadoxxx {
-  border-radius: 18px; /* ou 999px para bem arredondado */
-}
-
-.btn-salvar-xxx {
-  width: 100%;
-  font-size: 1rem;
-  margin-top: 1rem;
 }
 
 
@@ -175,58 +215,4 @@ body, html {
   flex-wrap: wrap;
   gap: 1px;
   margin-bottom: 16px;
-}
-
-
-mat-toolbar {
-  position: fixed;
-  top: 40px;
-  left: 0;
-  right: 0;
-  z-index: 1000; /* garante que fique por cima */
-}
-
-.conteudo {
-  margin-top: 56px; /* altura da toolbar, pra não ficar por baixo */
-  padding: 16px;
-}
-
-.btn-voltar {
-  border-radius: 50%;
-  background-color: black;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 10px;
-}
-
-.btn-voltar mat-icon {
-  color: white;
-}
-
-.titulo-toolbar {
-  font-size: 16px;
-  padding: 2px;
-}
-
-.campo-form {
-  margin-bottom: 12px;
-  width: 80%;
-  max-width: 220px;
-}
-
-.btn-salvarn {
-  width: 100%;
-  font-size: 0.9rem;
-  margin-top: 1rem;
-  background-color: #4d494d;
-  color: rgb(226, 155, 226);
-  border-radius: 18px;
-  transition: background-color 0.3s ease;
-}
-
-.btn-salvarn:hover {
-  background-color: #6d5266;
 }
