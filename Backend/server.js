@@ -349,6 +349,14 @@ app.post('/api/alunoInsert', authenticateToken, async (req, res) => {
     //console.error(req.body[`aludia${i}`]);
     //console.error(req.body[`aluhora${i}`]);
   }
+  // tratamento local indefinido
+  if (typeof req.body[`localId`] === 'undefined') {
+    req.body[`localId`] = null;
+  }
+  // tratamento serviço indefinido
+  if (typeof req.body[`servicoId`] === 'undefined') {
+    req.body[`servicoId`] = null;
+  }
 
   // Agora que os valores estão garantidos, você pode extrair:
   const {
