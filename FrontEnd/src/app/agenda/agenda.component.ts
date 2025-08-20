@@ -803,11 +803,13 @@ console.log("this.equiptos ag: ", this.equiptos)
       agenda_id: appt.agenda_id,
       alunoId: appt.alunoId,
       localId: appt.localId,
+      local: appt.local,
       date: toDate,
       titulo: appt.titulo,
       statusId: appt.statusId ?? 1,
       servicoId: appt.servicoId,
       equiptoId: appt.equiptoId,
+      equipto: appt.equipto,
     };
     //console.log('appt y:', appt );
     //console.log('updated y:', updated );
@@ -918,7 +920,7 @@ console.log("this.equiptos ag: ", this.equiptos)
       next: () => {
         this.snackBar.open('Agenda gerada com sucesso!', 'Fechar', { duration: 3000 });
         this.appointments$.next([]);
-        //this.appointments$ = new BehaviorSubject<Appointment[]>([]);
+        this.appointments$ = new BehaviorSubject<Appointment[]>([]);
         this.loadAppointments(); // ⬅️ recarrega os dados após sucesso
       },
       error: err => {

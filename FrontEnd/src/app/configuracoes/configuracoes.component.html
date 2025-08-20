@@ -19,7 +19,7 @@
     <mat-card-content style="display: flex; flex-direction: column; gap: 8px;">
 
       <!-- Dias da semana -->
-      <label class="form-label">Dias de Atendimento:</label>
+      <label class="form-label" style="padding-top: 25px;">Dias de Atendimento:</label>
       <div class="dias-checkboxes">
         <mat-checkbox *ngFor="let dia of diasSemana"
                       [checked]="configSelecionada.diasAtendimento.includes(dia.valor)"
