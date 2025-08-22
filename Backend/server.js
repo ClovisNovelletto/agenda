@@ -277,8 +277,9 @@ app.get('/api/alunoLista', authenticateToken, async (req, res) => {
         CASE WHEN aludia3 = true THEN 'Qua: ' || aluhora3 || CASE WHEN aludia4=true OR aludia5=true OR aludia6=true THEN ' / ' ELSE '' END ELSE '' END ||
         CASE WHEN aludia4 = true THEN 'Qui: ' || aluhora4 || CASE WHEN aludia5=true OR aludia6=true THEN ' / ' ELSE '' END ELSE '' END ||
         CASE WHEN aludia5 = true THEN 'Sex: ' || aluhora5 || CASE WHEN aludia6=true THEN ' / ' ELSE '' END ELSE '' END ||
-        CASE WHEN aludia6 = true THEN 'Sab: ' || aluhora6 ELSE '' END aludias
-      FROM Alunos WHERE AluPersonalID = ${personalId}`;
+        CASE WHEN aludia6 = true THEN 'Sab: ' || aluhora6 ELSE '' END aludias, CASE WHEN aluservicoid=2 THEN true ELSE false END AS "mostrarEquipto"
+      FROM Alunos WHERE AluPersonalID = ${personalId}
+      ORDER BY Aluno`;
     res.json(aluno);
     //console.log(result.rows); // apenas isso para logar
     // não usar res.json(result.rows);    // envia resposta corretamente uma única vez
@@ -923,6 +924,22 @@ app.post('/api/agendaGerar', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Erro ao inserir agenda' });
   }
 
+});
+
+app.post('/api/agendaAluno', authenticateToken, async (req, res) => {
+  try {
+    console.log("carrega agenda do aluno");
+    const personalId = req.user.personalId;
+    const {alunoId, ano, mes1a12} = req.body;
+    console.log("alunoId: ", alunoId);
+    console.log("ano: ", ano);
+    console.log("mes1a12: ", mes1a12);
+    const agendas = await sql`SELECT * FROM agendaslista WHERE PersonalID = ${personalId} AND AlunoID = ${alunoId} AND EXTRACT(YEAR FROM Date)=${ano} AND EXTRACT(MONTH FROM Date) =${mes1a12} ORDER BY Date`;
+    res.json(agendas);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao buscar agendas');
+  }
 });
 
 app.post('/api/agendaPorPeriodo', authenticateToken, async (req, res) => {
