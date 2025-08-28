@@ -25,6 +25,7 @@ import { MatListModule } from '@angular/material/list'; // Se for usar <mat-list
       <button mat-button (click)="select(4)">🔴 Falta</button>
       <mat-divider></mat-divider>
       <button mat-button (click)="editar()">✏️ Editar</button>
+      <button mat-button (click)="descricao()">✏️ Descrição</button>
     </div>
   `,
   styles: [`
@@ -45,11 +46,15 @@ export class AgendaStatusSheetComponent {
     private bottomSheetRef: MatBottomSheetRef<AgendaStatusSheetComponent>
   ) {}
 
-  select(statusId: number) {
-    this.bottomSheetRef.dismiss({ action: 'status', statusId });
+  select(statusid: number) {
+    this.bottomSheetRef.dismiss({ action: 'status', statusid });
   }
 
   editar() {
     this.bottomSheetRef.dismiss({ action: 'editar' });
+  }
+
+  descricao() {
+    this.bottomSheetRef.dismiss({ action: 'descricao' });
   }
 }

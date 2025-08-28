@@ -2,6 +2,7 @@
 import { NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 import { AgendaComponent } from './agenda/agenda.component';
+import { AgendaIndividualComponent } from './agenda/agenda-individual/agenda-individual.component';
 import { LoginComponent } from './login/login/login.component';
 import { RegisterComponent } from './login/register/register.component';
 import { EsqueciSenhaComponent } from './login/esqueci-senha/esqueci-senha.component';
@@ -21,6 +22,7 @@ export const routes: Routes = [
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
   /*{ path: 'agenda', component: AgendaComponent, canActivate: [AuthGuard] },*/
   { path: 'agenda', canActivate: [AuthGuard], loadComponent: () => import('./agenda/agenda.component').then(m => m.AgendaComponent)},
+  { path: 'agendaIndividual', canActivate: [AuthGuard], loadComponent: () => import('./agenda/agenda-individual/agenda-individual.component').then(m => m.AgendaIndividualComponent)},
   { path: 'configuracoes',  canActivate: [AuthGuard], loadComponent: () => import('./configuracoes/configuracoes.component').then(m => m.ConfiguracoesComponent)},
   { path: 'alunoLista',  canActivate: [AuthGuard], loadComponent: () => import('./aluno/aluno-lista/aluno-lista.component').then(m => m.AlunoListaComponent)},
   { path: 'localLista',  canActivate: [AuthGuard], loadComponent: () => import('./local/local-lista/local-lista.component').then(m => m.LocalListaComponent)},

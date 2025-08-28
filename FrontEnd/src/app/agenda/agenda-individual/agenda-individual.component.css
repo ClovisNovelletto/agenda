@@ -1,0 +1,346 @@
+html, body {
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
+  overflow: hidden!important; /* impede rolagem global */
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0px;
+}
+
+.toolbar {
+  position: sticky;
+  top: 0px;
+  z-index: 5;
+}
+
+.btn-voltar {
+  border-radius: 50%;
+  background-color: black;
+  width: 36px;
+  height: 36px;
+  margin-right: 10px;
+  color: #fff;
+}
+
+.titulo {
+  font-size: 16px;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.campo-mes {
+  width: 160px;
+  margin: 0px 0px 0px 12px;
+  padding: 0px!important;
+}
+
+/* Layout principal: sidebar + conteúdo */
+.agenda-layout {
+  display: flex;
+  /*flex: 1;*/
+  flex-direction: row;
+  overflow: hidden!important;
+  /*height: 100vh;*/ /* altura da tela inteira */
+  height: calc(100vh - 64px); /* já está certo */
+}
+
+.aluno-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  padding: 0px;
+  color: #004d40 !important;
+  font-size: 10px !important;
+  flex: 1;
+  overflow-y: auto;
+}
+
+
+.aluno-lista mat-checkbox {
+  font-size: 10px !important;
+  transform: scale(0.9);
+  margin-left: 0;
+  padding-left: 0;
+  color: #004d40 !important;
+}
+
+.content  {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  padding: 0px;
+  overflow: hidden!important;
+  overflow-y: auto;   /* força rolagem */
+  /*height: 80%;*/
+  min-height: 0;
+}
+
+.header-linha {
+  padding: 0 4px 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.tabela-wrap {
+  /*max-width: 100%;*/   /* limita a largura da tabela */
+  width: 100%;   /* limita a largura da tabela */
+  flex: 1;
+  overflow: auto;/* hidden!important;*/
+  padding: 0px 0px 0px;
+  /*border-radius: 8px;*/
+  border: 1px solid #ccc;
+  overflow-y: auto;   /* força rolagem */
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 16px 0;
+}
+
+.empty {
+  text-align: center;
+  color: #ffabf3;
+  padding: 16px;
+  /*color: #004d40 !important;*/
+}
+
+/* Tabela */
+.content table {
+  width: 100%;
+  max-width: 500px;   /* controla largura máxima */
+  table-layout: auto;
+}
+
+.agenda-table th,
+.agenda-table td {
+  padding: 0px 0px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.sidebar-header {
+  font-weight: 600;
+  padding: 8px 8px;
+  border-bottom: 1px solid #eee;
+  color: #ccc;
+}
+
+/* Sidebar (lista de alunos) */
+.sidebar {
+  width: 520px;
+  flex-shrink: 0;
+  max-width: 520px;
+  float: left;        /* garante que fique à esquerda */
+  overflow-y: auto;
+  background-color: #cf9ccf;
+  /*background: rgba(230, 214, 228, 0.911);*/
+  border-right: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 0px;
+  /*max-height: 800px;*/
+  color: #ccc;
+  flex: 0 0 250px; /* sidebar fixa mais estreita */
+  display: flex;
+  flex-direction: column;
+  /*height: 80%;*/
+  min-height: 0;
+}
+
+/* Datepicker só mês */
+.month-picker .mat-calendar-period-button {
+  pointer-events: none;
+}
+.month-picker .mat-calendar-content .mat-calendar-body-label {
+  display: none;
+}
+
+.corFonte {
+  color: #004d40 !important;
+}
+
+/* ajusta tabela para não expandir muito */
+table.mat-table {
+  width: 100%;
+  table-layout: fixed;  /* evita colunas largas demais */
+  font-size: 13px;      /* fonte mais compacta */
+}
+
+/* header menor */
+th.mat-header-cell {
+  padding: 4px 6px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* células mais enxutas */
+td.mat-cell {
+  padding: 0px 0px;
+  font-size: 13px;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* ajusta cada coluna se precisar */
+.mat-column-data {
+  width: 120px;
+  padding: 5px;
+}
+.mat-column-equipto {
+  width: 110px;
+  padding: 5px;
+}
+
+.mat-column-descricao {
+  width: 250px;
+  padding: 5px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .sidebar-header {
+    font-weight: 600;
+    padding: 8px 8px;
+    border-bottom: 1px solid #eee;
+    color: #ccc;
+    font-size: 14px;
+  }
+  .sidebar {
+    flex: 1;
+    max-width: 100%;
+    order: -1;
+    /*max-height: 80%;*/
+    width: 180px;     /* ajusta para a tela pequena, mas ainda grande */
+    float: left;    /* força ficar à esquerda */
+    position: relative; /* evita que fique flutuando para o lado direito */
+    margin-right: 10px;
+    flex: 0 0 120px; /* sidebar fixa mais estreita */
+    margin: 0px;
+    font-size: 8px;
+    --mat-checkbox-label-text-size: 10spx;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    min-height: 0;
+  }
+
+  .agenda-table th,
+  .agenda-table td {
+    padding: 0px 0px 0px 0px!important;
+    font-size: 1px;
+  }
+  .mat-column-data {
+    width: 120px;
+    padding: 5px;
+    font-size: 11px;
+  }
+  .mat-column-equipto {
+    width: 110px;
+    padding: 5px;
+    font-size: 11px;
+  }
+
+  .mat-column-descricao {
+    width: 50px;
+    padding: 5px;
+    font-size: 11px;
+  }
+
+  .campo-mes {
+    /*padding-left: 0px!important;*/
+    width: 115px;
+    height: 20px;
+    margin: 5px 0px 0px 5px;
+    font-size: 11px;
+    padding: 0px!important;
+  }
+}
+
+@media (max-width: 480px) {
+  .agenda-table th,
+  .agenda-table td {
+    padding: 0px 0px 0px 0px!important;
+    --mat-checkbox-label-text-size: 9px;
+  }
+
+  .mat-column-descricao {
+    width: 50px;
+    padding: 5px;
+    font-size: 11px;
+  }
+}
+
+
+.tabela-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+
+}
+
+.tabela-header {
+  width: 100%;
+  table-layout: fixed;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  height: 30px!important;
+  background-color: #cf9ccf;
+  border-bottom: 1px solid #eee;
+
+}
+
+.tabela-body {
+  flex: 1;
+  overflow-y: auto; /* só o corpo rola */
+  min-height: 0;
+}
+
+.tabela-body table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.tabela-header .mat-header-row {
+  height: 40px; /* altura da linha do cabeçalho */
+}
+
+.tabela-header-linha {
+  padding: 0 4px 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.tabela-header .mat-header-cell {
+  padding: 0 8px; /* ajusta o padding horizontal */
+  line-height: 40px; /* alinha o texto verticalmente */
+  font-size: 14px; /* opcional: diminui a fonte */
+}
+
+::ng-deep .tabela-header .mat-header-row {
+  height: 40px;
+}
+
+.custom-height {
+  /* Define uma densidade mais baixa para este campo */
+  /* -1 é um pouco mais baixo, -4 é o mais baixo */
+  --mat-form-field-density: -1!important; 
+  height: 80px !important; 
+  margin-left: 3px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  width: 150px;
+  font-size: 10px!important;
+  padding: 0px!important;
+}
+
+

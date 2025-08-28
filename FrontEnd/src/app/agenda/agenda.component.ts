@@ -2,6 +2,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { Component, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AppointmentDialogComponent } from '../appointment-dialog/appointment-dialog.component';
+import { DescricaoDialogComponent } from '././descricao-dialog/descricao-dialog.component';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -13,6 +14,7 @@ import { HttpClient } from '@angular/common/http';
 import { Aluno } from '../models/aluno.model';
 import { Local } from '../models/local.model';
 import { Equipto } from '../models/equipto.model';
+import { Servico } from '../models/servico.model';
 import { Personal } from '../models/personal.model';
 import { ConfigAgenda } from '../models/configAgenda.model';
 import { HttpHeaders } from '@angular/common/http';
@@ -48,6 +50,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { forkJoin } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { AuthService } from '../auth.service';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -88,12 +91,12 @@ export class AgendaComponent implements OnInit, AfterViewInit {
   alunos: Aluno[] = [];
   locals: Local[] = [];
   equiptos: Equipto[] = [];
+  servicos: Servico[] = [];
   personals: Personal[] = [];
   personal?:  Personal;
   agendaStatus: AgendaStatus[] = [];
   selectedAlunoId: number | null = null;
   selectedLocalId: number | null = null;
-  selectedPersonalId: number | null = null;
   appointments: Appointment[] = [];
   appointments$ = new BehaviorSubject<Appointment[]>([]);
   //readonly minutes: number[] = [0, 10, 20, 30, 40, 50];
@@ -119,6 +122,7 @@ export class AgendaComponent implements OnInit, AfterViewInit {
     mostrarLocal: true,
     mostrarServico: true,
     mostrarEquipto: true,    
+    servicoid: 23,
   };
   
   //appointments: { date: string; hour: string; titulo: string }[] = [];
@@ -142,9 +146,12 @@ export class AgendaComponent implements OnInit, AfterViewInit {
   isMobile: boolean = false;
   dropListIds: string[] = [];
 
-  constructor(private dialog: MatDialog, private http: HttpClient, private personalService: PersonalService, private agendaStatusService: AgendaStatusService, private bottomSheet: MatBottomSheet, private snackBar: MatSnackBar, private cd: ChangeDetectorRef) {}
+  constructor(private dialog: MatDialog, private http: HttpClient, private personalService: PersonalService,
+              private agendaStatusService: AgendaStatusService, private bottomSheet: MatBottomSheet,
+              private snackBar: MatSnackBar, private cd: ChangeDetectorRef, private authService: AuthService) {}
 
   ngOnInit(): void {
+    
     this.gerarListaMeses();
     // Define o mês atual como selecionado
     const hoje = dayjs();
@@ -179,12 +186,6 @@ export class AgendaComponent implements OnInit, AfterViewInit {
       console.log('configAgenda init dentro loald:', this.configAgenda);
       console.log('this.configAgenda.diasAtendimento.length:', this.configAgenda.diasAtendimento.length);
 
-      // Gera dados dependentes da configAgenda
-      //this.generateMinutes();
-      //this.generateAllDropListIds();
-      //this.generateWeek();
-      //this.generateHours();
-
       // Carrega todos os dados da agenda juntos
       
       forkJoin({
@@ -192,7 +193,8 @@ export class AgendaComponent implements OnInit, AfterViewInit {
         status: this.loadAgendaStatus(),
         alunos: this.loadAlunos(),
         locais: this.loadLocals(),
-        equips: this.loadEquiptos()
+        equips: this.loadEquiptos(),
+        servis: this.loadServicos(),
       }).subscribe(() => {
         this.generateMinutes();
         this.generateAllDropListIds();
@@ -203,43 +205,9 @@ export class AgendaComponent implements OnInit, AfterViewInit {
         setTimeout(() => this.cd.markForCheck());
       });
       
-      /*forkJoin({
-        alunos: this.loadAlunos(),
-        locais: this.loadLocals(),
-        equiptos: this.loadEquiptos(),
-        status: this.loadAgendaStatus(),
-        appointments: this.loadAppointments()
-      }).subscribe(results => {
-        this.alunos = results.alunos;
-        this.locals = results.locais;
-        this.equiptos = results.equiptos;
-        this.statusList = results.status;
-        this.appointments = results.appointments;
-
-        // Garante que o OnPush renderize tudo com cores
-        this.cd.detectChanges();
-      });*/
     });
     
 
-/*
-    this.loadPersonal().subscribe(config => {
-      this.configAgenda = config;
-      console.log('configAgenda init dentro loald:', this.configAgenda);
-      console.log('this.configAgenda.diasAtendimento.length:', this.configAgenda.diasAtendimento.length);
-      this.loadAgendaStatus();
-      this.generateMinutes(); // gerar os minutos corretamente
-      this.generateAllDropListIds(); // agora com os minutos corretos
-      this.generateWeek();           // se também depende disso
-      this.generateHours();
-      this.loadAlunos();
-      this.loadLocals();
-      this.loadEquiptos();
-      this.loadAppointments();      
-      setTimeout(() => {
-        this.cd.markForCheck();
-      });
-    });*/
   }
 
   gerarListaMeses() {
@@ -269,7 +237,8 @@ export class AgendaComponent implements OnInit, AfterViewInit {
         intervaloMinutos: personal.intervalo_minutos,
         mostrarLocal: personal.mostrarLocal,
         mostrarServico: personal.mostrarServico,
-        mostrarEquipto: personal.mostrarEquipto
+        mostrarEquipto: personal.mostrarEquipto,
+        servicoid: personal.servicoid,
       }))
     );
   }
@@ -330,26 +299,6 @@ export class AgendaComponent implements OnInit, AfterViewInit {
     }
   }
 
-/*
-  loadAppointments(): Observable<any> {
-  const semanas = [-14, -7, 0, 7, 14];
-  const requests: Observable<any>[] = [];
-
-  for (const dias of semanas) {
-    const base = dayjs(this.currentDate).add(dias, 'day');
-    const inicio = base.startOf('week').toDate();
-    const fim = base.endOf('week').toDate();
-
-    if (!this.periodoJaCarregado(inicio, fim)) {
-      requests.push(this.carregarAgendaPeriodo(inicio, fim));
-    }
-  }
-
-  // retorna um único observable que só completa quando todos terminarem
-  return forkJoin(requests);
-}
-*/
-
   loadAppointments() {
     const semanas = [-14, -7, 0, 7, 14]; // dias de deslocamento
 
@@ -364,41 +313,12 @@ export class AgendaComponent implements OnInit, AfterViewInit {
     }
   }
 
-  /*loadAppointments() {
-    const token = localStorage.getItem('jwt-token');
-    const headers = new HttpHeaders({Authorization: `Bearer ${token}` });
-    this.http.get<any[]>(`${environment.apiUrl}/agendas`, {headers}).subscribe((data) => {
-      const mapped = data.map((item) => ({
-        agenda_id: item.agenda_id,
-        date: dayjs(item.date).toDate(),
-        start: dayjs(item.start).toDate(),
-        hour: item.hour,
-        titulo: item.titulo,
-        alunoId: item.alunoid,
-        aluno: item.aluno,
-        localId: item.localid,
-        local: item.local,
-        personalId: item.personalid,
-        statusId: item.statusid ?? 1
-      }));
-      this.appointments$.next(mapped); // Agora dispara re-render
-    });
-  }*/
-
   loadAgendaStatus(): Observable<any[]> {
     return  this.agendaStatusService.getStatus().pipe(
       tap(data => this.agendaStatus = data) // atualiza a variável
     );
   }
 
-  /*    
-  loadAgendaStatus(): void {
-        this.agendaStatusService.getStatus().subscribe(res => {
-        this.agendaStatus = res;
-      console.warn('agendaStatus load :', this.agendaStatus);    
-      });
-  }
-  */
   loadAlunos(): Observable<any[]> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({Authorization: `Bearer ${token}` });    
@@ -407,15 +327,6 @@ export class AgendaComponent implements OnInit, AfterViewInit {
       tap(data => this.alunos = data) // atualiza a variável
     );
   }
-/*    
-  loadAlunos(): void {
-    const token = localStorage.getItem('jwt-token');
-    const headers = new HttpHeaders({Authorization: `Bearer ${token}` });    
-    this.http.get<Aluno[]>(`${environment.apiUrl}/alunos`, {headers}).subscribe((alunos) => {
-      this.alunos = alunos;
-    });
-  }
-*/
 
   loadLocals(): Observable<any[]> {
     const token = localStorage.getItem('jwt-token');
@@ -425,15 +336,6 @@ export class AgendaComponent implements OnInit, AfterViewInit {
       tap(data => this.locals = data)
     );
   }
-/*
-loadLocals(): void {
-    const token = localStorage.getItem('jwt-token');
-    const headers = new HttpHeaders({Authorization: `Bearer ${token}` });    
-    this.http.get<Local[]>(`${environment.apiUrl}/locals`, {headers}).subscribe((locals) => {
-      this.locals = locals;
-    });
-  }
-*/
 
   loadEquiptos(): Observable<any[]> {
     const token = localStorage.getItem('jwt-token');
@@ -444,15 +346,14 @@ loadLocals(): void {
     );
   }
 
-/*
-loadEquiptos(): void {
+  loadServicos(): Observable<any[]> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({Authorization: `Bearer ${token}` });    
-    this.http.get<Equipto[]>(`${environment.apiUrl}/equiptos`, {headers}).subscribe((equiptos) => {
-      this.equiptos = equiptos;
-    });
+    return this.http.get<Servico[]>(`${environment.apiUrl}/servicos`, {headers})
+        .pipe(
+      tap(data => this.servicos = data)
+    );
   }
-*/
 
   generateDropListId(day: Date, hour: string, minute: number): string {
     return `${day.toDateString()}-${hour}-${minute}`;
@@ -503,31 +404,39 @@ loadEquiptos(): void {
 
 
   openAppointmentModal(day: Date, hour: string, minute: number) {
+    const personalid = this.authService.getPersonalId();
     const [h] = hour.split(':');
     //const start = new Date(day);
     const start = dayjs.utc(day).tz('America/Sao_Paulo').toDate();
     start.setHours(+h, minute, 0, 0);
 
-console.log("this.locals ag: ", this.locals)            
-console.log("this.equiptos ag: ", this.equiptos)      
+console.log("this.locals ag: ", this.locals); 
+console.log("this.equiptos ag: ", this.equiptos);
+console.log("this.personal: ", this.personal); 
+console.log("this.configAgenda: ", this.configAgenda); 
+console.log("this.personal?.servicoid: ", this.configAgenda.servicoid);
 
 
     console.log('this.configAgenda.intervaloMinutos antess', this.configAgenda.intervaloMinutos);
     const dialogRef = this.dialog.open(AppointmentDialogComponent, {
-      width: '300px',
+      width: '360px',
       data: {
         date: start,
         hour: hour, // 👈 Adicione isso!
         alunos: this.alunos,
         locals: this.locals,
         equiptos: this.equiptos,
+        servicos: this.servicos,
+        servicoidPad: this.configAgenda.servicoid,
         mostrarEquipto: this.configAgenda.mostrarEquipto,
-        personalId: 1,//this.personalId // ajuste conforme o nome do id do personal
+        mostrarServico: this.configAgenda.mostrarServico,
+        personalid: personalid,//this.personalid // ajuste conforme o nome do id do personal
         intervalo: this.configAgenda?.intervaloMinutos ?? 10,  // 👈 Aqui passa o intervalo
         horaInicio: this.configAgenda.horaInicio,
         horaFim: this.configAgenda.horaFim,
       }
     });
+    
     console.log('this.configAgenda.intervaloMinutos depois ', this.configAgenda.intervaloMinutos);
     dialogRef.afterClosed().subscribe((result) => {
       if (result?.atualizouAlunos && result.aluno) {
@@ -547,27 +456,27 @@ console.log("this.equiptos ag: ", this.equiptos)
         }
         console.log('afterClosedo openAppointmentModal depois',  this.locals);
       }    
-      if (result?.titulo) {
+      if (result?.aluno) {
         //const start = new Date(day);
         const start = dayjs.utc(day).tz('America/Sao_Paulo').toDate();
         const [h] = hour.split(':');
         start.setHours(+h, minute, 0, 0);
         this.saveAppointment(
           result.agenda_id,
-          result.titulo,
+          /*result.titulo,*/
           result.descricao,
           result.date,
           result.hour,
-          result.alunoId,
+          result.alunoid,
           result.aluno,
-          result.localId,
+          result.localid,
           result.local,
-          result.statusId ?? 1,
-          result.servicoId,
+          result.statusid ?? 1,
+          result.servicoid,
           result.servico,
-          result.equiptoId,
+          result.equiptoid,
           result.equipto,
-          /*result.personalId,*/
+          result.personalid,
           start
         );
         console.log("openAppointmentModal",'openAppointmentModal!');
@@ -575,6 +484,46 @@ console.log("this.equiptos ag: ", this.equiptos)
         this.salvarCompromisso(result);
       }
     });
+  }
+
+  salvarDescricao(comp: any): void {
+    const token = localStorage.getItem('jwt-token');
+        const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+        console.log('entrou salvarDescricao!');
+
+    const compromisso = {
+      agenda_id: comp.agenda_id,
+      descricao: comp.descricao,
+    };
+
+    console.log('Compromisso descrição dados enviados!');
+
+    if (comp.agenda_id) {
+      this.http.put(`${environment.apiUrl}/agendasDescricao`, compromisso, { headers }).subscribe({
+        next: () => {
+          console.log('Compromisso atualizado com sucesso!');
+          
+          // Atualiza tela sem carregar dados
+          const atual = this.appointments$.getValue();
+          const idx = atual.findIndex(a => a.agenda_id === compromisso.agenda_id);
+          console.log('idx edit:', idx);
+          console.log('compromisso:', compromisso);
+          if (idx !== -1) {
+            atual[idx] = {
+              ...atual[idx],
+              descricao: compromisso.descricao, 
+            };
+            this.appointments$.next([...atual]);
+          }
+
+          this.loadAppointments();
+          setTimeout(() => this.cd.markForCheck());
+        },
+        error: (err) => {
+          console.error('Erro ao atualizar descrição compromisso:', err);
+        }
+      });
+    }
   }
 
   salvarCompromisso(comp: any): void {
@@ -589,55 +538,56 @@ console.log("this.equiptos ag: ", this.equiptos)
       const dataCompleta = dayjs.utc(comp.date).tz('America/Sao_Paulo').toDate();
 
     const compromisso = {
-      /*personalId: comp.personalId,*/ // opcional se já vem do token
-      agenda_id: comp.agenda_id,
-      alunoId: comp.alunoId,
-      localId: comp.localId,
+      /*personalid: comp.personalid,*/ // opcional se já vem do token
+      agenda_id: comp.agenda_id ?? null,
+      alunoid: comp.alunoid,
+      localid: comp.localid,
+      aluno: comp.aluno,
       local: comp.local,
       data: comp.date,
       /*hora: comp.hour,*/
-      titulo: comp.titulo,
+      /*titulo: comp.titulo,*/
       //descricao: comp.descricao,
-      statusId: comp.statusId ?? 1,/*'agendado' // padrão*/
-      servicoId: comp.servicoId,
-      equiptoId: comp.equiptoId,
+      statusid: comp.statusid ?? 1,/*'agendado' // padrão*/
+      servicoid: comp.servicoid,
+      servico: comp.servico,
+      hour: comp.hour,
+      equiptoid: comp.equiptoid,
       equipto: comp.equipto,
     };
 
     console.log('Compromisso dados enviados!');
     //console.log(compromisso);
 
-    if (comp.agenda_id) {
+    if (!(compromisso.agenda_id == null)) {
       /*this.http.put('/api/agendas', compromisso, { headers }).subscribe({*/
       this.http.put(`${environment.apiUrl}/agendas`, compromisso, { headers }).subscribe({
         next: () => {
           console.log('Compromisso atualizado com sucesso!');
-          // Aqui você pode recarregar a agenda ou dar feedback ao usuário
-          // Atualiza localmente:
-          
           // Atualiza tela sem carregar dados
           const atual = this.appointments$.getValue();
           const idx = atual.findIndex(a => a.agenda_id === compromisso.agenda_id);
           console.log('idx edit:', idx);
-          console.log('compromisso:', compromisso);
+          //console.log('compromisso:', compromisso);
           if (idx !== -1) {
             atual[idx] = {
               ...atual[idx],
               date: compromisso.data, 
               start: compromisso.data, 
-              alunoId: compromisso.alunoId,
-              localId: compromisso.localId,
+              alunoid: compromisso.alunoid,
+              aluno: compromisso.aluno,
+              localid: compromisso.localid,
               local: compromisso.local,
-              titulo: compromisso.titulo,
-              statusId: compromisso.statusId,
-              servicoId: compromisso.servicoId,
-              equiptoId: compromisso.equiptoId,
+              /*titulo: compromisso.titulo,*/
+              statusid: compromisso.statusid,
+              servicoid: compromisso.servicoid,
+              equiptoid: compromisso.equiptoid,
               equipto: compromisso.equipto,
             };
             this.appointments$.next([...atual]);
           }
 
-          this.loadAppointments();
+          //this.loadAppointments();
           setTimeout(() => this.cd.markForCheck());
         },
         error: (err) => {
@@ -645,14 +595,39 @@ console.log("this.equiptos ag: ", this.equiptos)
         }
       });
     }else{
-
-
       /*this.http.post('/api/agendas', compromisso, { headers }).subscribe({*/
       this.http.post(`${environment.apiUrl}/agendas`, compromisso, { headers }).subscribe({
-        next: () => {
+        next: (novoCompromisso: any) => {
           console.log('Compromisso inserido com sucesso!');
           // Aqui você pode recarregar a agenda ou dar feedback ao usuário
-          this.loadAppointments();
+          const atual = this.appointments$.getValue();
+          const idx = atual.findIndex(a => a.agenda_id === novoCompromisso.agenda_id);
+
+          if (idx === -1) {
+            atual.push({
+              agenda_id: novoCompromisso.agenda_id,
+              date: dayjs(novoCompromisso.date).toDate(), 
+              start: dayjs(novoCompromisso.date).toDate(),
+              hour: novoCompromisso.hour,
+              alunoid: novoCompromisso.alunoid,
+              aluno: novoCompromisso.aluno,
+              localid: novoCompromisso.localid,
+              local: novoCompromisso.local,
+              personalid: novoCompromisso.personalid,
+              statusid: novoCompromisso.statusid,
+              servicoid: novoCompromisso.servicoid,
+              servico: novoCompromisso.servico,
+              equiptoid: novoCompromisso.equiptoid,
+              equipto: novoCompromisso.equipto,
+              descricao: novoCompromisso.descricao
+            });
+            this.appointments$.next([...atual]);
+            /*this.loadAppointments();*/
+            setTimeout(() => this.cd.markForCheck());
+            /*this.cd.detectChanges();*/
+          }
+          
+          //this.loadAppointments();
         },
         error: (err) => {
           console.error('Erro ao inserir compromisso:', err);
@@ -661,10 +636,10 @@ console.log("this.equiptos ag: ", this.equiptos)
     }
   }
 
-  getStatusCor(statusId: number): string {
-    //console.warn('statusId:', statusId);
+  getStatusCor(statusid: number): string {
+    //console.warn('statusid:', statusid);
     //console.warn('agendaStatus get:', this.agendaStatus);
-    return this.agendaStatus?.find(s => s.id === statusId)?.cor || 'transparent';
+    return this.agendaStatus?.find(s => s.id === statusid)?.cor || 'transparent';
   }
 
   getDateTime(appt: Appointment): Date {
@@ -707,6 +682,35 @@ console.log("this.equiptos ag: ", this.equiptos)
 
   }
 
+  editarDescricao(appt: any): void {
+    agenda_id: appt.agenda_id,
+    console.log('entrou no ediar descrição:');
+    console.log('appt:', appt );
+    //const safeDate = new Date(Date.parse(appt.date));
+    const dialogRef = this.dialog.open(DescricaoDialogComponent, {
+      width: '360px',
+      data: {
+        descricao: appt.descricao,
+      }
+    });
+console.log('teste vai:');
+    dialogRef.afterClosed().subscribe(descr => {
+      console.log('agora é a volta:', descr );
+      if (!(descr == null)) {
+        // Atualiza compromisso existente
+        console.log('result desc rx:', descr );
+        console.log('appt descr x:', appt );
+        const updated = {
+          agenda_id: appt.agenda_id,
+          descricao: descr
+        };
+        console.log('appt z:', appt );
+        console.log('updated z:', updated );
+        this.salvarDescricao(updated); // mesma função que salva novo ou atualiza
+      }
+    });
+  }
+
   editarCompromisso(appt: any): void {
     console.log('entrou no ediar:');
     console.log('appt:', appt );
@@ -715,7 +719,7 @@ console.log("this.equiptos ag: ", this.equiptos)
     console.log('appt.data:', appt.date );
     console.log('safeDate:', safeDate );
     const dialogRef = this.dialog.open(AppointmentDialogComponent, {
-      width: '300px',
+      width: '360px',
       data: {
         date: safeDate,
         hour: appt.data, // se quiser passar como string também
@@ -723,7 +727,9 @@ console.log("this.equiptos ag: ", this.equiptos)
         alunos: this.alunos,     // 👈 passa a lista
         locals: this.locals,     // 👈 passa a lista
         equiptos: this.equiptos,
+        servicos: this.servicos,
         mostrarEquipto: this.configAgenda.mostrarEquipto,
+        mostrarServico: this.configAgenda.mostrarServico,
         intervalo: this.configAgenda?.intervaloMinutos ?? 10,  // 👈 Aqui passa o intervalo
         horaInicio: this.configAgenda.horaInicio,
         horaFim: this.configAgenda.horaFim,
@@ -747,21 +753,23 @@ console.log("this.equiptos ag: ", this.equiptos)
         }
       console.log('afterClosedo editarCompromisso depois',  this.locals);
       }    
-      if (result?.titulo) {
+      if (result?.aluno) {
         // Atualiza compromisso existente
         console.log('result x:', result );
         console.log('appt x:', appt );
-        //alunoId, localId, data, /*hora,*/ titulo, /*descricao,*/ status 
+        //alunoid, localid, data, /*hora,*/ titulo, /*descricao,*/ status 
         const updated = {
           agenda_id: appt.agenda_id,
-          alunoId: result.alunoId,
-          localId: result.localId,
+          alunoid: result.alunoid,
+          aluno: result.aluno,
+          localid: result.localid,
           local: result.local,
           date: result.date,
-          titulo: result.titulo,
-          statusId: appt.statusId ?? 1,
-          servicoId: appt.servicoId,
-          equiptoId: result.equiptoId,
+          /*titulo: result.titulo,*/
+          statusid: appt.statusid ?? 1,
+          servicoid: appt.servicoid,
+          servico: appt.servico,
+          equiptoid: result.equiptoid,
           equipto: result.equipto,
         };
         console.log('appt z:', appt );
@@ -801,18 +809,20 @@ console.log("this.equiptos ag: ", this.equiptos)
 
     const updated = {
       agenda_id: appt.agenda_id,
-      alunoId: appt.alunoId,
-      localId: appt.localId,
+      alunoid: appt.alunoid,
+      aluno: appt.aluno,
+      localid: appt.localid,
       local: appt.local,
       date: toDate,
-      titulo: appt.titulo,
-      statusId: appt.statusId ?? 1,
-      servicoId: appt.servicoId,
-      equiptoId: appt.equiptoId,
+      /*titulo: appt.titulo,*/
+      statusid: appt.statusid ?? 1,
+      servicoid: appt.servicoid,
+      servico: appt.servico,
+      equiptoid: appt.equiptoid,
       equipto: appt.equipto,
     };
-    //console.log('appt y:', appt );
-    //console.log('updated y:', updated );
+    console.log('appt y:', appt );
+    console.log('updated y:', updated );
 
     this.salvarCompromisso(updated);
   }
@@ -861,15 +871,17 @@ console.log("this.equiptos ag: ", this.equiptos)
       console.log('result.action.', result.action);      
       if (result.action === 'editar') {
         this.editarCompromisso(appt);
-      } else if (result.action === 'status' && appt.statusId != result.statusId) {
-        const statusId = result.statusId ?? 1;
+      } else if (result.action === 'descricao') {
+        this.editarDescricao(appt);
+      } else if (result.action === 'status' && appt.statusid != result.statusid) {
+        const statusid = result.statusid ?? 1;
         console.log('appt:', appt);
-        console.log('status antigo:', appt.statusId);
-        console.log('status novo:', result.statusId);
+        console.log('status antigo:', appt.statusid);
+        console.log('status novo:', result.statusid);
 
         const updated = {
           agenda_id: appt.agenda_id,
-          statusId: result.statusId ?? 1,
+          statusid: result.statusid ?? 1,
         };
 
         const token = localStorage.getItem('jwt-token');
@@ -886,7 +898,7 @@ console.log("this.equiptos ag: ", this.equiptos)
             if (idx !== -1) {
               atual[idx] = {
                 ...atual[idx],
-                statusId: updated.statusId
+                statusid: updated.statusid
               };
               this.appointments$.next([...atual]);
             }
@@ -897,7 +909,6 @@ console.log("this.equiptos ag: ", this.equiptos)
             console.error('Erro ao atualizar  compromisso:', err);
           }
         });
-
       }
     });
   }
@@ -921,7 +932,9 @@ console.log("this.equiptos ag: ", this.equiptos)
         this.snackBar.open('Agenda gerada com sucesso!', 'Fechar', { duration: 3000 });
         this.appointments$.next([]);
         this.appointments$ = new BehaviorSubject<Appointment[]>([]);
+        this.carregamentosFeitos = [];
         this.loadAppointments(); // ⬅️ recarrega os dados após sucesso
+        setTimeout(() => this.cd.markForCheck());
       },
       error: err => {
         this.snackBar.open('Erro ao gerar agenda!', 'Fechar', { duration: 3000 });
@@ -931,7 +944,7 @@ console.log("this.equiptos ag: ", this.equiptos)
 
   abrirDialogoGerarAgenda() {
     const dialogRef = this.dialog.open(DialogGerarAgendaComponent, {
-      width: '300px'
+      width: '360px'
     });
 
     dialogRef.afterClosed().subscribe((mesSelecionado) => {
@@ -944,20 +957,20 @@ console.log("this.equiptos ag: ", this.equiptos)
     
   saveAppointment(
     agenda_id: BigInteger,
-    titulo: string,
+    /*titulo: string,*/
     descricao: string,
     date: Date,
     hour: string,
-    alunoId: number,
+    alunoid: number,
     aluno: string,
-    localId: number,
+    localid: number,
     local: string,
-    statusId: number,
-    servicoId: number,
+    statusid: number,
+    servicoid: number,
     servico: string,
-    equiptoId: number,
+    equiptoid: number,
     equipto: string,
-    /*personalId: number,*/
+    personalid: number,
     start: Date
   ): void {
     const [h, m] = [start.getHours(), start.getMinutes()];
@@ -965,21 +978,21 @@ console.log("this.equiptos ag: ", this.equiptos)
 
     const newAppointment: Appointment = {
       agenda_id,
-      titulo,
+      /*titulo,*/
       descricao,
       date,
       start,
       hour: formattedHour,
-      alunoId,
+      alunoid,
       aluno,
-      localId,
+      localid,
       local,
-      statusId,
-      servicoId,
+      statusid,
+      servicoid,
       servico,
-      equiptoId,
+      equiptoid,
       equipto,
-      /*personalId*/
+      personalid,
     };
 
     this.appointments.push(newAppointment);
@@ -1000,26 +1013,27 @@ console.log("this.equiptos ag: ", this.equiptos)
 
     const payload = {
       data_inicio: dayjs(inicio).format('YYYY-MM-DD'),
-      data_fim: dayjs(fim).format('YYYY-MM-DD')
+      data_fim: dayjs(fim).format('YYYY-MM-DD HH:MM')
     };
-
+console.log('payload:', payload);
     this.http.post<any[]>(`${environment.apiUrl}/agendaPorPeriodo`, payload, {headers}).subscribe(dados => {
       const novos = dados.map(item =>  ({
         agenda_id: item.agenda_id,
         date: dayjs(item.date).toDate(),
         start: dayjs(item.start).toDate(),
         hour: item.hour,
-        titulo: item.titulo,
-        alunoId: item.alunoid,
+        /*titulo: item.titulo,*/
+        alunoid: item.alunoid,
         aluno: item.aluno,
-        localId: item.localid,
+        localid: item.localid,
         local: item.local,
-        personalId: item.personalid,
-        statusId: item.statusid ?? 1,
-        servicoId: item.servicoid,
+        personalid: item.personalid,
+        statusid: item.statusid ?? 1,
+        servicoid: item.servicoid,
         servico: item.servico,
-        equiptoId: item.equiptoid,
+        equiptoid: item.equiptoid,
         equipto: item.equipto,
+        descricao: item.descricao,
       }));
       const atuais = this.appointments$.value;
 

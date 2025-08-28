@@ -87,7 +87,7 @@ export class AuthService {
     if (!token) return null;
 
     const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.personalId ?? null;
+    return payload.personalid ?? null;
   }
 
   getAlunoId(): number | null {
@@ -95,7 +95,7 @@ export class AuthService {
     if (!token) return null;
 
     const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.alunoId ?? null;
+    return payload.alunoid ?? null;
   }
 
 }

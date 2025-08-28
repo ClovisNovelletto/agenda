@@ -35,7 +35,7 @@ export class DialogGerarAgendaComponent implements OnInit {
       const data = hoje.add(i, 'month');
       const inicio = data.startOf('month').toDate();
       const fim = data.endOf('month').toDate();
-      const label = data.format('MMMM [de] YYYY');
+      const label = data.format('MM/YYYY');
       const item = { label, dataInicio: inicio, dataFim: fim };
       this.meses.push(item);
 

@@ -26,7 +26,7 @@
  <mat-form-field appearance="fill" *ngIf="mostrarSeletorMes">
   <mat-label>Escolha o mês</mat-label>
   <mat-select [value]="mesSelecionado" (selectionChange)="gerarListaMeses()">
-    <mat-option *ngFor="let mes of mesesDisponiveis" [value]="mes">
+    <mat-option *ngFor="let mes of mesesDisponiveis" [value]="mes" >
       {{ mes.label }}
     </mat-option>
   </mat-select>
@@ -75,7 +75,7 @@
                     (cdkDragEnded)="draggedAppointment = null"
                     [cdkDragData]="{ appointment: appt, fromDay: day, fromHour: hour, fromMinute: minute }"
                     class="appointment"
-                    [style.backgroundColor]="getStatusCor(appt.statusId)"
+                    [style.backgroundColor]="getStatusCor(appt.statusid)"
                     (click)="abrirMenuStatus(appt, day, hour, minute); $event.stopPropagation()">
 
                     <!-- Preview que aparece durante o drag -->

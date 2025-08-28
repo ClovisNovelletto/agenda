@@ -5,6 +5,7 @@ html, body {
   padding: 0;
   box-sizing: border-box;
   overflow-x: visible;
+  /*overflow: hidden;*/
   -webkit-overflow-scrolling: touch;
 }
 *, *::before, *::after {

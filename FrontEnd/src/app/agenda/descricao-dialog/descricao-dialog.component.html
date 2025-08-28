@@ -1,0 +1,48 @@
+<!-- descricao-dialog.component.html -->
+
+<mat-toolbar color="primary" style="margin-bottom: 0px; margin-top: 5px;">
+  <button mat-icon-button style="border-width:0px; display: flex; width: 20px !important; height: 20px !important; align-items: center !important; justify-content: center !important; background-color: black; color:white; padding: 7px; margin-right: 10px;" (click)="fechar()">
+        <mat-icon style="display: flex; align-items: center !important; justify-content: center !important;">arrow_back</mat-icon>
+  </button>
+  <span style="font-size: 16px !important; padding: 2px;">Descrição</span>
+</mat-toolbar>
+
+<!--<h2 mat-dialog-title>Descrição</h2>-->
+<mat-dialog-content class="descricao-dialog">
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Digite a descrição</mat-label>
+    <textarea
+      matInput
+      [(ngModel)]="descricao"
+      rows="10">
+    </textarea>
+  </mat-form-field>
+</mat-dialog-content>
+
+    <div>
+      <button mat-raised-button (click)="salvar()" class="btn-salvar" style="margin-left: 25px; margin-bottom: 20px;">
+        Salvar
+      </button>
+    </div>
+
+    <!--
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close (click)="cancelar()">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="salvar()">Salvar</button>
+</mat-dialog-actions>
+-->
+<!--
+<h2 mat-dialog-title>Descrição</h2>
+
+<mat-dialog-content>
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Digite a descrição</mat-label>
+    <textarea matInput [(ngModel)]="descricao" rows="6" placeholder="Escreva sua descrição aqui..."></textarea>
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancelar()">Cancelar</button>
+  <button mat-flat-button color="primary" (click)="salvar()">Salvar</button>
+</mat-dialog-actions>
+-->

@@ -21,6 +21,7 @@ export class AgendaStatusService {
   getStatus(): Observable<AgendaStatus[]> {
   const token = localStorage.getItem('jwt-token');
   const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+  console.log("entrou no serviço");
   return this.http.get<AgendaStatus[]>(`${environment.apiUrl}/agendaStatus`, { headers });
 }
 

@@ -72,8 +72,8 @@ export class AlunoFormComponent implements OnInit {
     intervaloMinutos: 10,
     mostrarLocal: true, 
     mostrarServico: true,
-    mostrarEquipto: true
-    
+    mostrarEquipto: true,
+    servicoid: 23,
   };
 
   constructor(
@@ -92,8 +92,9 @@ export class AlunoFormComponent implements OnInit {
       email: [''],
       cpf: [''],
       datanasc: [null],
-      localId: [null, Validators.required],
-      servicoId: [null], //null, Validators.required],
+      datainicio: [null],
+      localid: [null, Validators.required],
+      servicoid: [null, Validators.required],
       diasAula: this.fb.array([])
     });
 
@@ -130,8 +131,8 @@ export class AlunoFormComponent implements OnInit {
       }
 
       if (this.data?.aluno) {
-        const localSelecionado = this.locals.find(l => l.id === this.data.aluno.localId);
-        const servicoSelecionado = this.servicos.find(s => s.id === this.data.aluno.servicoId);
+        const localSelecionado = this.locals.find(l => l.id === this.data.aluno.localid);
+        const servicoSelecionado = this.servicos.find(s => s.id === this.data.aluno.servicoid);
 
         this.localSelecionado = localSelecionado;
         this.servicoSelecionado = servicoSelecionado;
@@ -144,8 +145,9 @@ export class AlunoFormComponent implements OnInit {
           email: this.data.aluno.email,
           cpf: this.data.aluno.cpf,
           datanasc: this.data.aluno.datanasc ? new Date(this.data.aluno.datanasc) : null,
-          localId: localSelecionado?.id,
-          servicoId: servicoSelecionado?.id
+          datainicio: this.data.aluno.datainicio ? new Date(this.data.aluno.datainicio) : null,
+          localid: localSelecionado?.id,
+          servicoid: servicoSelecionado?.id
         });
 
         // Preenche nomes nos autocompletes
@@ -163,39 +165,23 @@ export class AlunoFormComponent implements OnInit {
           ativo ? grupo.get('hora')?.enable() : grupo.get('hora')?.disable();
         }
       }
-
-      // --- Preenche valores do aluno, se houver ---
-      /*if (this.data?.aluno) {
-        const localSelecionado = this.locals.find(l => l.id === this.data.aluno.localId);
-        const servicoSelecionado = this.servicos.find(s => s.id === this.data.aluno.servicoId);
-
-        this.localSelecionado = localSelecionado;
-        this.servicoSelecionado = servicoSelecionado;
-
-        this.form.patchValue({
-          nome: this.data.aluno.nome,
-          telefone: this.data.aluno.telefone,
-          ativo: this.data.aluno.ativo,
-          email: this.data.aluno.email,
-          cpf: this.data.aluno.cpf,
-          datanasc: this.data.aluno.datanasc ? new Date(this.data.aluno.datanasc) : null,
-          localId: localSelecionado?.id,
-          servicoId: servicoSelecionado?.id
-        });
-console.log('his.data.aluno:', this.data.aluno);
-console.log('localSelecionado:', localSelecionado);
-console.log('this.locals :', this.locals );
-console.log('this.servicos :', this.servicos);
-        const diasAulaArray = this.form.get('diasAula') as FormArray;
-        for (let i = 0; i < 7; i++) {
-          const ativo = this.data.aluno[`aludia${i}`] ?? false;
-          const hora = this.data.aluno[`aluhora${i}`] ?? '';
-          const grupo = diasAulaArray.at(i);
-          grupo.get('ativo')?.setValue(ativo);
-          grupo.get('hora')?.setValue(hora);
-          ativo ? grupo.get('hora')?.enable() : grupo.get('hora')?.disable();
-        }
-      }*/
+      else {
+        if(servicos.length>0) {
+          const nomeSelecionado = this.servicos[0].nome;
+          const servico = this.servicos.find(l => l.nome === nomeSelecionado);
+          if (servico && servico.id) {
+            this.servicoCtrl.setValue(servico.nome);
+            this.form.get('servicoid')?.setValue(servico.id);
+            this.servicoSelecionado = servico;
+            this.form.get('servicoid')?.setValue(servico.id);
+            this.form.get('servicoid')?.markAsDirty();
+            this.form.get('servicoid')?.markAsTouched();
+            this.form.get('servicoid')?.updateValueAndValidity();
+            this.form.markAsDirty();
+            this.form.updateValueAndValidity();
+          }
+        }  
+      }
 
       // --- Marcar campos como dirty para habilitar botão salvar ---
       this.form.markAllAsTouched();
@@ -252,179 +238,6 @@ console.log('this.servicos :', this.servicos);
       });
   }
 
-/*
-  ngOnInit(): void {
-
-    this.form = this.fb.group({
-      nome: ['', Validators.required],
-      telefone: ['', Validators.required],
-      ativo: [true],
-      email: [''],
-      cpf: [''],
-      datanasc: [null],
-      localId: ['', Validators.required],
-      servicoId: [],
-      diasAula: this.fb.array([])
-    });
-
-    const token = localStorage.getItem('jwt-token');
-    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-
-    this.http.get<any[]>(`${environment.apiUrl}/locals`, { headers })
-      .subscribe(localsData => {
-      this.locals = localsData;
-      console.log('locals carregados:', this.locals);
-
-      // Aqui você já pode preencher o campo, porque os dados chegaram
-      if (this.data?.aluno?.localId) {
-        const localEncontrado = this.locals.find(l => l.id === this.data.aluno.localId);
-        if (localEncontrado) {
-          this.localCtrl.setValue(localEncontrado.nome);
-          this.localSelecionado = localEncontrado;
-        }
-        this.localCtrl.setValue(localEncontrado.nome);
-        this.localCtrl.markAsDirty();
-        this.localCtrl.markAsTouched();
-      }
-
-      // Configuração do autocomplete
-      this.localCtrl.valueChanges
-        .pipe(
-          startWith(''),
-          map(value => value?.toLowerCase()),
-          map(nome => {
-            const filtrado = this.locals.filter(a =>
-              a.nome.toLowerCase().includes(nome)
-            );
-            this.localEncontrado = filtrado.length > 0;
-            return filtrado;
-          })
-        )
-        .subscribe(result => {
-          this.localsFiltrados = result;
-        });
-    });
-
-    this.http.get<any[]>(`${environment.apiUrl}/servicos`, { headers })
-      .subscribe(servicosData => {
-      this.servicos = servicosData;
-      console.log('servicos carregados:', this.servicos);
-
-      // Aqui você já pode preencher o campo, porque os dados chegaram
-      if (this.data?.aluno?.servicoId) {
-        const servicoEncontrado = this.servicos.find(l => l.id === this.data.aluno.servicoId);
-        if (servicoEncontrado) {
-          this.servicoCtrl.setValue(servicoEncontrado.nome);
-          this.servicoSelecionado = servicoEncontrado;
-        }
-      }
-
-      // Configuração do autocomplete
-      this.servicoCtrl.valueChanges
-        .pipe(
-          startWith(''),
-          map(value => value?.toLowerCase()),
-          map(nome => {
-            const filtrado = this.servicos.filter(a =>
-              a.nome.toLowerCase().includes(nome)
-            );
-            this.servicoEncontrado = filtrado.length > 0;
-            return filtrado;
-          })
-        )
-        .subscribe(result => {
-          this.servicosFiltrados = result;
-        });
-    });
-        
-    this.loadPersonal().subscribe(config => {
-      this.configAgenda = config;
-      console.log('diasAtendimento:', this.configAgenda.diasAtendimento); // agora sim!
-      console.log('configAgenda init dentro loald:', this.configAgenda);
-      console.log('this.configAgenda.diasAtendimento.length:', this.configAgenda.diasAtendimento.length);
-
-    
-      //passado para cá pq quando executado fora executa antes e não tem valores
-
-       //const dias = this.configAgenda.diasAtendimento; // ex: [1,2,3,4,5,6]
-       
-      const formArray = this.form.get('diasAula') as FormArray;
-
-      // Cria 7 entradas fixas: domingo (0) até sábado (6)
-      for (let i = 0; i < 7; i++) {
-        const estaHabilitado = this.configAgenda.diasAtendimento.includes(i);
-
-        const grupo = this.fb.group({
-          ativo: [{ value: false, disabled: !estaHabilitado }],
-          hora: [{ value: '', disabled: true }]
-        });
-
-        grupo.get('ativo')?.valueChanges.subscribe(ativo => {
-          const horaControl = grupo.get('hora');
-          if (ativo && estaHabilitado) {
-            horaControl?.enable();
-          } else {
-            horaControl?.disable();
-          }
-        });
-
-        formArray.push(grupo);
-      }
-
-      console.log("diasAula:", this.form.value.diasAula);
-
-      this.horasPossiveis = this.gerarHorasPossiveis(this.configAgenda.horaInicio, this.configAgenda.horaFim, this.configAgenda.intervaloMinutos);
-      
-      console.log("this.data?.aluno:", this.data?.aluno);
-      
-      console.log("locals:", this.locals);
-      //const localSelecionado = this.locals?.find(l => l.id === this.data.aluno.localId);
-      console.log("this.localSelecionado:", this.localSelecionado);
-
-      if (this.data?.aluno) {
-        this.form.patchValue({
-          nome: this.data.aluno.nome,
-          telefone: this.data.aluno.telefone,
-          ativo: this.data.aluno.ativo,
-          email: this.data.aluno.email,
-          cpf: this.data.aluno.cpf,
-          datanasc: this.data.aluno.datanasc
-            ? new Date(this.data.aluno.datanasc)
-            : null,
-          localId: this.localSelecionado?.id, //this.data.aluno.localId
-          servicolId: this.servicoSelecionado?.id 
-        });
-
-      
-        const diasAulaArray = this.form.get('diasAula') as FormArray;
-
-        for (let i = 0; i < 7; i++) {
-          const ativo = this.data.aluno[`aludia${i}`] ?? false;
-          const hora = this.data.aluno[`aluhora${i}`] ?? '';
-
-          const grupo = diasAulaArray.at(i);
-          grupo.get('ativo')?.setValue(ativo);
-          grupo.get('hora')?.setValue(hora);
-          if (!ativo) {
-            grupo.get('hora')?.disable();
-          } else {
-            grupo.get('hora')?.enable();
-          }
-        }
-      }
-
-      if (this.localSelecionado) {
-        this.form.get('localId')?.setValue(this.localSelecionado.id);
-      }
-
-      if (this.servicoSelecionado) {
-        this.form.get('servicoId')?.setValue(this.servicoSelecionado.id);
-      }
-
-    });
-    console.log('diasAtendimento:', this.configAgenda.diasAtendimento);
-  }
-*/
   salvar() {
     if (this.form.valid) {
       const formValue = this.form.value;
@@ -436,9 +249,10 @@ console.log('this.servicos :', this.servicos);
         ativo: formValue.ativo,
         email: formValue.email,
         cpf: formValue.cpf,
-        localId: this.localSelecionado?.id,
-        servicoId: this.servicoSelecionado?.id,
+        localid: this.localSelecionado?.id,
+        servicoid: this.servicoSelecionado?.id,
         datanasc: formValue.datanasc,
+        datainicio: formValue.datainicio,
       };
 
       const diasAulaArray = this.form.get('diasAula') as FormArray;
@@ -467,7 +281,8 @@ console.log('this.servicos :', this.servicos);
         intervaloMinutos: personal.intervalo_minutos,
         mostrarLocal: personal.mostrarLocal,
         mostrarServico: personal.mostrarServico,
-        mostrarEquipto: personal.mostrarEquipto
+        mostrarEquipto: personal.mostrarEquipto,
+        servicoid:personal.servicoid
       }))
     );
   }
@@ -507,29 +322,29 @@ console.log('horas possíveis:', horas);
     if (local) {
       this.localCtrl.setValue(local.nome);
       // Aqui você pode também setar no seu form principal, por ex:
-      this.form.get('localId')?.setValue(local.id);
+      this.form.get('localid')?.setValue(local.id);
     }
   }
 */
   onLocalSelecionado(event: MatAutocompleteSelectedEvent) {
   const nomeSelecionado = event.option.value;
   const local = this.locals.find(l => l.nome === nomeSelecionado);
-  console.log('Selecionado pelo clique:', local);
+  console.log('Local Selecionado pelo clique:', local);
   if (local && local.id) {
     this.localCtrl.setValue(local.nome);
-    this.form.get('localId')?.setValue(local.id);
+    this.form.get('localid')?.setValue(local.id);
 
     // Só marca como alterado se for válido
-    this.form.get('localId')?.markAsDirty();
-    this.form.get('localId')?.markAsTouched();
-    this.form.get('localId')?.updateValueAndValidity();
+    this.form.get('localid')?.markAsDirty();
+    this.form.get('localid')?.markAsTouched();
+    this.form.get('localid')?.updateValueAndValidity();
 
     this.form.markAsDirty();
     this.form.updateValueAndValidity();
   } else {
     // Se limpou o campo, zera e revalida para desabilitar botão
-    this.form.get('localId')?.reset();
-    this.form.get('localId')?.updateValueAndValidity();
+    this.form.get('localid')?.reset();
+    this.form.get('localid')?.updateValueAndValidity();
     this.form.updateValueAndValidity();
   }
 }
@@ -538,23 +353,23 @@ console.log('horas possíveis:', horas);
 onLocalBlur() {
   const nome = this.localCtrl.value;
   const local = this.locals.find(l => l.nome === nome);
-  console.log('Selecionado ao sair do campo:', local);
+  console.log('Local Selecionado ao sair do campo:', local);
   if (local && local.id) {
     this.localCtrl.setValue(local.nome);
-    this.form.get('localId')?.setValue(local.id);
+    this.form.get('localid')?.setValue(local.id);
     this.localSelecionado = local;
 
     // Só marca como alterado se for válido
-    this.form.get('localId')?.markAsDirty();
-    this.form.get('localId')?.markAsTouched();
-    this.form.get('localId')?.updateValueAndValidity();
+    this.form.get('localid')?.markAsDirty();
+    this.form.get('localid')?.markAsTouched();
+    this.form.get('localid')?.updateValueAndValidity();
 
     this.form.markAsDirty();
     this.form.updateValueAndValidity();
   } else {
     // Se limpou o campo, zera e revalida para desabilitar botão
-    this.form.get('localId')?.reset();
-    this.form.get('localId')?.updateValueAndValidity();
+    this.form.get('localid')?.reset();
+    this.form.get('localid')?.updateValueAndValidity();
     this.form.updateValueAndValidity();
   }
 }
@@ -564,23 +379,23 @@ onLocalBlur() {
   onServicoSelecionado(event: MatAutocompleteSelectedEvent) {
   const nomeSelecionado = event.option.value;
   const servico = this.servicos.find(l => l.nome === nomeSelecionado);
-  console.log('Selecionado pelo clique:', servico);
+  console.log('Serviço Selecionado pelo clique:', servico);
   if (servico && servico.id) {
     this.servicoCtrl.setValue(servico.nome);
-    this.form.get('servicoId')?.setValue(servico.id);
+    this.form.get('servicoid')?.setValue(servico.id);
     this.servicoSelecionado = servico;
 
     // Só marca como alterado se for válido
-    this.form.get('servicoId')?.markAsDirty();
-    this.form.get('servicoId')?.markAsTouched();
-    this.form.get('servicoId')?.updateValueAndValidity();
+    this.form.get('servicoid')?.markAsDirty();
+    this.form.get('servicoid')?.markAsTouched();
+    this.form.get('servicoid')?.updateValueAndValidity();
 
     this.form.markAsDirty();
     this.form.updateValueAndValidity();
   } else {
     // Se limpou o campo, zera e revalida para desabilitar botão
-    this.form.get('servicoId')?.reset();
-    this.form.get('servicoId')?.updateValueAndValidity();
+    this.form.get('servicoid')?.reset();
+    this.form.get('servicoid')?.updateValueAndValidity();
     this.form.updateValueAndValidity();
   }
 }
@@ -589,22 +404,22 @@ onLocalBlur() {
 onServicoBlur() {
   const nome = this.servicoCtrl.value;
   const servico = this.servicos.find(l => l.nome === nome);
-  console.log('Selecionado ao sair do campo:', servico);
+  console.log('Serviço Selecionado ao sair do campo:', servico);
   if (servico && servico.id) {
     this.servicoCtrl.setValue(servico.nome);
-    this.form.get('servicoId')?.setValue(servico.id);
+    this.form.get('servicoid')?.setValue(servico.id);
 
     // Só marca como alterado se for válido
-    this.form.get('servicoId')?.markAsDirty();
-    this.form.get('servicoId')?.markAsTouched();
-    this.form.get('servicoId')?.updateValueAndValidity();
+    this.form.get('servicoid')?.markAsDirty();
+    this.form.get('servicoid')?.markAsTouched();
+    this.form.get('servicoid')?.updateValueAndValidity();
 
     this.form.markAsDirty();
     this.form.updateValueAndValidity();
   } else {
     // Se limpou o campo, zera e revalida para desabilitar botão
-    this.form.get('servicoId')?.reset();
-    this.form.get('servicoId')?.updateValueAndValidity();
+    this.form.get('servicoid')?.reset();
+    this.form.get('servicoid')?.updateValueAndValidity();
     this.form.updateValueAndValidity();
   }
 }
@@ -631,7 +446,7 @@ onServicoBlur() {
     console.log('selecionado', selecionado);
     if (selecionado) {
       this.localSelecionado = selecionado;
-      this.form.get('localId')?.setValue(selecionado.id);
+      this.form.get('localid')?.setValue(selecionado.id);
     }
   }*/
 
@@ -639,14 +454,14 @@ onServicoBlur() {
     console.log('onLocalSelected...');
     const local = this.locals.find(a => a.nome === nome);
     if (local) {
-      console.log('localId: ', local.id);
-      this.form.patchValue({ localId: local.id });
+      console.log('localid: ', local.id);
+      this.form.patchValue({ localid: local.id });
       this.localSelecionado = local;
       console.log('localSelecionado: ', this.localSelecionado);
       this.localCtrl.markAsDirty();
       this.localCtrl.markAsTouched();
     } else {
-      this.form.patchValue({ localId: '' });
+      this.form.patchValue({ localid: '' });
     }
   }
     
@@ -654,14 +469,14 @@ onServicoBlur() {
     console.log('onServicoSelected...');
     const servico = this.servicos.find(a => a.nome === nome);
     if (servico) {
-      console.log('servicoId: ', servico.id);
-      this.form.patchValue({ servicoId: servico.id });
+      console.log('servicoid: ', servico.id);
+      this.form.patchValue({ servicoid: servico.id });
       this.servicoSelecionado = servico;
       console.log('servicoSelecionado: ', this.servicoSelecionado);
       this.localCtrl.markAsDirty();
       this.localCtrl.markAsTouched();
     } else {
-      this.form.patchValue({ servicoId: '' });
+      this.form.patchValue({ servicoid: '' });
     }
   }
 

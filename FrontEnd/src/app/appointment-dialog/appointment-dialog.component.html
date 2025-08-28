@@ -1,6 +1,7 @@
 
 <form [formGroup]="form">
   <mat-dialog-content>
+  <!--
     <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 95%;">
       <mat-label>Título</mat-label>
       <input matInput formControlName="titulo" required />
@@ -8,8 +9,32 @@
         Campo obrigatório
       </mat-error>
     </mat-form-field>
-
+  -->
    
+    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+      <mat-form-field appearance="fill" style="flex: 6;">
+        <mat-label>Data</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="dataCompr" [readonly]="true">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      
+        <mat-error *ngIf="form.get('dataCompr')?.hasError('required') && form.get('dataCompr')?.touched">
+          Campo obrigatório
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" style="flex: 4;">
+        <mat-label>Hora</mat-label>
+        <mat-select formControlName="hour" required>
+          <mat-option *ngFor="let h of horasPossiveis" [value]="h">{{ h }}</mat-option>
+        </mat-select>
+
+        <mat-error *ngIf="form.get('hour')?.hasError('required') && form.get('hour')?.touched">
+          Campo obrigatório
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <!--
     <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
       <mat-label>Data</mat-label>
 
@@ -33,8 +58,8 @@
         Campo obrigatório
       </mat-error>
     </mat-form-field>  
-
-    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 95%;">
+  -->
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 100%;">
       <mat-label>Aluno</mat-label>
       <input type="text" matInput [formControl]="alunoCtrl" [matAutocomplete]="autoAluno" required>
       <mat-autocomplete #autoAluno="matAutocomplete" (optionSelected)="onAlunoSelected($event.option.value)">
@@ -54,7 +79,7 @@
       + Adicionar novo aluno
     </button>
 
-    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 95%;" class="w-full">
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 100%;" class="w-full">
       <mat-label>Local</mat-label>
       <input type="text" matInput [formControl]="localCtrl" [matAutocomplete]="autoLocal" required>
       <mat-autocomplete #autoLocal="matAutocomplete" (optionSelected)="onLocalSelected($event.option.value)">
@@ -69,7 +94,17 @@
       + Adicionar novo local
     </button>
 
-    <mat-form-field *ngIf="mostrarEquipto && alunoSelecionado?.mostrarEquipto" appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 95%;" class="w-full">
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 100%;" class="w-full">
+      <mat-label>Serviço</mat-label>
+      <input type="text" matInput [formControl]="servicoCtrl" [matAutocomplete]="autoServico">
+      <mat-autocomplete #autoServico="matAutocomplete" (optionSelected)="onServicoSelected($event.option.value)">
+        <mat-option *ngFor="let servico of servicosFiltrados" [value]="servico.nome">
+          {{ servico.nome }} 
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <mat-form-field *ngIf="mostrarEquipto && (alunoSelecionado?.mostrarEquipto || servicoSelecionado?.temequipto)" appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 100%;" class="w-full">
       <mat-label>Equipamento</mat-label>
       <input type="text" matInput [formControl]="equiptoCtrl" [matAutocomplete]="autoEquipto">
       <mat-autocomplete #autoEquipto="matAutocomplete" (optionSelected)="onEquiptoSelected($event.option.value)">
@@ -78,6 +113,8 @@
         </mat-option>
       </mat-autocomplete>
     </mat-form-field>
+
+
 
     </mat-dialog-content>
 

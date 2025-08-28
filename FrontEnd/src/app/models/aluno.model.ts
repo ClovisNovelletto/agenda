@@ -7,8 +7,9 @@ export interface Aluno {
   servico: string,
   email?: string;
   datanasc?: string;
+  datainicio?: string;
   cpf?: string;
   ativo: boolean;
   diasAula: [];
-  mostrarEquito: boolean;
+  mostrarEquipto: boolean;
 }

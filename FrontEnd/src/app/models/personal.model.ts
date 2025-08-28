@@ -14,4 +14,5 @@ export interface Personal {
   mostrarLocal: boolean;
   mostrarServico: boolean;
   mostrarEquipto: boolean;
+  servicoid: number;
 }

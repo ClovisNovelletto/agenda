@@ -1,0 +1,117 @@
+<div class="page" >
+  <mat-toolbar color="primary" class="toolbar">
+    <button mat-icon-button class="btn-voltar" (click)="fechar()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <span class="titulo">Agenda do Aluno</span>
+    <span class="spacer"></span>
+
+    <!-- seletor de mês (apenas mês/ano) -->
+
+      <mat-dialog-content style="width: 150px; height: 65px;">
+        <mat-form-field appearance="fill" class="custom-height">
+          <mat-label style="font-size: 15px;">Mês Filtro:</mat-label>
+          <mat-select 
+            [(value)]="mesSelecionadoLabel" 
+            (selectionChange)="onMonthSelected($event)">
+            <mat-option *ngFor="let mes of meses" [value]="mes">
+              {{ mes.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </mat-dialog-content>
+  
+  </mat-toolbar>
+
+  <!--<div class="container">-->
+  <div class="agenda-layout" >
+    <!-- Sidebar Alunos -->
+    <aside class="sidebar">
+
+      <div class="sidebar-header">Alunos</div>
+
+      <div class="aluno-lista">
+        <mat-checkbox 
+            *ngFor="let aluno of alunos; trackBy: trackByAlunoId"
+            [checked]="alunoSelecionado!.id === aluno.id"
+            (change)="selecionarAluno(aluno)">
+            {{ aluno.nome }} 
+        </mat-checkbox>
+
+        <div class="empty" *ngIf="!carregandoAlunos && alunos.length === 0">
+            Nenhum aluno ativo.
+        </div>
+      </div>
+    
+    </aside>
+
+    
+    <main class="content">
+
+      <div class="tabela-container">
+        <table mat-table [dataSource]="[]" class="tabela-header" >
+          <ng-container matColumnDef="data">
+            <th style="min-height: 30px!important; height: 30px!important;" mat-header-cell *matHeaderCellDef> Data </th>
+          </ng-container>
+        
+          <ng-container matColumnDef="equipto">
+            <th style="min-height: 30px!important; height: 30px!important;" mat-header-cell *matHeaderCellDef> Equipto </th>
+          </ng-container>
+
+          <ng-container matColumnDef="descricao">
+            <th style="min-height: 30px!important; height: 30px!important;" mat-header-cell *matHeaderCellDef> Descrição </th>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedHeaderColumns;" style="height:30px;"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['data'];"></tr> 
+        </table>
+      
+      <div class="tabela-wrap" *ngIf="alunoSelecionado">
+        <div class="loading" *ngIf="carregandoAulas">
+          <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
+        </div>
+
+         <table mat-table [dataSource]="dataSource" *ngIf="!carregandoAulas">
+
+            <ng-container matColumnDef="data">
+                <!--<th style="min-height: 0px!important; height: 0px!important;"mat-header-cell *matHeaderCellDef sticky> Data </th>-->
+                <td style="min-height: 30px!important; height: 30px!important;"mat-cell *matCellDef="let row" [style.backgroundColor]="getStatusCor(row.statusid)" class="corFonte">
+                {{ toDate(row.date) | date:'dd/MM' }} {{ row.hour }} {{ toDate(row.date) | date:'(EEE)' }}
+                </td>
+            </ng-container>
+  
+            <ng-container matColumnDef="equipto">
+                <!--<th style="min-height: 0px!important; height: 0px!important;" mat-header-cell *matHeaderCellDef sticky> Equipto </th>-->
+                <td style="min-height: 30px!important; height: 30px!important;" mat-cell *matCellDef="let row" [style.backgroundColor]="getStatusCor(row.statusid)" class="corFonte">
+                {{ row.equipto || '—' }}
+                </td>
+            </ng-container>
+            
+            <!--<div *ngIf="!isMobile">-->
+              <ng-container matColumnDef="descricao">
+                  <!--<th style="min-height: 0px!important; height: 0px!important;" mat-header-cell *matHeaderCellDef sticky> Descrição </th>-->
+                  <td style="min-height: 30px!important; height: 30px!important;" mat-cell *matCellDef="let row" [style.backgroundColor]="getStatusCor(row.statusid)" class="corFonte">
+                  {{ row.descricao || '—' }}
+                  </td>
+              </ng-container>
+            <!--</div>-->
+
+            <!--<tr style="min-height: 0px!important; height: 0px!important;" mat-header-row *matHeaderRowDef="displayedColumns"></tr>-->
+            <tr style="min-height: 30px!important; height: 30px!important;"
+                mat-row
+                *matRowDef="let row; columns: displayedColumns;"
+                [ngClass]="rowClass(row.status)"
+                (click)="abrirMenuStatus(row)">
+            </tr>
+        </table>
+        
+        <div class="empty" *ngIf="!carregandoAulas && dataSource.data.length === 0" >
+          Sem aulas para este mês.
+        </div>
+
+      </div>
+    </div>
+    </main>
+  </div>
+</div>
+

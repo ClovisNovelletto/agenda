@@ -52,15 +52,17 @@ import { ptBR } from 'date-fns/locale';
 })
 
 export class AppointmentDialogComponent {
-  titulo: string = '';
+  /*titulo: string = '';*/
   descricao: string = '';
   selectedAluno: number | null = null;
   selectedLocal: number | null = null;
   selectedEquipto: number | null = null;
+  selectedServico: number | null = null;
   selectedPersonal: number | null = null;
   alunos: any[] = [];
   locals: any[] = [];
   equiptos: any[] = [];
+  servicos: any[] = [];
   personals: any[] = [];
   date: Date;
   hour: string;
@@ -79,16 +81,24 @@ export class AppointmentDialogComponent {
   equiptoSelecionado: any = null;
   equiptoEncontrado: boolean = true;
 
+  servicoCtrl = new FormControl('');
+  servicosFiltrados: any[] = [];
+  servicoSelecionado: any = null;
+  servicoEncontrado: boolean = true;
+
   novoAlunoRetorno: any[] = [];
   atualizouAlunos: boolean = false;
   novoLocalRetorno: any[] = [];
   atualizouLocals: boolean = false;
   atualizouEquiptos: boolean = false;
+  atualizouServicos: boolean = false;
   horasPossiveis: string[] = [];
   intervalo: number = 10; // valor padrão
   horaInicio: number = 6; // valor padrão
   horaFim: number = 22; // valor padrão
   mostrarEquipto: boolean = false;
+  mostrarServico: boolean = false;
+  servicoidPad: number = 23;
 
   /* any =null;*/
   constructor(
@@ -105,7 +115,10 @@ export class AppointmentDialogComponent {
     this.locals = data.locals || [];
     this.equiptos = data.equiptos || [];
     this.mostrarEquipto = data.mostrarEquipto;
-    this.selectedPersonal = data.personalId || null;
+    this.servicoidPad = data.servicoidPad;
+    this.servicos = data.servicos || [];
+    this.mostrarServico = data.mostrarServico;
+    this.selectedPersonal = data.personalid || null;
     this.intervalo = data.intervalo ?? 10; // 👈 Aqui está certo
     this.horaInicio = data.horaInicio
     this.horaFim = data.horaFim
@@ -117,18 +130,45 @@ export class AppointmentDialogComponent {
     this.atualizouAlunos = false;
     this.atualizouLocals = false;
     this.atualizouEquiptos = false;
+    this.atualizouServicos = false;
     this.intervalo = this.data.intervalo || 10; // fallback para 10 min se não vier
     console.log('this.data.intervalo', this.data.intervalo);
     this.horasPossiveis = this.gerarHorasPossiveis(this.horaInicio, this.horaFim, this.intervalo);
     this.form = this.fb.group({
       dataCompr: [null, Validators.required],
       hour: ['', Validators.required],
-      titulo: ['', Validators.required],
+      /*titulo: ['', Validators.required],*/
       descricao: [''],
-      alunoId: ['', Validators.required],
-      localId: ['', Validators.required],
-      equiptoId: [],
+      alunoid: ['', Validators.required],
+      localid: ['', Validators.required],
+      equiptoid: [],
+      servicoid: [],
       datateste: [null],
+    });
+
+    
+    // quando o texto digitado mudar
+    this.alunoCtrl.valueChanges.subscribe(nome => {
+      const aluno = this.alunos.find(a => a.nome === nome);
+      if (aluno) {
+        // selecionou válido → seta id
+        this.form.patchValue({ alunoid: aluno.id }, { emitEvent: false });
+      } else {
+        // digitou algo não válido → limpa id
+        this.form.patchValue({ alunoid: '' }, { emitEvent: false });
+      }
+    });
+    
+    // quando o texto digitado mudar
+    this.localCtrl.valueChanges.subscribe(nome => {
+      const local = this.locals.find(a => a.nome === nome);
+      if (local) {
+        // selecionou válido → seta id
+        this.form.patchValue({ localid: local.id }, { emitEvent: false });
+      } else {
+        // digitou algo não válido → limpa id
+        this.form.patchValue({ localid: '' }, { emitEvent: false });
+      }
     });
 
     /* Tratamento para não mudar 08/05/2025 para 05/08/2025
@@ -164,7 +204,8 @@ export class AppointmentDialogComponent {
       }
     });*/
 
-    console.log('this.data.date.toISOString():', this.data.date.toISOString());
+    //console.log('this.data.date.toISOString():', this.data.date.toISOString());
+    //console.log('comp.date:', this.data.compromisso.date);
     this.form.patchValue({
       /*dataCompr: this.data.date || null,*/
         dataCompr: this.data.date
@@ -180,16 +221,18 @@ export class AppointmentDialogComponent {
     if (this.data.compromisso) {
       const comp = this.data.compromisso;
 
-      const alunoSelecionado = this.alunos?.find(a => a.id === comp.alunoId);
-      const localSelecionado = this.locals?.find(l => l.id === comp.localId);
-      const equiptoSelecionado = this.equiptos?.find(l => l.id === comp.equiptoId);
+      const alunoSelecionado = this.alunos?.find(a => a.id === comp.alunoid);
+      const localSelecionado = this.locals?.find(l => l.id === comp.localid);
+      const equiptoSelecionado = this.equiptos?.find(l => l.id === comp.equiptoid);
+      const servicoSelecionado = this.servicos?.find(l => l.id === comp.servicoid);
     console.log('comp.date.toISOString():', comp.date.toISOString());
       this.form.patchValue({
-        titulo: comp.titulo,
+        /*titulo: comp.titulo,*/
         descricao: comp.descricao, // se existir no form
-        alunoId: alunoSelecionado?.id || null,
-        localId: localSelecionado?.id || null,
-        equiptoId: equiptoSelecionado?.id || null,
+        alunoid: alunoSelecionado?.id || null,
+        localid: localSelecionado?.id || null,
+        equiptoid: equiptoSelecionado?.id || null,
+        servicoid: servicoSelecionado?.id || null,
         dataCompr: comp.date
           ? new Date(comp.date instanceof Date ? comp.date.toISOString() : comp.date)
           : null,
@@ -198,31 +241,35 @@ export class AppointmentDialogComponent {
       });
 
       // Só para exibir no campo de autocomplete:
-      this.alunoSelecionado = this.alunos?.find(a => a.id === this.data.compromisso.alunoId);
+      this.alunoSelecionado = this.alunos?.find(a => a.id === this.data.compromisso.alunoid);
       if (this.alunoSelecionado) {
         this.alunoCtrl.setValue(this.alunoSelecionado.nome);
-        this.form.get('alunoId')?.setValue(this.alunoSelecionado.id); // <-- isso garante que salva
+        this.form.get('alunoid')?.setValue(this.alunoSelecionado.id); // <-- isso garante que salva
       }
 
-      this.localSelecionado = this.locals?.find(l => l.id === this.data.compromisso.localId);
+      this.localSelecionado = this.locals?.find(l => l.id === this.data.compromisso.localid);
       if (this.localSelecionado) {
         this.localCtrl.setValue(this.localSelecionado.nome);
-        this.form.get('localId')?.setValue(this.localSelecionado.id);
+        this.form.get('localid')?.setValue(this.localSelecionado.id);
       }
 
-      this.equiptoSelecionado = this.equiptos?.find(l => l.id === this.data.compromisso.equiptoId);
+      this.equiptoSelecionado = this.equiptos?.find(l => l.id === this.data.compromisso.equiptoid);
       if (this.equiptoSelecionado) {
         this.equiptoCtrl.setValue(this.equiptoSelecionado.nome);
-        this.form.get('equiptoId')?.setValue(this.equiptoSelecionado.id);
+        this.form.get('equiptoid')?.setValue(this.equiptoSelecionado.id);
       }
 
-      
+      this.servicoSelecionado = this.servicos?.find(l => l.id === this.data.compromisso.servicoid);
+      if (this.servicoSelecionado) {
+        this.servicoCtrl.setValue(this.servicoSelecionado.nome);
+        this.form.get('servicoid')?.setValue(this.servicoSelecionado.id);
+      }
 console.log("this.locals: ", this.locals)      
-console.log("local: ", this.data.compromisso.localId)
+console.log("local: ", this.data.compromisso.localid)
 console.log("this.localSelecionado: ", this.localSelecionado)
       
 console.log("this.equiptos: ", this.equiptos)      
-console.log("equipto: ", this.data.compromisso.equiptoId)
+console.log("equipto: ", this.data.compromisso.equiptoid)
 console.log("this.equiptoSelecionado: ", this.equiptoSelecionado)
 console.log("this.alunoSelecionado: ", this.alunoSelecionado)
 
@@ -232,10 +279,10 @@ console.log("this.alunoSelecionado: ", this.alunoSelecionado)
       const encontrado = this.alunos.find(a => a.nome === value);
         
       if (encontrado) {
-        this.form.get('alunoId')?.setValue(encontrado.id);
+        this.form.get('alunoid')?.setValue(encontrado.id);
       } else {
-        // Se não houver correspondência, limpa o alunoId
-        this.form.get('alunoId')?.setValue(null);
+        // Se não houver correspondência, limpa o alunoid
+        this.form.get('alunoid')?.setValue(null);
       }
       });
 
@@ -244,10 +291,10 @@ console.log("this.alunoSelecionado: ", this.alunoSelecionado)
       const encontrado = this.locals.find(a => a.nome === value);
         
       if (encontrado) {
-        this.form.get('localId')?.setValue(encontrado.id);
+        this.form.get('localid')?.setValue(encontrado.id);
       } else {
-        // Se não houver correspondência, limpa o localId
-        this.form.get('localId')?.setValue(null);
+        // Se não houver correspondência, limpa o localid
+        this.form.get('localid')?.setValue(null);
       }
       });
 
@@ -313,18 +360,80 @@ console.log("this.alunoSelecionado: ", this.alunoSelecionado)
 console.log("equiptosFiltrados: ", this.equiptosFiltrados)      
 console.log("this.equiptoEncontrado: ", this.equiptoEncontrado)
 
+    this.http.get<any[]>(`${environment.apiUrl}/servicos`, { headers }).subscribe(data => {    
+      this.servicos = data;
+
+      this.servicoCtrl.valueChanges
+        .pipe(
+          startWith(''),
+          map(value => value?.toLowerCase()),
+          map(nome => {
+            const filtrado = this.servicos.filter(a => a.nome.toLowerCase().includes(nome));
+            this.servicoEncontrado = filtrado.length > 0;
+            return filtrado;
+          })
+        )
+        .subscribe(result => {
+          this.servicosFiltrados = result;
+        });
+    });
+
   }
+
+  atualizaServico(servid: number){
+    console.log("entrou servico", servid);
+    if(!(servid == null)) {
+      console.log("entrou servico", servid);
+//      const servicoSelecionado = this.servicos?.find(l => l.id === servid);
+      this.servicoSelecionado = this.servicos?.find(l => l.id === servid);
+      console.log("this.servicos", this.servicos);
+      console.log("this.servicoSelecionado", this.servicoSelecionado);
+      this.form.patchValue({
+        servicoid: this.servicoSelecionado?.id || null,
+      });
+
+
+      if (this.servicoSelecionado) {
+        this.servicoCtrl.setValue(this.servicoSelecionado.nome);
+        console.log("this.servicoSelecionado.nome", this.servicoSelecionado.nome);
+        this.form.get('servicoid')?.setValue(this.servicoSelecionado.id);
+      }
+    }
+  }
+
   
+  atualizaLocal(locid: number){
+    console.log("entrou local", locid);
+    if(!(locid == null)) {
+      console.log("entrou local", locid);
+      this.localSelecionado = this.locals?.find(l => l.id === locid);
+      console.log("this.locals", this.locals);
+      console.log("this.localSelecionado", this.localSelecionado);
+      this.form.patchValue({
+        localid: this.localSelecionado?.id || null,
+      });
+
+
+      if (this.localSelecionado) {
+        this.localCtrl.setValue(this.localSelecionado.nome);
+        console.log("this.localSelecionado.nome", this.localSelecionado.nome);
+        this.form.get('localid')?.setValue(this.localSelecionado.id);
+      }
+    }
+  }
+
   onAlunoSelected(nome: string) {
     console.log('onAlunoSelected...');
     const aluno = this.alunos.find(a => a.nome === nome);
     if (aluno) {
-      console.log('alunoId: ', aluno.id);
-      this.form.patchValue({ alunoId: aluno.id });
+      console.log('alunoid: ', aluno.id);
+      this.form.patchValue({ alunoid: aluno.id });
       this.alunoSelecionado = aluno;
       console.log('alunoSelecionado: ', this.alunoSelecionado);
+      this.atualizaServico(this.alunoSelecionado.servicoid);
+      this.atualizaLocal(this.alunoSelecionado.alulocalid);
     } else {
-      this.form.patchValue({ alunoId: '' });
+      this.form.patchValue({ alunoid: '' });
     }
   }
 
@@ -332,12 +441,12 @@ console.log("this.equiptoEncontrado: ", this.equiptoEncontrado)
     console.log('onLocalSelected...');
     const local = this.locals.find(a => a.nome === nome);
     if (local) {
-      console.log('localId: ', local.id);
-      this.form.patchValue({ localId: local.id });
+      console.log('localid: ', local.id);
+      this.form.patchValue({ localid: local.id });
       this.localSelecionado = local;
       console.log('localSelecionado: ', this.localSelecionado);
     } else {
-      this.form.patchValue({ localId: '' });
+      this.form.patchValue({ localid: '' });
     }
   }
 
@@ -346,12 +455,26 @@ console.log("this.equiptoEncontrado: ", this.equiptoEncontrado)
     console.log('onEquiptoSelected...');
     const equipto = this.equiptos.find(a => a.nome === nome);
     if (equipto) {
-      console.log('equiptoId: ', equipto.id);
-      this.form.patchValue({ equiptoId: equipto.id });
+      console.log('equiptoid: ', equipto.id);
+      this.form.patchValue({ equiptoid: equipto.id });
       this.equiptoSelecionado = equipto;
       console.log('equiptoSelecionado: ', this.equiptoSelecionado);
     } else {
-      this.form.patchValue({ equiptoId: '' });
+      this.form.patchValue({ equiptoid: '' });
+    }
+  }
+
+  
+  onServicoSelected(nome: string) {
+    console.log('onservicoSelected...');
+    const servico = this.servicos.find(a => a.nome === nome);
+    if (servico) {
+      console.log('servicoid: ', servico.id);
+      this.form.patchValue({ servicoid: servico.id });
+      this.servicoSelecionado = servico;
+      console.log('servicoSelecionado: ', this.servicoSelecionado);
+    } else {
+      this.form.patchValue({ servicoid: '' });
     }
   }
 
@@ -387,7 +510,7 @@ console.log("this.equiptoEncontrado: ", this.equiptoEncontrado)
           console.log('novoAluno.nome: ', novoAluno.nome);
           console.log('novoAluno.id: ', novoAluno.id);
           this.alunoCtrl.setValue(novoAluno.nome);
-          this.form.patchValue({ alunoId: novoAluno.id });
+          this.form.patchValue({ alunoid: novoAluno.id });
           this.alunoSelecionado = novoAluno;
         });
       }
@@ -426,7 +549,7 @@ console.log("this.equiptoEncontrado: ", this.equiptoEncontrado)
           console.log('novoLocal.nome: ', novoLocal.nome);
           console.log('novoLocal.id: ', novoLocal.id);
           this.localCtrl.setValue(novoLocal.nome);
-          this.form.patchValue({ localId: novoLocal.id });
+          this.form.patchValue({ localid: novoLocal.id });
           this.localSelecionado = novoLocal;
         });
       }
@@ -460,19 +583,22 @@ console.log("this.equiptoEncontrado: ", this.equiptoEncontrado)
       this.dialogRef.close({
 
       atualizouAlunos: this.atualizouAlunos,     // ✅ indica que houve inclusão de aluno
-      aluno: this.novoAlunoRetorno,              // ✅ o novo aluno criado no dialog
+      //aluno: this.novoAlunoRetorno,              // ✅ o novo aluno criado no dialog
       atualizouLocals: this.atualizouLocals,     // ✅ indica que houve inclusão de local
       //local: this.novoLocalRetorno,              // ✅ o novo local criado no dialog
-      titulo: dados.titulo,
+      /*titulo: dados.titulo,*/
       descricao: this.descricao,
-      alunoId: this.alunoSelecionado?.id,
-      localId: this.localSelecionado?.id,
+      alunoid: this.alunoSelecionado?.id,
+      aluno: this.alunoSelecionado?.nome ,
+      localid: this.localSelecionado?.id,
       local: this.localSelecionado?.nome,
-      equiptoId: this.equiptoSelecionado?.id,
+      equiptoid: this.equiptoSelecionado?.id,
       equipto: this.equiptoSelecionado?.nome,
-      //alunoId: this.selectedAluno,
-      //localId: this.selectedLocal,
-      personalId: this.selectedPersonal,
+      servicoid: this.servicoSelecionado?.id,
+      servico: this.servicoSelecionado?.nome,
+      //alunoid: this.selectedAluno,
+      //localid: this.selectedLocal,
+      personalid: this.selectedPersonal,
       date: dataCompleta, //this.data.date,
       hour: this.data.hour
 
@@ -520,4 +646,5 @@ console.log("this.equiptoEncontrado: ", this.equiptoEncontrado)
     return horas;
     */
   }
+
 }

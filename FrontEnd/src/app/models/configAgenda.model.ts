@@ -6,4 +6,5 @@ export interface ConfigAgenda {
   mostrarLocal: boolean;
   mostrarServico: boolean;
   mostrarEquipto: boolean;
+  servicoid: number;
 }
