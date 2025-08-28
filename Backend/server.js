@@ -143,22 +143,22 @@ app.post('/api/login', async (req, res) => {
       if (resultSenhaValida[0].is_valid) {      
         console.log("result válido");
         // tratamento para pegar personal ou aluno
-        const userId = result[0].id;
+        const userid = result[0].id;
         const tipo = result[0].tipo_usuario;
-        let personalId = null;
-        let alunoId = null;
+        let personalid = null;
+        let alunoid = null;
 
         if (tipo == 2) {
-          //const resPersonal = await pool.query('SELECT personal_id id FROM personals WHERE peruserid = $1', [userId]);
-          const resPersonal = await sql`SELECT personal_id FROM personals WHERE peruserid = ${userId}`;
-          personalId = resPersonal[0]?.personal_id ?? null;
+          //const resPersonal = await pool.query('SELECT personal_id id FROM personals WHERE peruserid = $1', [userid]);
+          const resPersonal = await sql`SELECT personal_id FROM personals WHERE peruserid = ${userid}`;
+          personalid = resPersonal[0]?.personal_id ?? null;
         } else if (tipo ==3) {
-          const resAluno = await sql`SELECT aluno_id FROM alunos WHERE aluuserid = ${userId}`;
-          const alunoId = resAluno[0]?.aluno_id ?? null;
+          const resAluno = await sql`SELECT aluno_id FROM alunos WHERE aluuserid = ${userid}`;
+          const alunoid = resAluno[0]?.aluno_id ?? null;
         }
 
         // Gera o token JWT com informações do usuário
-        const token = jwt.sign({ email, tipo, personalId, alunoId  }, SECRET_KEY, { expiresIn: '180d' });
+        const token = jwt.sign({ email, tipo, personalid, alunoid  }, SECRET_KEY, { expiresIn: '180d' });
         res.json({ token, message: 'Login bem-sucedido!' });
 
       } else {
@@ -195,8 +195,8 @@ const authenticateToken = (req, res, next) => {
 app.get('/api/localLista', authenticateToken, async (req, res) => {
   try {
     console.log("carrega locais");
-    const personalId = req.user.personalId;
-    const local = await sql`SELECT Local_ID id, Local nome, LocEndereco endereco, LocAtivo ativo FROM Locals WHERE LocPersonalID = ${personalId}`;
+    const personalid = req.user.personalid;
+    const local = await sql`SELECT Local_ID id, Local nome, LocEndereco endereco, LocAtivo ativo FROM Locals WHERE LocPersonalID = ${personalid}`;
     res.json(local);
   } catch (err) {
     console.error(err);
@@ -207,8 +207,8 @@ app.get('/api/localLista', authenticateToken, async (req, res) => {
 app.get('/api/equiptoLista', authenticateToken, async (req, res) => {
   try {
     console.log("carrega equiptos");
-    const personalId = req.user.personalId;
-    const equipto = await sql`SELECT Equipto_ID id, Equipto nome, EqOrdem ordem, EqAtivo ativo FROM Equiptos WHERE EqPersonalID = ${personalId}`;
+    const personalid = req.user.personalid;
+    const equipto = await sql`SELECT Equipto_ID id, Equipto nome, EqOrdem ordem, EqAtivo ativo FROM Equiptos WHERE EqPersonalID = ${personalid}`;
     res.json(equipto);
   } catch (err) {
     console.error(err);
@@ -233,14 +233,14 @@ app.put('/api/equiptoSave', authenticateToken, async (req, res) => {
 });
 
 app.post('/api/equiptoInsert', authenticateToken, async (req, res) => {
-  const personalId = req.user.personalId;
+  const personalid = req.user.personalid;
 
   const {id, nome, ordem, ativo} = req.body;
 
   try {
     const equipto = await sql`
       INSERT INTO Equiptos (equipto, EqOrdem, EqAtivo, EqPersonalID)
-      VALUES (${nome}, ${ordem}, ${ativo}, ${personalId})
+      VALUES (${nome}, ${ordem}, ${ativo}, ${personalid})
       RETURNING *`; 
     res.json({
       id: equipto[0].equipto_id,                         
@@ -264,12 +264,11 @@ app.post('/api/equiptoInsert', authenticateToken, async (req, res) => {
 app.get('/api/alunoLista', authenticateToken, async (req, res) => {
   try {
     console.log("carrega alunos");
-    const personalId = req.user.personalId;
-    //const compareQuery = `SELECT aluno_id id, aluno nome, alufone telefone, aludatanasc datanasc, aluemail email, alucpf cpf, aluativo ativo, alucodconvite codigo_convite FROM Alunos WHERE AluPersonalID=$1`;
-    //const result = await pool.query(compareQuery, [personalId]);      
-    const aluno = await sql`SELECT aluno_id id, aluno nome, alufone telefone, aludatanasc datanasc, aluemail email, alucpf cpf, aluativo ativo, alucodconvite codigo_convite,
-        AluLocalID AS "localId", (SELECT Local FROM Locals WHERE Local_ID=AluLocalID) Local,
-        AluServicoID AS "servicoId", (SELECT Servico FROM Servicos WHERE Servico_ID=AluServicoID) Servico,
+    const personalid = req.user.personalid;
+
+    const aluno = await sql`SELECT aluno_id id, aluno nome, alufone telefone, aludatanasc datanasc, aludatainicio datainicio, aluemail email, alucpf cpf, aluativo ativo, alucodconvite codigo_convite,
+        AluLocalID AS "localid", (SELECT Local FROM Locals WHERE Local_ID=AluLocalID) Local,
+        AluServicoID AS "servicoid", (SELECT Servico FROM Servicos WHERE Servico_ID=AluServicoID) AS "servico",
         aludia0, aludia1, aludia2, aludia3, aludia4, aludia5, aludia6, aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6,
 	      CASE WHEN aludia0 = true THEN 'Dom: ' || aluhora0 || CASE WHEN aludia1=true OR aludia2=true OR aludia3=true OR aludia4=true OR aludia5=true OR aludia6=true THEN ' / ' ELSE '' END ELSE '' END ||
         CASE WHEN aludia1 = true THEN 'Seg: ' || aluhora1 || CASE WHEN aludia2=true OR aludia3=true OR aludia4=true OR aludia5=true OR aludia6=true THEN ' / ' ELSE '' END ELSE '' END ||
@@ -278,7 +277,7 @@ app.get('/api/alunoLista', authenticateToken, async (req, res) => {
         CASE WHEN aludia4 = true THEN 'Qui: ' || aluhora4 || CASE WHEN aludia5=true OR aludia6=true THEN ' / ' ELSE '' END ELSE '' END ||
         CASE WHEN aludia5 = true THEN 'Sex: ' || aluhora5 || CASE WHEN aludia6=true THEN ' / ' ELSE '' END ELSE '' END ||
         CASE WHEN aludia6 = true THEN 'Sab: ' || aluhora6 ELSE '' END aludias, CASE WHEN aluservicoid=2 THEN true ELSE false END AS "mostrarEquipto"
-      FROM Alunos WHERE AluPersonalID = ${personalId}
+      FROM Alunos WHERE AluPersonalID = ${personalid}
       ORDER BY Aluno`;
     res.json(aluno);
     //console.log(result.rows); // apenas isso para logar
@@ -291,9 +290,6 @@ app.get('/api/alunoLista', authenticateToken, async (req, res) => {
 
 
 app.put('/api/alunoSave', authenticateToken, async (req, res) => {
-  //const camposDia = [aludia0, aludia1, aludia2, aludia3, aludia4, aludia5, aludia6];
-  //const camposHora = [aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6];
-  //const { id, nome, telefone, datanasc, cpf, email, ativo, aludia0, aludia1, aludia2, aludia3, aludia4, aludia5, aludia6, aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6 } = req.body;
 
   // Preenche valores padrão se não vieram do frontend
   for (let i = 0; i < 7; i++) {
@@ -310,16 +306,24 @@ app.put('/api/alunoSave', authenticateToken, async (req, res) => {
 
   // Agora que os valores estão garantidos, você pode extrair:
   const {
-    id, nome, telefone, datanasc, cpf, email, ativo,
+    id, nome, telefone, datanasc, datainicio, cpf, email, ativo,
     aludia0, aludia1, aludia2, aludia3, aludia4, aludia5, aludia6,
-    aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6, localId, servicoId
+    aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6, localid, servicoid
   } = req.body;
+
+  console.log("id",id);
+  console.log("nome",nome);
+  console.log("telefone",telefone);
+  console.log("localid",localid);
+  console.log("servicoid",servicoid);
+  console.log("datainicio",datainicio);
 
   // UPDATE
   try {
     const aluno = await sql`
       UPDATE Alunos SET
-       Aluno = ${nome}, AluCPF = ${cpf}, AluDataNasc = ${datanasc}, AluEmail = ${email}, AluAtivo = ${ativo}, alufone = ${telefone}, alulocalid = ${localId}, aluservicoid = ${servicoId},
+       Aluno = ${nome}, AluCPF = ${cpf}, AluDataNasc = ${datanasc}, AluDataInicio = ${datainicio}, AluEmail = ${email},
+       AluAtivo = ${ativo}, alufone = ${telefone}, alulocalid = ${localid}, aluservicoid = ${servicoid},
        aludia0 = ${aludia0}, aludia1 = ${aludia1}, aludia2 = ${aludia2}, aludia3 = ${aludia3}, aludia4 = ${aludia4}, aludia5 = ${aludia5}, aludia6 = ${aludia6},
        aluhora0 = ${aluhora0}, aluhora1 = ${aluhora1}, aluhora2 = ${aluhora2}, aluhora3 = ${aluhora3}, aluhora4 = ${aluhora4}, aluhora5 = ${aluhora5}, aluhora6 = ${aluhora6}
        WHERE Aluno_ID = ${id}
@@ -334,8 +338,8 @@ app.put('/api/alunoSave', authenticateToken, async (req, res) => {
 
 
 app.post('/api/alunoInsert', authenticateToken, async (req, res) => {
-  //const { nome, telefone, datanasc, cpf, email, ativo } = req.body;
-  const personalId = req.user.personalId;
+  
+  const personalid = req.user.personalid;
   const codigoConvite = gerarCodigoConvite();
 
     // Preenche valores padrão se não vieram do frontend
@@ -351,37 +355,43 @@ app.post('/api/alunoInsert', authenticateToken, async (req, res) => {
     //console.error(req.body[`aluhora${i}`]);
   }
   // tratamento local indefinido
-  if (typeof req.body[`localId`] === 'undefined') {
-    req.body[`localId`] = null;
+  if (typeof req.body[`localid`] === 'undefined') {
+    req.body[`localid`] = null;
   }
   // tratamento serviço indefinido
-  if (typeof req.body[`servicoId`] === 'undefined') {
-    req.body[`servicoId`] = null;
+  if (typeof req.body[`servicoid`] === 'undefined') {
+    req.body[`servicoid`] = null;
+  }
+
+  // tratamento data inicio indefinido
+  if (typeof req.body[`datainicio`] === 'undefined') {
+    req.body[`datainicio`] = new Date();
+  }
+
+  // tratamento data inicio sem preencer
+  if (req.body[`datainicio`] == null) {
+    req.body[`datainicio`] = new Date();
   }
 
   // Agora que os valores estão garantidos, você pode extrair:
   const {
-    id, nome, telefone, datanasc, cpf, email, ativo,
+    id, nome, telefone, datanasc, datainicio, cpf, email, ativo,
     aludia0, aludia1, aludia2, aludia3, aludia4, aludia5, aludia6,
-    aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6, localId, servicoId
+    aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6, localid, servicoid
   } = req.body;
 
+  //console.error('req.body:', req.body);
 
   try {
-    //const result = await pool.query(`
-    //  INSERT INTO Alunos (aluno, AluCPF, AluDataNasc, AluEmail, AluAtivo, alufone, alupersonalid, alucodconvite)
-    //  VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-    //  RETURNING aluno_id, aluno, alufone, alucodconvite
-    //`, [nome, cpf, datanasc, email, ativo, telefone, personalId, codigoConvite]);
     const aluno = await sql`
-      INSERT INTO Alunos (aluno, AluCPF, AluDataNasc, AluEmail, AluAtivo, alufone, alupersonalid, alucodconvite, alulocalid, aluservicoid,
+      INSERT INTO Alunos (aluno, AluCPF, AluDataNasc, AluDataInicio, AluEmail, AluAtivo, alufone, alupersonalid, alucodconvite, alulocalid, aluservicoid,
       aludia0, aludia1, aludia2, aludia3, aludia4, aludia5, aludia6, aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6)
-      VALUES (${nome}, ${cpf}, ${datanasc}, ${email}, ${ativo}, ${telefone}, ${personalId}, ${codigoConvite}, ${localId}, ${servicoId},
+      VALUES (${nome}, ${cpf}, ${datanasc}, ${datainicio}, ${email}, ${ativo}, ${telefone}, ${personalid}, ${codigoConvite}, ${localid}, ${servicoid},
       ${aludia0}, ${aludia1}, ${aludia2}, ${aludia3}, ${aludia4}, ${aludia5}, ${aludia6},
       ${aluhora0}, ${aluhora1}, ${aluhora2}, ${aluhora3}, ${aluhora4}, ${aluhora5}, ${aluhora6})
       RETURNING *`; 
     res.json({
-      id: aluno[0].aluno_id,                         // <- compatível com this.form.patchValue({ alunoId: novoAluno.id });
+      id: aluno[0].aluno_id,                         // <- compatível com this.form.patchValue({ alunoid: novoAluno.id });
       nome: aluno[0].aluno,                          // <- compatível com this.alunoCtrl.setValue(novoAluno.nome);
       telefone: aluno[0].alufone,                    // <- opcional, se quiser manter
       codigo_convite: aluno[0].alucodconvite
@@ -415,14 +425,14 @@ app.put('/api/localSave', authenticateToken, async (req, res) => {
 });
 
 app.post('/api/localInsert', authenticateToken, async (req, res) => {
-  const personalId = req.user.personalId;
+  const personalid = req.user.personalid;
 
   const {id, nome, endereco, ativo} = req.body;
 
   try {
     const local = await sql`
       INSERT INTO Locals (local, LocEndereco, LocAtivo, LocPersonalID)
-      VALUES (${nome}, ${endereco}, ${ativo}, ${personalId})
+      VALUES (${nome}, ${endereco}, ${ativo}, ${personalid})
       RETURNING *`; 
     res.json({
       id: local[0].local_id,                         
@@ -442,34 +452,13 @@ app.post('/api/localInsert', authenticateToken, async (req, res) => {
   }
 });
 
-/*
-app.post('/api/alunoInsert', authenticateToken, async (req, res) => {
-  const { id, nome, telefone, datanasc, cpf, email, ativo } = req.body;
-  const personalId = req.user.personalId;
-  console.log("req",req);
-  console.log("req.body", req.body);
-  console.log("datanasc",datanasc);
-  // INSERT
-  try {
-    const result = await pool.query(`
-      INSERT INTO Alunos(Aluno, AluCPF, AluDataNasc, AluEmail, AluAtivo, AluFone, AluPersonalID)
-        Aluno = $1, AluCPF = $2, AluDataNasc = $3, AluEmail = $4, AluAtivo = $5, alufone = $6
-      WHERE Aluno_ID = $7`,
-      [nome, cpf, datanasc, email, ativo, telefone, personalId]);
-    res.status(201).json(result.rows[0]);
-    } catch (err) {
-      console.error('Erro ao atualizar agenda:', err);
-      res.status(500).json({ error: 'Erro ao atualizar agenda' });
-    }
-});
-*/
 app.get('/api/agendas', authenticateToken, async (req, res) => {
   try {
     console.log("carrega agenda");
-    const personalId = req.user.personalId;
+    const personalid = req.user.personalid;
     //const compareQuery = `SELECT * FROM agendaslista WHERE PersonalID=$1`;
-    //const result = await pool.query(compareQuery, [personalId]);      
-    const agendas = await sql`SELECT * FROM agendaslista WHERE PersonalID = ${personalId}`;
+    //const result = await pool.query(compareQuery, [personalid]);      
+    const agendas = await sql`SELECT * FROM agendaslista WHERE PersonalID = ${personalid}`;
     res.json(agendas);
     //console.log(result.rows); // apenas isso para logar
     // não usar res.json(result.rows);    // envia resposta corretamente uma única vez
@@ -483,9 +472,9 @@ app.get('/api/agendas', authenticateToken, async (req, res) => {
 app.get('/api/agendaStatus', authenticateToken, async (req, res) => {
   try {
     console.log("carrega agenda status");
-    //const personalId = req.user.personalId;
+    //const personalid = req.user.personalid;
     //const compareQuery = `SELECT agendastatu_id ID, agendastatu Status, agcor Cor FROM AgendaStatus`;
-    //const result = await pool.query(compareQuery, null /*[personalId]*/);      
+    //const result = await pool.query(compareQuery, null /*[personalid]*/);      
     const agendaStatus = await sql`SELECT agendastatu_id ID, agendastatu Status, agcor Cor FROM AgendaStatus`;
     res.json(agendaStatus);
   } catch (err) {
@@ -496,13 +485,16 @@ app.get('/api/agendaStatus', authenticateToken, async (req, res) => {
 
 app.get('/api/alunos', authenticateToken, async (req, res) => {
   try {
-    const personalId = req.user.personalId;
+    const personalid = req.user.personalid;
     //const compareQuery = `SELECT aluno_id id, aluno nome, alufone telefone, alucodconvite codigo_convite FROM alunos WHERE AluPersonalID=$1`;
-    //const result = await pool.query(compareQuery, [personalId]);      
+    //const result = await pool.query(compareQuery, [personalid]);      
     const alunos = await sql`SELECT aluno_id id, aluno nome, alufone telefone, alucodconvite codigo_convite,
                                     aludia0, aludia1, aludia2, aludia3, aludia4, aludia5, aludia6, alulocalid,
-                                    aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6, CASE WHEN aluservicoid=2 THEN true ELSE false END AS "mostrarEquipto"
-      FROM alunos WHERE AluPersonalID=${personalId} AND AluAtivo = true`;
+                                    aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6, 
+                                    CASE WHEN aluservicoid=2 THEN true ELSE false END AS "mostrarEquipto",
+                                    AluServicoID AS "servicoid", (SELECT Servico FROM Servicos WHERE Servico_ID=AluServicoID) AS "servico"
+      FROM alunos WHERE AluPersonalID=${personalid} AND AluAtivo = true
+      ORDER BY aluno`;
     res.json(alunos);
     //console.log(res.json(result.rows));
   } catch(err) {
@@ -513,10 +505,10 @@ app.get('/api/alunos', authenticateToken, async (req, res) => {
 
 app.get('/api/locals', authenticateToken, async (req, res) => {
   try {
-    const personalId = req.user.personalId;
+    const personalid = req.user.personalid;
     //const compareQuery = `SELECT local_id id, local nome, locendereco endereco FROM locals WHERE LocPersonalID=$1`;
-    //const result = await pool.query(compareQuery, [personalId]);      
-    const locals = await sql`SELECT local_id id, local nome, locendereco endereco FROM locals WHERE LocPersonalID=${personalId} AND LocAtivo = true`;
+    //const result = await pool.query(compareQuery, [personalid]);      
+    const locals = await sql`SELECT local_id id, local nome, locendereco endereco FROM locals WHERE LocPersonalID=${personalid} AND LocAtivo = true`;
     //const result = await pool.query('SELECT local_id id, local nome, locendereco endereco FROM locals');
     res.json(locals);
     //console.log(res.json(result.rows));
@@ -529,7 +521,7 @@ app.get('/api/locals', authenticateToken, async (req, res) => {
 
 app.get('/api/equiptos', authenticateToken, async (req, res) => {
   try {
-    const personalId = req.user.personalId;
+    const personalid = req.user.personalid;
     const equiptos = await sql`SELECT equipto_id id, equipto nome FROM equiptos WHERE eqativo = true`;
     res.json(equiptos);
   } catch(err) {
@@ -540,8 +532,10 @@ app.get('/api/equiptos', authenticateToken, async (req, res) => {
 
 app.get('/api/servicos', authenticateToken, async (req, res) => {
   try {
-    const personalId = req.user.personalId;
-    const servicos = await sql`SELECT servico_id id, servico nome FROM servicos WHERE Servico_ID IN(SELECT PSServicoID FROM PersonalsServicos WHERE PSPersonalID=${personalId}) AND SeAtivo = true`;
+    const personalid = req.user.personalid;
+    const servicos = await sql`SELECT servico_id id, servico nome, sevalor valor, setemequipto temequipto, seativo ativo
+                                 FROM servicos WHERE Servico_ID IN(SELECT PSServicoID FROM PersonalsServicos
+                               WHERE PSPersonalID=${personalid}) AND SeAtivo = true`;
     res.json(servicos);
   } catch(err) {
       console.error(err);
@@ -551,13 +545,13 @@ app.get('/api/servicos', authenticateToken, async (req, res) => {
 
 app.get('/api/configuracoes', authenticateToken, async (req, res) => {
   try {
-     const personalId = req.user.personalId;
+     const personalid = req.user.personalid;
     //const compareQuery = `SELECT personal_id id, personal nome,
     //                             dia0, dia1, dia2, dia3, dia4, dia5, dia6, hora_inicio, hora_fim, intervalo_minutos
     //   FROM Personals WHERE Personal_ID=$1`;
-    //const result = await pool.query(compareQuery, [personalId]);    
+    //const result = await pool.query(compareQuery, [personalid]);    
     const result = await sql`SELECT personal_id id, personal nome, dia0, dia1, dia2, dia3, dia4, dia5, dia6, hora_inicio, hora_fim,
-       intervalo_minutos, mostrarLocal, mostrarServico, mostrarEquipto FROM Personals WHERE Personal_ID = ${personalId}`;
+       intervalo_minutos, mostrarLocal, mostrarServico, mostrarEquipto FROM Personals WHERE Personal_ID = ${personalid}`;
 
     //const result = await pool.query('SELECT personal_id id, personal nome FROM personals'); 
     res.json(result[0]);
@@ -584,8 +578,8 @@ app.get('/api/configuracoesServicos', authenticateToken, async (req, res) => {
 
 app.get('/api/personals/me/configuracoesServicos', authenticateToken, async (req, res) => {
   try {
-    const personalId = req.user.personalId;
-    const result = await sql`SELECT PSServicoID ServicoID FROM PersonalsServicos WHERE PSPersonalID=${personalId}`;
+    const personalid = req.user.personalid;
+    const result = await sql`SELECT PSServicoID ServicoID FROM PersonalsServicos WHERE PSPersonalID=${personalid}`;
     res.json(result.map(r => r.servicoid));
   } catch(err) {
       console.error(err);
@@ -595,16 +589,16 @@ app.get('/api/personals/me/configuracoesServicos', authenticateToken, async (req
 
 app.post('/api/personals/me/configuracoesServicos', authenticateToken, async (req, res) => {
   try {
-    const personalId = req.user.personalId;
+    const personalid = req.user.personalid;
     const servicosIds = req.body; // array de IDs
 
-    await sql`DELETE FROM PersonalsServicos WHERE PSPersonalID = ${personalId}`;
+    await sql`DELETE FROM PersonalsServicos WHERE PSPersonalID = ${personalid}`;
 
     // Insere novos serviços (se houver)
     if (servicosIds && servicosIds.length > 0) {
       await Promise.all(
         servicosIds.map(id => 
-          sql`INSERT INTO PersonalsServicos (pspersonalid, psservicoid) VALUES (${personalId}, ${id})`
+          sql`INSERT INTO PersonalsServicos (pspersonalid, psservicoid) VALUES (${personalid}, ${id})`
         )
       );
     }
@@ -619,11 +613,15 @@ app.post('/api/personals/me/configuracoesServicos', authenticateToken, async (re
 
 app.get('/api/personals', authenticateToken, async (req, res) => {
   try {
-     const personalId = req.user.personalId;
+     const personalid = req.user.personalid;
     const compareQuery = `SELECT personal_id id, personal nome, dia0, dia1, dia2, dia3, dia4, dia5, dia6,
-                                 hora_inicio, hora_fim, intervalo_minutos, mostrarLocal, mostrarServico, mostrarEquipto
+                                 hora_inicio, hora_fim, intervalo_minutos, mostrarLocal, mostrarServico, mostrarEquipto,
+                                 CASE WHEN (SELECT COUNT(*) FROM PersonalsServicos WHERE pspersonalid=Personal_ID) = 1 
+                                      THEN (SELECT PSServicoID FROM PersonalsServicos WHERE pspersonalid=Personal_ID) 
+                                      ELSE null
+                                 END AS "servicoid"
        FROM Personals WHERE Personal_ID=$1`;
-    const result = await pool.query(compareQuery, [personalId]);    
+    const result = await pool.query(compareQuery, [personalid]);    
 
     //const result = await pool.query('SELECT personal_id id, personal nome FROM personals'); 
     res.json(result.rows);
@@ -636,18 +634,23 @@ app.get('/api/personals', authenticateToken, async (req, res) => {
 
 app.get('/api/personal/me', authenticateToken, async (req, res) => {
   try {
-     const personalId = req.user.personalId;
+     const personalid = req.user.personalid;
 
     //const compareQuery = `SELECT personal_id id, personal nome,  dia0, dia1, dia2, dia3, dia4, dia5, dia6, hora_inicio, hora_fim, intervalo_minutos FROM Personals WHERE Personal_ID=$1`;
-    //const result = await pool.query(compareQuery, [personalId]);    
+    //const result = await pool.query(compareQuery, [personalid]);    
     //res.json(result.rows);
 
     const result = await sql`SELECT personal_id AS "id", personal nome, dia0, dia1, dia2, dia3, dia4, dia5, dia6, hora_inicio, hora_fim,
-         intervalo_minutos, mostrarLocal AS "mostrarLocal", mostrarServico AS "mostrarServico", mostrarEquipto AS "mostrarEquipto" FROM Personals WHERE Personal_ID = ${personalId}`;
-    console.log(personalId);
+                                    intervalo_minutos, mostrarLocal AS "mostrarLocal", mostrarServico AS "mostrarServico", mostrarEquipto AS "mostrarEquipto",
+                                    CASE WHEN (SELECT COUNT(*) FROM PersonalsServicos WHERE pspersonalid=Personal_ID) = 1 
+                                         THEN (SELECT PSServicoID FROM PersonalsServicos WHERE pspersonalid=Personal_ID) 
+                            	           ELSE null
+                                    END AS "servicoid"
+         FROM Personals WHERE Personal_ID = ${personalid}`;
+    console.log(personalid);
     console.log(result[0]);
     res.json(result[0] ?? {}); 
-    console.log(personalId);
+    console.log(personalid);
   } catch(err) {
       console.error(err);
     res.status(500).send('Erro ao buscar configurações do personal');
@@ -695,22 +698,30 @@ function gerarCodigoConvite(length = 8) {
 }
 
 app.post('/api/alunos', authenticateToken, async (req, res) => {
-  const { nome, telefone/* personal_id*/ } = req.body;
-  const personalId = req.user.personalId;
+
+  // tratamento data inicio indefinido
+  if (typeof req.body[`datainicio`] === 'undefined') {
+    req.body[`datainicio`] = new Date();
+  }
+
+  // tratamento data inicio sem preencer
+  if (req.body[`datainicio`] == null) {
+    req.body[`datainicio`] = new Date();
+  }
+  
+  const { nome, telefone, datainicio /* personal_id*/ } = req.body;
+  const personalid = req.user.personalid;
   const codigoConvite = gerarCodigoConvite();
+  //const datainicio = req.user.datainicio;;
 
   try {
-    //const result = await pool.query(`
-    //  INSERT INTO Alunos (aluno, alufone, alupersonalid, alucodconvite)
-    //  VALUES ($1, $2, $3, $4)
-    //  RETURNING aluno_id, aluno, alufone, alucodconvite
-    //`, [nome, telefone, personalId, codigoConvite]);
+
     const aluno = await sql`
-      INSERT INTO Alunos (aluno, alufone, alupersonalid, alucodconvite, AluAtivo)
-      VALUES (${nome}, ${telefone}, ${personalId}, ${codigoConvite}, true)
+      INSERT INTO Alunos (aluno, alufone, aludatainicio, alupersonalid, alucodconvite, AluAtivo)
+      VALUES (${nome}, ${telefone}, ${datainicio}, ${personalid}, ${codigoConvite}, true)
       RETURNING *`; 
     res.json({
-      id: aluno[0].aluno_id,                         // <- compatível com this.form.patchValue({ alunoId: novoAluno.id });
+      id: aluno[0].aluno_id,                         // <- compatível com this.form.patchValue({ alunoid: novoAluno.id });
       nome: aluno[0].aluno,                          // <- compatível com this.alunoCtrl.setValue(novoAluno.nome);
       telefone: aluno[0].alufone,                    // <- opcional, se quiser manter
       codigo_convite: aluno[0].alucodconvite
@@ -730,21 +741,21 @@ app.post('/api/alunos', authenticateToken, async (req, res) => {
 
 app.post('/api/locals', authenticateToken, async (req, res) => {
   const {nome, endereco/* personal_id*/ } = req.body;
-  const personalId = req.user.personalId;
+  const personalid = req.user.personalid;
 
   try {
     //const result = await pool.query(`
     //  INSERT INTO locals (local, locendereco, locpersonalid)
     //  VALUES ($1, $2, $3)
     //  RETURNING local_id, local, locendereco
-    //`, [nome, endereco, personalId]);
+    //`, [nome, endereco, personalid]);
 
     const local = await sql`
       INSERT INTO locals (local, locendereco, locpersonalid, locativo)
-      VALUES (${nome}, ${endereco}, ${personalId}, true)
+      VALUES (${nome}, ${endereco}, ${personalid}, true)
       RETURNING *`; 
     res.json({
-      id: local[0].local_id,                         // <- compatível com this.form.patchValue({ alunoId: novoAluno.id });
+      id: local[0].local_id,                         // <- compatível com this.form.patchValue({ alunoid: novoAluno.id });
       nome: local[0].local,                          // <- compatível com this.alunoCtrl.setValue(novoAluno.nome);
       endereco: local[0].locendereco                    // <- opcional, se quiser manter
     });
@@ -777,7 +788,7 @@ app.post('/api/register-aluno', authenticateToken, async (req, res) => {
       VALUES ($1, $2, 3) RETURNING id
     `, [email, senhaHash]);
 
-    const usuarioId = userResult.rows[0].id;
+    const usuarioid = userResult.rows[0].id;
 
     // 3. Busca aluno com o código informado
     const alunoResult = await db.query(`
@@ -787,14 +798,14 @@ app.post('/api/register-aluno', authenticateToken, async (req, res) => {
       return res.status(400).json({ erro: 'Código de convite inválido' });
     }
 
-    const alunoId = alunoResult.rows[0].id;
+    const alunoid = alunoResult.rows[0].id;
 
     // 4. Faz a associação do usuario_id ao aluno
     await db.query(`
       UPDATE Alunos SET aluuserid = $1 WHERE aluno_id = $2
-    `, [usuarioId, alunoId]);
+    `, [usuarioid, alunoid]);
 
-    return res.status(201).json({ sucesso: true, usuario_id: usuarioId });
+    return res.status(201).json({ sucesso: true, usuario_id: usuarioid });
 
   } catch (erro) {
     console.error('Erro no registro do aluno:', erro);
@@ -806,7 +817,7 @@ app.post('/api/register-aluno', authenticateToken, async (req, res) => {
 
 app.put('/api/personal/configuracoes', authenticateToken, async (req, res) => {
   const { diasAtendimento, horaInicio, horaFim, intervaloMinutos, mostrarLocal, mostrarServico, mostrarEquipto } = req.body;
-  const personalId = req.user.personalId;
+  const personalid = req.user.personalid;
   console.log("req.body", req.body);
   try {
     //const result = await pool.query(`
@@ -814,7 +825,7 @@ app.put('/api/personal/configuracoes', authenticateToken, async (req, res) => {
     //    dia0=$1, dia1=$2, dia2=$3, dia3=$4, dia4=$5, dia5=$6, dia6=$7, hora_inicio=$8, hora_fim=$9, intervalo_minutos=$10
     //  WHERE Personal_ID = $11`,
     //  [diasAtendimento.includes(0), diasAtendimento.includes(1), diasAtendimento.includes(2), diasAtendimento.includes(3),
-    //   diasAtendimento.includes(4), diasAtendimento.includes(5), diasAtendimento.includes(6), horaInicio, horaFim, intervaloMinutos, personalId]);
+    //   diasAtendimento.includes(4), diasAtendimento.includes(5), diasAtendimento.includes(6), horaInicio, horaFim, intervaloMinutos, personalid]);
     //res.status(201).json(result.rows[0]);
     const result = await sql`
       UPDATE Personals SET
@@ -824,7 +835,7 @@ app.put('/api/personal/configuracoes', authenticateToken, async (req, res) => {
        mostrarLocal=${mostrarLocal},
        mostrarServico=${mostrarServico},
        mostrarEquipto=${mostrarEquipto}
-      WHERE Personal_ID = ${personalId}
+      WHERE Personal_ID = ${personalid}
       RETURNING *
     `;    
     res.status(201).json(result[0]);
@@ -834,9 +845,40 @@ app.put('/api/personal/configuracoes', authenticateToken, async (req, res) => {
   }
 });
 
+
+app.put('/api/agendasDescricao', authenticateToken, async (req, res) => {
+  const { agenda_id, descricao } = req.body;
+  const personalid = req.user.personalid;
+  console.log("agenda_id", agenda_id);
+
+  try {
+    const agenda = await sql`
+      UPDATE Agendas SET
+        AgDescricao = ${descricao}
+      WHERE Agenda_ID = ${agenda_id}
+      RETURNING *`;
+    res.status(201).json(agenda)
+    } catch (err) {
+      console.error('Erro ao atualizar descrição agenda:', err);
+      res.status(500).json({ error: 'Erro ao atualizar descrição agenda' });
+    }
+});
+
 app.put('/api/agendas', authenticateToken, async (req, res) => {
-  const { agenda_id, alunoId, localId, servicoId, equiptoId, data, /*hora,*/ titulo, /*descricao,*/ statusId } = req.body;
-  const personalId = req.user.personalId;
+  const personalid = req.user.personalid;
+  // tratamento equipto indefinido
+  if (typeof req.body[`equiptoid`] === 'undefined') {
+    req.body[`equiptoid`] = null;
+  } 
+
+  // tratamento serviço indefinido
+  if (typeof req.body[`servicoid`] === 'undefined') {
+    const resServico = await sql`SELECT COALESCE((SELECT psservicoid FROM PersonalsServicos WHERE pspersonalid= ${personalid} LIMIT 1),23) AS "servicoid"`;
+    const servicolid = resServico[0]?.servicoid ?? null;
+    req.body[`servicoid`] = servicolid;
+  } 
+
+  const { agenda_id, alunoid, localid, servicoid, equiptoid, data, /*hora,*/ /*titulo,*/ /*descricao,*/ statusid } = req.body;
   console.log("agenda_id", agenda_id);
   console.log("data", data);
 
@@ -854,16 +896,11 @@ app.put('/api/agendas', authenticateToken, async (req, res) => {
 
   // UPDATE
   try {
-    //const result = await pool.query(`
-    //  UPDATE Agendas SET
-    //    AgPersonalID = $1, AgAlunoid = $2, AgLocalID = $3, AgData = $4, Agenda = $5, AgStatus = $6
-    //  WHERE Agenda_ID = $7`,
-    //  [personalId, alunoId, localId, dataCorrigida, titulo, statusId, agenda_id]);
-    //res.status(201).json(result.rows[0]);
+
     const agenda = await sql`
       UPDATE Agendas SET
-        AgPersonalID = ${personalId}, AgAlunoid = ${alunoId}, AgLocalID = ${localId}, AgServicoID = ${servicoId},
-        AgEquiptoID = ${equiptoId}, AgData = ${dataCorrigida}, Agenda = ${titulo}, AgStatus = ${statusId}
+        AgPersonalID = ${personalid}, AgAlunoid = ${alunoid}, AgLocalID = ${localid}, AgServicoID = ${servicoid},
+        AgEquiptoID = ${equiptoid}, AgData = ${dataCorrigida}, AgStatus = ${statusid}
       WHERE Agenda_ID = ${agenda_id}
       RETURNING *`;
     res.status(201).json(agenda)
@@ -874,21 +911,21 @@ app.put('/api/agendas', authenticateToken, async (req, res) => {
 });
 
 app.put('/api/agendaStatus', authenticateToken, async (req, res) => {
-  const { agenda_id, alunoId, localId, data, /*hora,*/ titulo, /*descricao,*/ statusId } = req.body;
+  const { agenda_id, alunoid, localid, data, /*hora,*/ /*titulo,*/ /*descricao,*/ statusid } = req.body;
 
   //console.log("req",req);
   //console.log("agenda_id",agenda_id);
-  //console.log("status", statusId);
+  //console.log("status", statusid);
 
   // UPDATE
   try {
     //const result = await pool.query(`
     //  UPDATE Agendas SET AgStatus = $1
     //  WHERE Agenda_ID = $2`,
-    //  [statusId, agenda_id]);
+    //  [statusid, agenda_id]);
     //res.status(201).json(result.rows[0]);
     const agendaStatus = await sql`
-          UPDATE Agendas SET AgStatus = ${statusId}
+          UPDATE Agendas SET AgStatus = ${statusid}
       WHERE Agenda_ID = ${agenda_id}
       RETURNING *`;
     res.status(201).json(agendaStatus[0]);
@@ -899,14 +936,14 @@ app.put('/api/agendaStatus', authenticateToken, async (req, res) => {
 });
 
 app.post('/api/agendaGerar', authenticateToken, async (req, res) => {
-  const personalId = req.user.personalId;
+  const personalid = req.user.personalid;
   const {data_inicio, data_fim} = req.body;
 
-  console.error('personalId:', personalId);
+  console.error('personalid:', personalid);
   console.error('data_inicio:', data_inicio);
   console.error('data_fim:', data_fim);
   try {
-    await sql`DELETE FROM Agendas WHERE AgPersonalID=${personalId} AND AgData>=${data_inicio} AND AgData<=${data_fim} AND AgStatus IN(1,3); /*Pedente ou Cancelado*/`;
+    await sql`DELETE FROM Agendas WHERE AgPersonalID=${personalid} AND AgData>=${data_inicio} AND AgData<=${data_fim} AND AgStatus IN(1,3); /*Pedente ou Cancelado*/`;
   } catch (err) {
     console.error('Erro ao apagar agenda do mês:', err);
     res.status(500).json({ error: 'Erro ao apagar agenda' });
@@ -915,7 +952,7 @@ app.post('/api/agendaGerar', authenticateToken, async (req, res) => {
   try {
     const agenda = await sql`
     INSERT INTO Agendas(Agenda, AgPersonalID, AgAlunoID, AgLocalID, AgServicoID, AgEquiptoID, AgData, AgStatus) --ON CONFLICT DO NOTHING
-    SELECT 'Teste', ${personalId}, AlunoID, LocalID, ServicoID, EquiptoID, datahora + interval '3 hour', 1 FROM h2ugetagendaEquipto(${data_inicio}, ${data_fim}, ${personalId})
+    SELECT 'Teste', ${personalid}, AlunoID, LocalID, ServicoID, EquiptoID, datahora + interval '3 hour', 1 FROM h2ugetagendaEquipto(${data_inicio}, ${data_fim}, ${personalid})
     ON CONFLICT DO NOTHING
     RETURNING *`;
     res.status(201).json(agenda);
@@ -929,12 +966,12 @@ app.post('/api/agendaGerar', authenticateToken, async (req, res) => {
 app.post('/api/agendaAluno', authenticateToken, async (req, res) => {
   try {
     console.log("carrega agenda do aluno");
-    const personalId = req.user.personalId;
-    const {alunoId, ano, mes1a12} = req.body;
-    console.log("alunoId: ", alunoId);
+    const personalid = req.user.personalid;
+    const {alunoid, ano, mes1a12} = req.body;
+    console.log("alunoid: ", alunoid);
     console.log("ano: ", ano);
     console.log("mes1a12: ", mes1a12);
-    const agendas = await sql`SELECT * FROM agendaslista WHERE PersonalID = ${personalId} AND AlunoID = ${alunoId} AND EXTRACT(YEAR FROM Date)=${ano} AND EXTRACT(MONTH FROM Date) =${mes1a12} ORDER BY Date`;
+    const agendas = await sql`SELECT * FROM agendaslista WHERE PersonalID = ${personalid} AND AlunoID = ${alunoid} AND EXTRACT(YEAR FROM Date)=${ano} AND EXTRACT(MONTH FROM Date) =${mes1a12} ORDER BY Date`;
     res.json(agendas);
   } catch (err) {
     console.error(err);
@@ -945,11 +982,11 @@ app.post('/api/agendaAluno', authenticateToken, async (req, res) => {
 app.post('/api/agendaPorPeriodo', authenticateToken, async (req, res) => {
   try {
     console.log("carrega agenda");
-    const personalId = req.user.personalId;
+    const personalid = req.user.personalid;
     const {data_inicio, data_fim} = req.body;
     console.log("data_inicio: ", data_inicio);
     console.log("data_fim: ", data_fim);
-    const agendas = await sql`SELECT * FROM agendaslista WHERE PersonalID = ${personalId} AND Date>=${data_inicio} AND Date <=${data_fim}`;
+    const agendas = await sql`SELECT * FROM agendaslista WHERE PersonalID = ${personalid} AND Date>=${data_inicio} AND Date <=${data_fim}`;
     res.json(agendas);
   } catch (err) {
     console.error(err);
@@ -958,13 +995,35 @@ app.post('/api/agendaPorPeriodo', authenticateToken, async (req, res) => {
 });
 
 app.post('/api/agendas', authenticateToken, async (req, res) => {
-  const { alunoId, localId, servicoId, equiptoId, data, /*hora,*/ titulo, /*descricao,*/ statusId } = req.body;
-  const personalId = req.user.personalId;
+  const personalid = req.user.personalid;
+
+  // tratamento equipto indefinido
+  if (typeof req.body[`equiptoid`] === 'undefined') {
+    req.body[`equiptoid`] = null;
+  } 
+
+  // tratamento serviço indefinido
+  if (typeof req.body[`servicoid`] === 'undefined') {
+    const resServico = await sql`SELECT COALESCE((SELECT psservicoid FROM PersonalsServicos WHERE pspersonalid= ${personalid} LIMIT 1),23) AS "servicoid"`;
+    const servicolid = resServico[0]?.servicoid ?? null;
+    req.body[`servicoid`] = servicolid;
+  }    
+
+  const { alunoid, localid, servicoid, equiptoid, data, statusid } = req.body;
+  
+  console.log("alunoid", alunoid);
+  console.log("localid",localid );
+  console.log("servicoid", servicoid);
+  console.log("equiptoid", equiptoid);
+  console.log("data", data);
+  console.log("statusid", statusid);
+  console.log("personalid", personalid);
+
 
   //console.log(req);
   console.log(req.user.email);
-  console.log(req.user.personalId);
-    
+  console.log(req.user.personalid);
+
 
   const dataHora = new Date(req.body.data);
 
@@ -980,17 +1039,23 @@ app.post('/api/agendas', authenticateToken, async (req, res) => {
 const dataCorrigida = dayjs(req.body.data).tz('America/Sao_Paulo').utc().toDate();
 console.log("req.body.data", req.body.data);
 console.log("dataCorrigida", dataCorrigida);
+console.log("req.body.data", req.body);
   try {
-    //const result = await pool.query(
-    //  `INSERT INTO agendas (AgPersonalID, AgAlunoid, AgLocalID, AgData, Agenda, AgStatus)
-    //  VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-    //  [personalId, alunoId, localId, dataCorrigida, titulo, statusId ]
-    //);
-    //res.status(201).json(result.rows[0]);
+
     const agenda = await sql`
-      INSERT INTO agendas (AgPersonalID, AgAlunoid, AgLocalID, AgServicoID, AgEquiptoID, AgData, Agenda, AgStatus)
-      VALUES (${personalId}, ${alunoId}, ${localId}, ${servicoId}, ${equiptoId}, ${dataCorrigida}, ${titulo}, ${statusId}) RETURNING *`;
-    res.status(201).json(agenda);
+      INSERT INTO agendas (AgPersonalID, AgAlunoid, AgLocalID, AgServicoID, AgEquiptoID, AgData, AgStatus)
+      VALUES (${personalid}, ${alunoid}, ${localid}, ${servicoid}, ${equiptoid}, ${dataCorrigida}, ${statusid}) RETURNING *`;
+    //  res.status(201).json(agenda[0]);
+
+    // pega o id recém-inserido
+    const insertedId = agenda[0].agenda_id;
+
+    // agora busca na view agendaslista o mesmo registro
+    const agendaCompleta = await sql`
+      SELECT * FROM agendaslista WHERE agenda_id = ${insertedId}`;
+
+    res.status(201).json(agendaCompleta[0]); // retorna já no formato certo da view
+        
   } catch (err) {
     console.error('Erro ao inserir agenda:', err);
     res.status(500).json({ error: 'Erro ao inserir agenda' });
