@@ -533,7 +533,7 @@ app.get('/api/equiptos', authenticateToken, async (req, res) => {
 app.get('/api/servicos', authenticateToken, async (req, res) => {
   try {
     const personalid = req.user.personalid;
-    const servicos = await sql`SELECT servico_id id, servico nome, sevalor valor, setemequipto temequipto, seativo ativo
+    const servicos = await sql`SELECT servico_id id, servico nome, sevalor valor, COALESCE(setemequipto,false) as temequipto, seativo ativo
                                  FROM servicos WHERE Servico_ID IN(SELECT PSServicoID FROM PersonalsServicos
                                WHERE PSPersonalID=${personalid}) AND SeAtivo = true`;
     res.json(servicos);
