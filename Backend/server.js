@@ -191,7 +191,7 @@ app.post('/api/refresh', async (req, res) => {
 
 // Endpoint para autenticar login
 app.post('/api/login', async (req, res) => {
-  const email = req.body.email?.trim();;
+  const email = req.body.email?.trim().toUpperCase();
   const password = req.body.password;
 //console.log("email", email);
 //console.log("password", password);
@@ -200,7 +200,7 @@ app.post('/api/login', async (req, res) => {
     //    const result = await pool.query(query, [username]);
 
     /*supabase*/
-     const result = await sql`SELECT id, password, tipo_usuario, forcarlogin FROM users WHERE email = ${email}`;
+     const result = await sql`SELECT id, password, tipo_usuario, forcarlogin FROM users WHERE UPPER(email) = ${email}`;
 
     if (result.length > 0) {
       console.log("result ok");
