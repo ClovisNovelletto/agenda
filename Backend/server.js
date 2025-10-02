@@ -117,6 +117,77 @@ app.use((req, res, next) => {
   next();
 });
 
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // Extrai o token do header "Authorization"
+
+  if (!token) return res.status(401).json({ error: 'Token ausente' });
+
+  jwt.verify(token, SECRET_KEY, (err, user) => {
+    if (err) return res.status(403).json({ error: 'Token inválido' });
+    req.user = user; // Armazena os dados do usuário no req
+    next(); // Continua para a próxima função
+  });
+};
+
+app.get('/api/forcarlogin', authenticateToken, async (req, res) => {
+  try {
+    const userid = req.user.userid;
+    const result = await sql`SELECT forcarlogin as 'forcarLogin' FROM users WHERE id = ${userid}`;
+
+    const forcarLogin = false
+
+    if (result.length > 0) {
+      forcarLogin = result[0].forcarLogin;
+    }
+
+    res.json(forcarLogin);
+
+  } catch(err) {
+      console.error(err);
+    res.status(500).send('Erro ao buscar personals');
+  }    
+});
+
+app.post('/api/refresh', async (req, res) => {
+  const refreshToken = req.headers['authorization']?.split(' ')[1];
+  if (!refreshToken) return res.sendStatus(401).json({ error: 'Token ausente' });
+
+  try {
+    const decoded = jwt.verify(refreshToken, SECRET_KEY, { ignoreExpiration: true });
+
+    const userid = decoded.userid;
+    const email = decoded.email;
+    const tipo = decoded.tipo;
+    const personalid = decoded.personalid;
+    const alunoid = decoded.alunoid;
+
+    console.log(userid);
+    const user = await sql`SELECT forcarlogin as "forcarLogin" FROM users WHERE id = ${userid}`;
+    console.log("user:");
+    console.log(user);
+    if (!user) return res.sendStatus(404);
+
+    // Checa o campo forcarLogin
+    if (user[0].forcarLogin) {
+      // Zera o campo, se quiser que só force uma vez
+      await sql`UPDATE Users SET forcarlogin = false WHERE id = ${userid}`; 
+      return res.status(401).json({ error: 'Login obrigatório' });
+    }
+
+    const token = jwt.sign(
+      { email: email, tipo: tipo, personalid: personalid, alunoid: alunoid, userid: userid },
+      SECRET_KEY,
+      { expiresIn: '1h' }
+    );
+
+    res.json({ token });
+  } catch (err) {
+    console.log("saiu pelo catch");
+    return res.sendStatus(403);
+  }
+});
+
 
 // Endpoint para autenticar login
 app.post('/api/login', async (req, res) => {
@@ -125,11 +196,11 @@ app.post('/api/login', async (req, res) => {
 //console.log("email", email);
 //console.log("password", password);
   try {
-    const query = 'SELECT id, password, tipo_usuario FROM users WHERE username = $1';
+    const query = 'SELECT id, password, tipo_usuario, forcarlogin FROM users WHERE username = $1';
     //    const result = await pool.query(query, [username]);
 
     /*supabase*/
-     const result = await sql`SELECT id, password, tipo_usuario FROM users WHERE email = ${email}`;
+     const result = await sql`SELECT id, password, tipo_usuario, forcarlogin FROM users WHERE email = ${email}`;
 
     if (result.length > 0) {
       console.log("result ok");
@@ -158,7 +229,7 @@ app.post('/api/login', async (req, res) => {
         }
 
         // Gera o token JWT com informações do usuário
-        const token = jwt.sign({ email, tipo, personalid, alunoid  }, SECRET_KEY, { expiresIn: '180d' });
+        const token = jwt.sign({ email, tipo, personalid, alunoid, userid }, SECRET_KEY, { expiresIn: '1h' });
         res.json({ token, message: 'Login bem-sucedido!' });
 
       } else {
@@ -176,20 +247,6 @@ app.post('/api/login', async (req, res) => {
     res.status(500).json({ error: 'Erro no login' });
   }
 });
-
-
-const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // Extrai o token do header "Authorization"
-
-  if (!token) return res.status(401).json({ error: 'Token ausente' });
-
-  jwt.verify(token, SECRET_KEY, (err, user) => {
-    if (err) return res.status(403).json({ error: 'Token inválido' });
-    req.user = user; // Armazena os dados do usuário no req
-    next(); // Continua para a próxima função
-  });
-};
 
 /*----------------------------------------------------------*/
 app.get('/api/localLista', authenticateToken, async (req, res) => {
