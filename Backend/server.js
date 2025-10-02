@@ -162,10 +162,10 @@ app.post('/api/refresh', async (req, res) => {
     const personalid = decoded.personalid;
     const alunoid = decoded.alunoid;
 
-    console.log(userid);
+    //console.log(userid);
     const user = await sql`SELECT forcarlogin as "forcarLogin" FROM users WHERE id = ${userid}`;
-    console.log("user:");
-    console.log(user);
+    //console.log("user:");
+    //console.log(user);
     if (!user) return res.sendStatus(404);
 
     // Checa o campo forcarLogin
