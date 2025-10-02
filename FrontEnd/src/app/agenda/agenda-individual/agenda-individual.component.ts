@@ -41,12 +41,12 @@ import { MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
 
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
-import { AgendaStatusSheetComponent } from '../../agenda-status-sheet/agenda-status-sheet.component'; // ajuste o caminho
+import { AgendaStatusSheetComponent } from '../agenda-status-sheet/agenda-status-sheet.component'; // ajuste o caminho
 import { HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../../src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { DescricaoDialogComponent } from './../descricao-dialog/descricao-dialog.component';
-import { AppointmentDialogComponent } from '../../appointment-dialog/appointment-dialog.component';
+import { AppointmentDialogComponent } from '../appointment-dialog/appointment-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDialogModule } from '@angular/material/dialog';
 import { Local } from '../../models/local.model';

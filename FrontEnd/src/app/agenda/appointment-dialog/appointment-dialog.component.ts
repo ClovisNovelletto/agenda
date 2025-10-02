@@ -15,9 +15,9 @@ import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialog } from '@angular/material/dialog';
-import { AddAlunoDialogComponent } from '../add-aluno-dialog/add-aluno-dialog.component'; // ajuste o caminho conforme necessário
-import { AddLocalDialogComponent } from '../add-local-dialog/add-local-dialog.component';
-import { environment } from '../../environments/environment';
+import { AddAlunoDialogComponent } from './add-aluno-dialog/add-aluno-dialog.component'; // ajuste o caminho conforme necessário
+import { AddLocalDialogComponent } from './add-local-dialog/add-local-dialog.component';
+import { environment } from '../../../environments/environment';
 
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';

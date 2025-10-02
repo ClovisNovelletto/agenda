@@ -2,7 +2,7 @@
   <mat-toolbar class="footer mat-elevation-z8">
     <!--<div class="tituloh2u">h2u Agenda</div>-->
     <div class="footer-menu" >
-      <button mat-icon-button class="mat-icon-button__icon" style="display: flex; align-items: center !important; justify-content: center !important;"
+      <button mat-icon-button class="mat-icon-button__icon" 
               [matMenuTriggerFor]="menuAgenda" routerLinkActive="active" matTooltip="Agenda">
         <mat-icon>calendar_month</mat-icon>
       </button>
@@ -12,12 +12,12 @@
         <button mat-menu-item routerLink="/agendaIndividual">Individual</button>
       </mat-menu>
 
-      <button mat-icon-button class="mat-icon-button__icon" style="display: flex; align-items: center !important; justify-content: center !important;"
+      <button mat-icon-button class="mat-icon-button__icon"
               routerLink="/financeiro" routerLinkActive="active" matTooltip="Financeiro">
         <mat-icon>attach_money</mat-icon>
       </button>
       
-      <button mat-icon-button class="mat-icon-button__icon" style="display: flex; align-items: center !important; justify-content: center !important;"
+      <button mat-icon-button class="mat-icon-button__icon" 
               [matMenuTriggerFor]="menuCadastro" routerLinkActive="active" matTooltip="Mais">
         <mat-icon>menu</mat-icon>
       </button>
@@ -27,7 +27,7 @@
         <button mat-menu-item routerLink="/localLista">Locais</button>
       </mat-menu>
 
-      <button mat-icon-button class="mat-icon-button__icon" style="display: flex; align-items: center !important; justify-content: center !important;"
+      <button mat-icon-button class="mat-icon-button__icon" 
                [matMenuTriggerFor]="menuConf" routerLinkActive="active" matTooltip="Configurações">
         <mat-icon>settings</mat-icon>
       </button>
@@ -37,7 +37,7 @@
         <button mat-menu-item routerLink="/configuracoesServicos">Serviços</button>
       </mat-menu>
 
-      <button mat-icon-button class="mat-icon-button__icon" style="display: flex; align-items: center !important; justify-content: center !important;" (click)="logout()" matTooltip="Sair">
+      <button mat-icon-button class="mat-icon-button__icon"  (click)="logout()" matTooltip="Sair">
         <mat-icon>logout</mat-icon>
       </button>
     </div>

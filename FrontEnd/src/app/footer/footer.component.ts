@@ -55,8 +55,8 @@ export class FooterComponent {
     if (this.isMobile()) {
       App.exitApp();
     } else {
-      this.snackBar.open('Feche a aba manualmente para sair do sistema!', 'Fechar', { duration: 3000 });
-      //alert('Feche a aba manualmente para sair do sistema.');      
+      this.snackBar.open('Feche a aba manualmente para sair do sistema!\nSe quiser forçar login use a opção desconectar no menu superior', 'Fechar', { duration: 3000, panelClass: ['snackbar-preline'] });
+      /*alert('Feche a aba manualmente para sair do sistema.'); */     
     }
     //manter logado e apenas fechar o app
     /*

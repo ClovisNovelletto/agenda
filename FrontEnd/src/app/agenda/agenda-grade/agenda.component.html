@@ -1,0 +1,160 @@
+<div class="agenda-container">
+
+  <!-- TOPO DE NAVEGAÇÃO -->
+  <div *ngIf="!isMobile && isMobile"  class="agenda-topo">
+
+    <div class="week-navigation" *ngIf="!isMobile">
+      <button mat-raised-button class="btn-salvar" (click)="previousWeek()">
+        <mat-icon>arrow_back</mat-icon>Anterior
+      </button>
+
+      <button mat-raised-button class="btn-salvar" (click)="abrirDialogoGerarAgenda()">
+        Gerar Agenda
+      </button>
+
+      <button mat-raised-button class="btn-salvar" (click)="nextWeek()">
+        <div style="display: flex; align-items: center; gap: 6px;">
+          Próxima<mat-icon>arrow_forward</mat-icon>
+        </div>
+      </button>
+    </div>
+  
+    <!-- seletor de mês -->
+  
+    <mat-form-field appearance="fill" *ngIf="mostrarSeletorMes">
+      <mat-label>Escolha o mês</mat-label>
+      <mat-select [value]="mesSelecionado" (selectionChange)="gerarListaMeses()">
+        <mat-option *ngFor="let mes of mesesDisponiveis" [value]="mes">
+          {{ mes.label }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  
+  </div>
+
+  <!-- CABEÇALHO DA GRADE -->
+  <div class="agenda-header" [style.grid-template-columns]="'40px repeat(' + week.length + ', 1fr)'">
+    <div class="header-cell hour-cell">Hora</div>
+    <div class="header-cell" *ngFor="let day of week">
+      {{ day | date: 'EEE dd/MM' }}
+    </div>
+  </div>
+
+  <!-- Corpo -->
+  <div class="agenda-scroll-wrapper">
+    <div class="agenda-grid" cdkDropListGroup >
+      <div *ngIf="appointments.length >= 0" class="agenda-grid" [style.grid-template-columns]="'40px repeat(' + week.length + ', 1fr)'">
+        <ng-container *ngFor="let hour of hours; trackBy: trackByHour">
+          <ng-container *ngFor="let minute of minutes; let i = index; trackBy: trackByMinute">
+
+            <div *ngIf="i === 0" class="hour-cell" [style.grid-row]="'span ' + minutes.length">
+              {{ hour.slice(0, 2) }}
+            </div>
+
+            <!-- Células -->
+            <div *ngFor="let day of week"
+                class="agenda-cell" 
+                [ngClass]="{ 'empty-cell': !hasAppointment(day, hour, minute) }"
+                (mouseenter)="hoveredCell = day + '-' + hour + '-' + minute"
+                (mouseleave)="hoveredCell = null"
+                (click)="isMobile && openAppointmentModal(day, hour, minute)">
+
+              <!-- Dropzone -->
+              <div cdkDropList
+                  [cdkDropListData]="getDropListData(day, hour, minute)"
+                  class="appointment-dropzone"
+                  (cdkDropListDropped)="onDrop($event)"
+                  [cdkDropListSortingDisabled]="true">
+                <!--<div *ngFor="let appt of getAppointments(day, hour, minute); trackBy: trackByAppt"-->
+                <!--<div *ngFor="let appt of (appointments$ | async) | appointmentsFiltradosPor(day, hour, minute); trackBy: trackByAppt"-->
+
+                <ng-container *ngIf="appointments$ | async as appointments">
+                  <div *ngFor="let appt of (appointments | appointmentsFiltradosPor: day : hour : minute); trackBy: trackByAppt">
+                    <div
+                      cdkDrag
+                      [cdkDragStartDelay]="{ touch: 300, mouse: 0 }"
+                      (cdkDragStarted)="draggedAppointment = appt"
+                      (cdkDragEnded)="draggedAppointment = null"
+                      [cdkDragData]="{ appointment: appt, fromDay: day, fromHour: hour, fromMinute: minute }"
+                      class="appointment"
+                      [style.backgroundColor]="getStatusCor(appt.statusid)"
+                      (click)="abrirMenuStatus(appt, day, hour, minute); $event.stopPropagation()">
+
+                      <!-- Preview que aparece durante o drag -->
+                      <ng-template cdkDragPreview>
+                        <div class="drag-preview">
+                          <strong>{{ appt.aluno }}</strong><br />
+                          <ng-container *ngIf="configAgenda.mostrarLocal"> <strong> {{ appt.local }}</strong><br/> </ng-container>
+                          <ng-container *ngIf="configAgenda.mostrarServico"> <strong>{{ appt.servico }}</strong><br/> </ng-container>
+                          <ng-container *ngIf="configAgenda.mostrarEquipto"> <strong>{{ appt.equipto }}</strong><br/> </ng-container>
+                        </div>
+                      </ng-template>
+
+                      <!-- Placeholder que substitui o item no lugar de origem -->
+                      <ng-template cdkDragPlaceholder>
+                        <div class="appointment-placeholder"></div>
+                      </ng-template>
+
+                      <strong>{{ appt.aluno }} </strong><br />
+                      <ng-container *ngIf="configAgenda.mostrarLocal"> <strong> {{ appt.local }}</strong><br/> </ng-container>
+                      <ng-container *ngIf="configAgenda.mostrarServico"> <strong>{{ appt.servico }}</strong><br/> </ng-container>
+                      <ng-container *ngIf="configAgenda.mostrarEquipto"> <strong>{{ appt.equipto }}</strong><br/> </ng-container>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+
+              <!-- Botão + -->
+              <div *ngIf="!isMobile && !isDragging && hoveredCell === (day + '-' + hour + '-' + minute)"
+                  class="cell-add-button"
+                  (click)="openAppointmentModal(day, hour, minute); $event.stopPropagation()">
+                +
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Botão flutuante volta período-->
+  <div class="fab-btnVoltar">
+    <button mat-fab class="btn-float-menu" (click)="previousWeek()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+  </div>
+
+  <!-- Botão flutuante avança período-->
+  <div class="fab-btnAvancar">
+    <button mat-fab class="btn-float-menu" (click)="nextWeek()">
+      <mat-icon>arrow_forward</mat-icon>
+    </button>
+  </div>
+
+  <!-- Botão flutuante opções -->
+  <div class="fab-container" >
+    <button mat-fab class="btn-float-menu" [matMenuTriggerFor]="fabMenuOpcoes">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+  </div>
+
+  <!-- Menu que abre a partir do botão -->
+  <mat-menu #fabMenuOpcoes="matMenu">
+    <button mat-menu-item (click)="openAppointmentModal()">
+      <mat-icon style="color: green; font-weight: bold; margin-bottom: 5px !important;">add</mat-icon>
+      <span>Nova Agenda</span>
+    </button>
+    <button mat-menu-item (click)="abrirDialogoGerarAgenda()">
+      <mat-icon style="color: green; font-weight: bold; margin-bottom: 5px !important;">event</mat-icon>
+      <span>Gerar Agenda</span>
+    </button>
+    <!--<button mat-menu-item (click)="outraAcao()">
+      <mat-icon>settings</mat-icon>
+      <span>Configurações</span>
+    </button>-->
+  </mat-menu>
+  <!--<button *ngIf="isMobile" class="btn-float-add" (click)="openAppointmentModal(); $event.stopPropagation()">
+    +
+  </button>-->            
+</div>

@@ -1,4 +1,9 @@
 
+body, html {
+  margin-top: 0px!important;
+  padding-top: 0px!important;
+}
+
 .servicos-container {
   display: flex;
   flex-direction: column;
@@ -8,6 +13,7 @@
   border-radius: 8px;
   background: black;
   overflow: hidden; /* evita barra de rolagem dupla */
+  /*padding-top: 40px;*/
 }
 
 .toolbar-servicos {
@@ -27,7 +33,9 @@
 .conteudo-servicos {
   flex: 1;
   overflow-y: auto; /* só essa parte rola */
-  padding: 12px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 10px;
 }
 
 .btn-salvar {

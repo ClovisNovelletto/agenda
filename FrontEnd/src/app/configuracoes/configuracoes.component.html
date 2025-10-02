@@ -1,79 +1,71 @@
-<!--
-<mat-toolbar color="primary">
-  <button mat-icon-button style="border-radius: 50%; display: flex; width: 20px !important; height: 20px !important; align-items: center !important; justify-content: center !important; background-color: black; padding: 7px; margin-right: 10px;" (click)="fechar()">
-    <mat-icon style="color: white; display: flex; align-items: center !important; justify-content: center !important;">arrow_back</mat-icon>
-  </button>
-  <span style="font-size: 16px !important; padding: 2px;">Configurações da agenda</span>
-</mat-toolbar>
--->
-<mat-toolbar color="primary">
-  <button mat-icon-button class="btn-voltar" (click)="fechar()">
-    <mat-icon>arrow_back</mat-icon>
-  </button>
-  <span class="titulo-toolbar">Configurações da agenda</span>
-</mat-toolbar>
+<div class="configuracao-container">
+  <mat-toolbar color="primary">
+    <button mat-icon-button class="btn-voltar" (click)="fechar()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <span class="titulo-toolbar">Configurações da agenda</span>
+  </mat-toolbar>
 
-<div style="max-width: 500px; align-items: center; align-content: center; align-self: center; alignment-baseline: center;" >
-  <mat-card *ngIf="configSelecionada" >
-    <!--<mat-card-title style="font-size: 14px !important; padding-bottom: 5px;">⚙️ Configurações da Agenda</mat-card-title>-->
-    <mat-card-content style="display: flex; flex-direction: column; gap: 8px;">
+  <div class="conteudo-configuracao">
+    <mat-card *ngIf="configSelecionada" >
+      <mat-card-content style="display: flex; flex-direction: column; gap: 8px;">
 
-      <!-- Dias da semana -->
-      <label class="form-label" style="padding-top: 25px;">Dias de Atendimento:</label>
-      <div class="dias-checkboxes">
-        <mat-checkbox *ngFor="let dia of diasSemana"
-                      [checked]="configSelecionada.diasAtendimento.includes(dia.valor)"
-                      (change)="toggleDia(dia.valor)">
-          {{ dia.nome }}
+        <!-- Dias da semana -->
+        <label class="form-label" >Dias de Atendimento:</label>
+        <div class="dias-checkboxes">
+          <mat-checkbox *ngFor="let dia of diasSemana"
+                        [checked]="configSelecionada.diasAtendimento.includes(dia.valor)"
+                        (change)="toggleDia(dia.valor)">
+            {{ dia.nome }}
+          </mat-checkbox>
+        </div>
+
+        <!-- Hora início -->
+        <mat-form-field appearance="fill" class="campo_form">
+          <mat-label>Hora Início</mat-label>
+          <mat-select [(ngModel)]="configSelecionada.horaInicio" name="horaInicio">
+            <mat-option *ngFor="let h of horasPossiveis" [value]="h">{{ h }}:00</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Hora fim -->
+        <mat-form-field appearance="fill" class="campo_form">
+          <mat-label>Hora Fim</mat-label>
+          <mat-select [(ngModel)]="configSelecionada.horaFim" name="horaFim">
+            <mat-option *ngFor="let h of horasPossiveis" [value]="h">{{ h }}:00</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Tempo aula -->
+        <mat-form-field appearance="fill" class="campo_form">
+          <mat-label>Início da Aula a cada</mat-label>
+          <mat-select [(ngModel)]="configSelecionada.intervaloMinutos" name="intervaloMinutos">
+            <mat-option [value]="10">10 min</mat-option>
+            <mat-option [value]="15">15 min</mat-option>
+            <mat-option [value]="30">30 min</mat-option>
+            <mat-option [value]="60">1h</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Mostrar local -->
+
+        <mat-checkbox [(ngModel)]="configSelecionada.mostrarLocal">
+          Mostrar Local
         </mat-checkbox>
-      </div>
 
-      <!-- Hora início -->
-      <mat-form-field appearance="fill" class="campo_form">
-        <mat-label>Hora Início</mat-label>
-        <mat-select [(ngModel)]="configSelecionada.horaInicio" name="horaInicio">
-          <mat-option *ngFor="let h of horasPossiveis" [value]="h">{{ h }}:00</mat-option>
-        </mat-select>
-      </mat-form-field>
+        <mat-checkbox [(ngModel)]="configSelecionada.mostrarServico">
+          Mostrar Serviço
+        </mat-checkbox>
 
-      <!-- Hora fim -->
-      <mat-form-field appearance="fill" class="campo_form">
-        <mat-label>Hora Fim</mat-label>
-        <mat-select [(ngModel)]="configSelecionada.horaFim" name="horaFim">
-          <mat-option *ngFor="let h of horasPossiveis" [value]="h">{{ h }}:00</mat-option>
-        </mat-select>
-      </mat-form-field>
+        <mat-checkbox [(ngModel)]="configSelecionada.mostrarEquipto">
+          Mostrar Equipamento
+        </mat-checkbox>
 
-      <!-- Tempo aula -->
-      <mat-form-field appearance="fill" class="campo_form">
-        <mat-label>Início da Aula a cada</mat-label>
-        <mat-select [(ngModel)]="configSelecionada.intervaloMinutos" name="intervaloMinutos">
-          <mat-option [value]="10">10 min</mat-option>
-          <mat-option [value]="15">15 min</mat-option>
-          <mat-option [value]="30">30 min</mat-option>
-          <mat-option [value]="60">1h</mat-option>
-        </mat-select>
-      </mat-form-field>
+          <button mat-raised-button type="submit" (click)="salvarConfiguracoes()" class="btn-salvar">
+            Salvar
+          </button>
 
-      <!-- Mostrar local -->
-
-      <mat-checkbox [(ngModel)]="configSelecionada.mostrarLocal">
-        Mostrar Local
-      </mat-checkbox>
-
-      <mat-checkbox [(ngModel)]="configSelecionada.mostrarServico">
-        Mostrar Serviço
-      </mat-checkbox>
-
-      <mat-checkbox [(ngModel)]="configSelecionada.mostrarEquipto">
-        Mostrar Equipamento
-      </mat-checkbox>
-
-        <button mat-raised-button type="submit" (click)="salvarConfiguracoes()" class="btn-salvar">
-          Salvar
-        </button>
-
-
-    </mat-card-content>
-  </mat-card>
+      </mat-card-content>
+    </mat-card>
+  </div>
 </div>

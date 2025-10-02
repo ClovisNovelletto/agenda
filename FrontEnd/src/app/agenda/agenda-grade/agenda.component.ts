@@ -2,7 +2,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { Component, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AppointmentDialogComponent } from '../appointment-dialog/appointment-dialog.component';
-import { DescricaoDialogComponent } from '././descricao-dialog/descricao-dialog.component';
+import { DescricaoDialogComponent } from '../descricao-dialog/descricao-dialog.component';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -11,22 +11,22 @@ import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 import {  } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { Aluno } from '../models/aluno.model';
-import { Local } from '../models/local.model';
-import { Equipto } from '../models/equipto.model';
-import { Servico } from '../models/servico.model';
-import { Personal } from '../models/personal.model';
-import { ConfigAgenda } from '../models/configAgenda.model';
+import { Aluno } from '../../models/aluno.model';
+import { Local } from '../../models/local.model';
+import { Equipto } from '../../models/equipto.model';
+import { Servico } from '../../models/servico.model';
+import { Personal } from '../../models/personal.model';
+import { ConfigAgenda } from '../../models/configAgenda.model';
 import { HttpHeaders } from '@angular/common/http';
 import { MatTableModule } from '@angular/material/table';
-import { Appointment } from '../models/appointment'; // ajuste o caminho conforme sua estrutura
+import { Appointment } from '../../models/appointment'; // ajuste o caminho conforme sua estrutura
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CdkDropList, CdkDragDrop } from '@angular/cdk/drag-drop';
-import { environment } from '../../../src/environments/environment';
+import { environment } from '../../../environments/environment';
 //import { Configuracoes } from '../configuracoes/configuracoes.component';
-import { PersonalService } from '../services/personal.service';
-import { AgendaStatusService } from '../services/agenda-status.service';
-import { AgendaStatus } from '../models/agendaStatus.model';
+import { PersonalService } from '../../services/personal.service';
+import { AgendaStatusService } from '../../services/agenda-status.service';
+import { AgendaStatus } from '../../models/agendaStatus.model';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
@@ -42,15 +42,17 @@ import {MatDatepickerInput} from '@angular/material/datepicker';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 
-import { DialogGerarAgendaComponent } from './dialog-gerar-agenda/dialog-gerar-agenda.component'; // ajuste o caminho
+import { DialogGerarAgendaComponent } from '../dialog-gerar-agenda/dialog-gerar-agenda.component'; // ajuste o caminho
 import { BehaviorSubject } from 'rxjs';
-import { AppointmentsFiltradosPorPipe } from '../pipes/appointments-filtrados-por.pipe';
+import { AppointmentsFiltradosPorPipe } from '../../pipes/appointments-filtrados-por.pipe';
 import { ChangeDetectorRef } from '@angular/core';
 import { Pipe, PipeTransform } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { forkJoin } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { AuthService } from '../auth.service';
+import { AuthService } from '../../auth.service';
+
+import { MatMenuModule } from '@angular/material/menu';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -77,13 +79,46 @@ dayjs.extend(timezone);
     MatSelectModule,
     AppointmentsFiltradosPorPipe,
     MatIconModule,
+    MatMenuModule,
+    /*H2uHammerConfig,*/
   //  Configuracoes,
   ],
-  providers: [MatDatepickerModule]
+  providers: [MatDatepickerModule
+  ],
 
- 
 })
 export class AgendaComponent implements OnInit, AfterViewInit {
+
+  onPan(event: any) {
+    // ignora se o movimento for mais vertical que horizontal
+    if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
+      return;
+    }
+
+    // enquanto arrasta: aplica translateX suave
+    this.translateX = event.deltaX;
+
+    // no final: decide se troca ou volta
+    if (event.isFinal) {
+      if (event.deltaX < -100) {
+        this.nextWeek();
+      } else if (event.deltaX > 100) {
+        this.previousWeek();
+      }
+      this.translateX = 0; // reseta posição
+    }
+  }
+
+  onSwipe(event: any) {
+    console.log('SWIPE EVENT:', event);
+    if (event.direction === Hammer.DIRECTION_LEFT) {
+      this.nextWeek();
+    }
+    if (event.direction === Hammer.DIRECTION_RIGHT) {
+      this.previousWeek();
+    }
+  }
+
   @ViewChildren(CdkDropList) dropLists!: QueryList<CdkDropList>;
   connectedDropLists: CdkDropList[] = [];
   weekDates: Date[] = [];
@@ -113,6 +148,9 @@ export class AgendaComponent implements OnInit, AfterViewInit {
   maxData = new Date(2030, 11); // Dezembro 2030
   mesesDisponiveis: { label: string, dataInicio: Date, dataFim: Date }[] = [];
   mesSelecionado: any = null;
+
+  translateX = 0;
+  dragging = false;
 
   configAgenda: ConfigAgenda = {
     diasAtendimento: [],
@@ -172,10 +210,10 @@ export class AgendaComponent implements OnInit, AfterViewInit {
     console.log('Formatado:', localDate.format('YYYY-MM-DD HH:mm'));
     console.log('Objeto Date:', localDate.toDate());
     console.log('AgendaComponent iniciado');
-    this.isMobile = window.innerWidth <= 768; // ajustável conforme seu layout
+    this.isMobile = window.innerWidth <= 960; // ajustável conforme seu layout
       window.addEventListener('resize', () => {
-        this.isMobile = window.innerWidth <= 768;
-        this.isMobile = window.innerWidth <= 768;
+        this.isMobile = window.innerWidth <= 960;
+        this.isMobile = window.innerWidth <= 960;
     });
     //const today = new Date();
     const today = dayjs.utc().tz('America/Sao_Paulo').toDate();
@@ -403,13 +441,18 @@ export class AgendaComponent implements OnInit, AfterViewInit {
   }
 
 
-  openAppointmentModal(day: Date, hour: string, minute: number) {
+  /*openAppointmentModal(day: Date, hour: string, minute: number) {*/
+  openAppointmentModal(day?: Date, hour?: string, minute?: number) {  
     const personalid = this.authService.getPersonalId();
-    const [h] = hour.split(':');
-    //const start = new Date(day);
     const start = dayjs.utc(day).tz('America/Sao_Paulo').toDate();
+    if (!hour) {
+      hour = "";
+    }
+    const [h] = hour.split(':');
     start.setHours(+h, minute, 0, 0);
 
+    //const start = new Date(day);
+    
 console.log("this.locals ag: ", this.locals); 
 console.log("this.equiptos ag: ", this.equiptos);
 console.log("this.personal: ", this.personal); 
@@ -1082,5 +1125,3 @@ function buildDateWithTime(baseDay: Date, hour: string, minute: number): Date {
   result.setHours(h, minute, 0, 0);
   return result;
 }
-
-

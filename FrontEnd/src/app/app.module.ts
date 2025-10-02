@@ -14,7 +14,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
-import { AppointmentDialogComponent } from './appointment-dialog/appointment-dialog.component';
+import { AppointmentDialogComponent } from './agenda/appointment-dialog/appointment-dialog.component';
 
 //imports agenda
 

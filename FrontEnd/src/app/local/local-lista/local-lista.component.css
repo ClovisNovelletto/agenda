@@ -4,7 +4,6 @@ html, body {
   margin: 0;
   box-sizing: border-box;
   overflow: visible;
-  padding-bottom: env(safe-area-inset-bottom, 40px); 
 }
 *, *::before, *::after {
   box-sizing: inherit;
@@ -59,14 +58,10 @@ html, body {
   color:#ff6b6b
 }
 
-
-/*tirar espaço logo abaixo dos campos de pesquisa e status - ativo/inativo*/
 ::ng-deep .mat-mdc-form-field-subscript-wrapper {
   display: none;
   overflow: visible;
 }
-
-/*novos filtros*/
 
 .filtros {
   display: flex;
@@ -147,32 +142,24 @@ button.mat-mini-fab mat-icon {
     justify-content: center !important;
 }
 
-
-/*rolagem*/
 .tela-container {
   height: 100%;
   display: flex;
   flex-direction: column;
   min-height: 0; 
-  /*border: 2px solid red;*/
   overflow: visible;
 }
 
 .lista-scroll {
   flex: 1;
   overflow-y: auto;
-  /* padding: 8px;*/
   min-height: 0; 
   overflow: visible;
 }
 
-/*filtro*/
-/*filtro 3*/
-
 .filtros {
   position: sticky;
-  top: 2px; /* abaixo da barra top */
-  /*top: 0;*/
+  top: 2px;
   background: #494646;
   z-index: 10;
   padding: 6px;

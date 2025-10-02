@@ -25,7 +25,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { MatSelectModule } from '@angular/material/select';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { AddLocalDialogComponent } from '../../add-local-dialog/add-local-dialog.component';
+import { AddLocalDialogComponent } from '../../agenda/appointment-dialog/add-local-dialog/add-local-dialog.component';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { HttpHeaders } from '@angular/common/http';

@@ -1,0 +1,24 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+ <!-- <circle cx="100" cy="100" r="90" fill="rgb(245,118,26)" />-->
+  <rect x="10" y="10" width="180" height="180" rx="60" ry="60" fill="rgb(245,118,26)"/>
+  
+  <text x="52%" y="43%" 
+        text-anchor="middle" 
+        font-family="Arial, Helvetica, sans-serif" 
+        font-size="90" 
+        fill="black" 
+        font-weight="bold"
+        dominant-baseline="middle">
+    ²
+  </text>
+    <text x="50%" y="55%" 
+        text-anchor="middle" 
+        font-family="Arial, Helvetica, sans-serif" 
+        font-size="90" 
+        fill="white" 
+        font-weight="bold"
+        dominant-baseline="middle">
+    hu
+  </text>
+</svg>

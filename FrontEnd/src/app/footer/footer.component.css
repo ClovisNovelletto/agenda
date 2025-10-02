@@ -1,27 +1,19 @@
 body {
-  /*padding-bottom: 40px;*/ /* mesmo valor da altura do footer */
-  padding-bottom: env(safe-area-inset-bottom, 40px); 
   overflow: visible;
 }
 
+
 .footer {
   position: fixed;
-  bottom: env(safe-area-inset-bottom, 0);
+  bottom: 0;
   left: 0;
   width: 100%;
-  height: 40px;
-  background-color: rgb(221, 148, 13);
-  color: rgb(9, 2, 24);
-  z-index: 1000;
+  height: 50px;
+  background: rgb(245, 118, 26);
+  color: white;
   display: flex;
-  align-items: center;     /* Centraliza verticalmente */
-  justify-content: center; /* Centraliza horizontalmente (opcional) */
-  padding: 0;
-  z-index: 9999 !important;
-  border-top: 0px solid red;
-  border-bottom: 0px solid red;
-  padding-bottom: env(safe-area-inset-bottom);
-  overflow: visible;
+  align-items: center;
+  justify-content: center;
 }
 
 .footer-menu {
@@ -59,7 +51,9 @@ body {
   white-space: nowrap;
 }
 
-.mat-icon-button__icon_xxx {
+.mat-icon-button__icon {
+  align-items: center;
+  justify-content: center;
   display: flex;
   min-height: 20px;
   min-width: 20px;
@@ -79,18 +73,22 @@ mat-icon {
   height: 24px !important;
   padding: 0 !important;
   display: flex;
-  align-items: center;
+  /*align-items: center;*/
   justify-content: center;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 750px) {
 
-  .mat-icon-button__icon_xxx {
-    display: flex;
-    min-height: 20px;
-    min-width: 20px;
-    height: 20px;
-    width: 20px;
+  .footer {
+    /* altura de conteúdo + inset */
+    --base-footer-height: 40px; /* a altura "visual" da barra */
+    padding-bottom: var(--safe-bottom, 40px); /* queda segura se algo der errado */
+    height: calc(var(--base-footer-height) + var(--safe-bottom, 40px));
+  }
+
+  .mat-icon-button__icon {
+    padding-top: 10px!important;
+    align-items: flex-start!important;
   }
 }
 

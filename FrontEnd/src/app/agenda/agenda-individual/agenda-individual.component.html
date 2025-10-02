@@ -51,7 +51,7 @@
       <div class="tabela-container">
         <table mat-table [dataSource]="[]" class="tabela-header" >
           <ng-container matColumnDef="data">
-            <th style="min-height: 30px!important; height: 30px!important;" mat-header-cell *matHeaderCellDef> Data </th>
+            <th style="min-height: 30px!important; height: 30px!important;" mat-header-cell *matHeaderCellDef> Dia Hora </th>
           </ng-container>
         
           <ng-container matColumnDef="equipto">
@@ -76,7 +76,7 @@
             <ng-container matColumnDef="data">
                 <!--<th style="min-height: 0px!important; height: 0px!important;"mat-header-cell *matHeaderCellDef sticky> Data </th>-->
                 <td style="min-height: 30px!important; height: 30px!important;"mat-cell *matCellDef="let row" [style.backgroundColor]="getStatusCor(row.statusid)" class="corFonte">
-                {{ toDate(row.date) | date:'dd/MM' }} {{ row.hour }} {{ toDate(row.date) | date:'(EEE)' }}
+                {{ toDate(row.date) | date:'dd' }} {{ toDate(row.date) | date:'EEE' }} {{ row.hour }}
                 </td>
             </ng-container>
   
