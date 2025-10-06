@@ -1,0 +1,115 @@
+<mat-toolbar color="primary" style="margin-bottom: 10px; margin-top: 5px;">
+  <button mat-icon-button style="display: flex; width: 20px !important; height: 20px !important; align-items: center !important; justify-content: center !important; background-color: black; padding: 7px; margin-right: 10px;" (click)="fechar()">
+    <mat-icon style="display: flex; align-items: center !important; justify-content: center !important;">arrow_back</mat-icon>
+  </button>
+  <span style="font-size: 16px !important; padding: 2px;">Cadastro de Anamnese</span>
+</mat-toolbar>
+
+<div style="margin-bottom: 25px; margin-left: 5px;" class="form-wrapper">
+  <form *ngIf="form" [formGroup]="form" (ngSubmit)="salvar()">
+
+    <mat-form-field appearance="fill" class="peso-card">
+      <mat-label>Data</mat-label>
+
+      <input matInput [matDatepicker]="pickerDataAnamnese" formControlName="dataAnamnese">
+      <mat-datepicker-toggle matSuffix [for]="pickerDataAnamnese"></mat-datepicker-toggle>
+      <mat-datepicker #pickerDataAnamnese></mat-datepicker>
+    </mat-form-field>
+
+
+    <mat-form-field appearance="fill" class="peso-card">
+      <mat-label>Título</mat-label>
+      <input matInput formControlName="titulo" />
+    </mat-form-field>
+
+    <mat-card class="peso-card">
+      <div class="peso-container">
+        <mat-form-field appearance="fill" class="peso-kg">
+          <mat-label>Idade</mat-label>
+          <mat-select formControlName="idade">
+            <mat-option *ngFor="let i of idades" [value]="i">{{ i  }} anos</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="peso-g">
+          <mat-label>Altura</mat-label>
+          <mat-select formControlName="altura">
+            <mat-option *ngFor="let a of alturas" [value]="a">{{ a }} m</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+    </mat-card>   
+
+    <mat-card class="peso-card">
+      <mat-card-subtitle>Peso corporal</mat-card-subtitle>
+
+      <div class="peso-container">
+        <mat-form-field appearance="fill" class="peso-kg">
+          <mat-label>Kg</mat-label>
+          <mat-select formControlName="pesoKg">
+            <mat-option *ngFor="let kg of kilos" [value]="kg">{{ kg }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="peso-g">
+          <mat-label>gramas</mat-label>
+          <mat-select formControlName="pesoG">
+            <mat-option *ngFor="let g of gramas" [value]="g">{{ g }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="peso-total">
+        Peso total: <strong>{{ getPesoTotal() | number:'1.3-3' }} kg</strong>
+      </div>
+    </mat-card>   
+
+
+    <mat-form-field appearance="fill" class="peso-card">
+      <mat-label>Qual é o Objetivo ?</mat-label>
+      <input matInput formControlName="objetivo" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="peso-card">
+      <mat-label>Principal Reclamação</mat-label>
+      <input matInput formControlName="principalRecl" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="peso-card">
+      <mat-label>Hábitos Alimentares</mat-label>
+      <input matInput formControlName="alimentacao" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="peso-card">
+      <mat-label>Medicamentos</mat-label>
+      <input matInput formControlName="medicamentos" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="peso-card">
+      <mat-label>Histórico de Saúde</mat-label>
+      <input matInput formControlName="historicosaude" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="peso-card">
+      <mat-label>Fatores de Risco</mat-label>
+      <input matInput formControlName="fatoresrisco" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="peso-card">
+      <mat-label>Como tem sido o Sono</mat-label>
+      <input matInput formControlName="sono" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="peso-card">
+      <mat-label>Descrição</mat-label>
+      <input matInput formControlName="descricao" />
+    </mat-form-field>
+
+    <div>
+      <button mat-raised-button type="submit" [disabled]="form.invalid || form.pristine" class="btn-salvar">
+        Salvar
+      </button>
+    </div>
+  </form>
+</div>

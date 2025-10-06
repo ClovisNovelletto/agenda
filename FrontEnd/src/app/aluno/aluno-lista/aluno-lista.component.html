@@ -29,7 +29,7 @@
   </div>
 
   <div class="lista-scroll">
-    <div class="aluno-item" *ngFor="let aluno of alunosFiltrados">
+    <div class="aluno-item" *ngFor="let aluno of alunosFiltrados" (click)="onEditar(aluno)">
       <div class="aluno-info">
         <span class="nome">{{ aluno.nome }}</span>
         <span class="telefone">{{ aluno.telefone }}</span>
@@ -41,6 +41,7 @@
           {{ aluno.ativo ? 'Ativo' : 'Inativo' }}
         </span>
       </div>
+
 
       <button mat-icon-button class="mat-icon-button__icon" color="primary" (click)="onEditar(aluno)">
         <mat-icon>edit</mat-icon>

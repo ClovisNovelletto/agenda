@@ -1,0 +1,103 @@
+<div class="page" >
+  <mat-toolbar color="primary" class="toolbar">
+    <button mat-icon-button class="btn-voltar" (click)="fechar()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <span class="titulo">Anamneses do Aluno</span>
+    <span class="spacer"></span>
+
+    <!-- seletor de mês (apenas mês/ano) -->
+    <button mat-mini-fab style="display: flex; align-items: center !important; justify-content: center !important; background-color: #28a745;" (click)="anamneseNova()" aria-label="Nova Anamnese">
+      <mat-icon style="display: flex; align-items: center !important; justify-content: center !important;">add</mat-icon>
+    </button>
+
+  </mat-toolbar>
+
+  <!--<div class="container">-->
+  <div class="agenda-layout" >
+    <!-- Sidebar Alunos -->
+    <aside class="sidebar">
+
+      <div class="sidebar-header">Alunos</div>
+
+      <div class="aluno-lista">
+        <mat-checkbox 
+            *ngFor="let aluno of alunos; trackBy: trackByAlunoId"
+            [checked]="alunoSelecionado!.id === aluno.id"
+            (change)="selecionarAluno(aluno)">
+            {{ aluno.nome }} 
+        </mat-checkbox>
+
+        <div class="empty" *ngIf="!carregandoAlunos && alunos.length === 0">
+            Nenhum aluno ativo.
+        </div>
+      </div>
+    
+    </aside>
+
+    
+    <main class="content">
+
+      <div class="tabela-container">
+        <table mat-table [dataSource]="[]" class="tabela-header">
+            <ng-container matColumnDef="data">
+                <th mat-header-cell *matHeaderCellDef>Data</th>
+            </ng-container>
+
+            <ng-container matColumnDef="titulo">
+                <th mat-header-cell *matHeaderCellDef>Título</th>
+            </ng-container>
+
+            <ng-container matColumnDef="descricao">
+                <th mat-header-cell *matHeaderCellDef>Descrição</th>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="['data','titulo','descricao']"></tr>
+        </table>
+      
+      <div class="tabela-wrap" *ngIf="alunoSelecionado">
+        <div class="loading" *ngIf="carregandoAnamneses">
+          <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
+        </div>
+
+        <table mat-table [dataSource]="dataSource" *ngIf="!carregandoAnamneses">
+
+            <ng-container matColumnDef="data">
+                <td mat-cell *matCellDef="let row" class="corFonte">
+                {{ toDate(row.data) | date:'dd/MM/yy' }} 
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="titulo">
+                <td mat-cell *matCellDef="let row" class="corFonte">
+                {{ row.titulo || '—' }}
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="descricao">
+                <td mat-cell *matCellDef="let row" class="corFonte">
+                {{ row.descricao || '—' }}
+                </td>
+            </ng-container>
+
+
+
+            <tr style="min-height: 30px!important; height: 30px!important;"
+                mat-row
+                *matRowDef="let row; columns: displayedColumns;"
+                (click)="anamneseEditar(row)">
+            </tr>
+          
+        </table>
+        
+        <div class="empty" *ngIf="!carregandoAnamneses && dataSource.data.length === 0" >
+          Aluno sem anamneses.
+        </div>
+
+      </div>
+    </div>
+    </main>
+  </div>
+</div>
+
+                <!--[ngClass]="rowClass(row.status)"-->

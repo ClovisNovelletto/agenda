@@ -30,6 +30,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { HttpHeaders } from '@angular/common/http';
 import { startWith } from 'rxjs/operators';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-local-form',
@@ -45,7 +46,7 @@ export class LocalFormComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<LocalFormComponent>,
-    private http: HttpClient,
+    private http: HttpClient, private cd: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA) public  data: any // { local?: Local }//data: Local 
   ) {}
 
@@ -68,6 +69,13 @@ export class LocalFormComponent implements OnInit {
       });
 
     }
+
+    // --- Marcar campos como dirty para habilitar botão salvar ---
+    this.form.markAllAsTouched();
+    //this.form.markAsDirty();
+
+    // --- Gatilho de detecção de mudança ---
+    setTimeout(() => this.cd.markForCheck());
 
   }
 
