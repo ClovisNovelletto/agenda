@@ -318,24 +318,177 @@ app.post('/api/equiptoInsert', authenticateToken, async (req, res) => {
 });
 
 /*----------------------------------------------------------*/
+
+app.get('/api/alunoPlanoLista', authenticateToken, async (req, res) => {
+  try {
+    console.log("carrega AlunoPlanoLista");
+    const personalid = req.user.personalid;
+
+    const tabPreco = await sql`SELECT *
+      FROM h2ualunoplanolista
+      WHERE personalid = ${personalid}
+      ORDER BY aluno, dataini`;
+    res.json(tabPreco);
+    //console.log(result.rows); // apenas isso para logar
+    
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao buscar tabela preços');
+  }
+});
+
+
+app.post('/api/alunoPlanoInsert', authenticateToken, async (req, res) => {
+  
+  const personalid = req.user.personalid;
+
+  // tratamento local indefinido
+  if (typeof req.body[`localid`] === 'undefined') {
+    req.body[`localid`] = null;
+  }
+  // tratamento serviço indefinido
+  if (typeof req.body[`servicoid`] === 'undefined') {
+    req.body[`servicoid`] = null;
+  }
+
+  // Agora que os valores estão garantidos, você pode extrair:
+  const {alunoid, dataini, datafim, planoid, frequenciaid, valortabela, valordesconto, valorreceber, diavcto, formapagtoid } = req.body;
+
+  //console.error('req.body:', req.body);
+
+  try {
+    const alunoPlano = await sql`
+      INSERT INTO alunosplanos (appersonalid, apalunoid, applanoid, apfrequenciaid, /*aptabprecoid,*/ apdataini, apdatafim,
+	                           apvalortabela, apvalordesconto, apvalorreceber, apdiavcto, apformapagtoid, apstatus)
+      VALUES (${personalid}, ${alunoid}, ${planoid}, ${frequenciaid}, ${dataini}, ${datafim}, ${valortabela},
+              ${valordesconto}, ${valorreceber}, ${diavcto}, ${formapagtoid}, 1 /*ativo*/ )
+      RETURNING *`; 
+    res.json({
+      id: alunoPlano[0].alunosplano_id
+    });
+    console.log('Retornando novo alunoPlano:', {
+      id: alunoPlano[0].alunosplano_id
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao cadastrar alunoPlano' });
+  }
+});
+
+app.post('/api/precoTabela', authenticateToken, async (req, res) => {
+  try {
+    console.log("carrega tabelaPrecos");
+    const personalid = req.user.personalid;
+    const {alunoid, planoid, frequenciaid} = req.body;
+console.log("personalid", personalid);
+console.log("alunoid", alunoid);
+console.log("planoid", planoid);
+console.log("frequenciaid", frequenciaid);
+
+
+    const tabPreco = await sql`SELECT h2ugetprecotabela(${personalid}, ${alunoid}, ${planoid}, ${frequenciaid}) AS "valorTabela"`;
+    res.json(tabPreco);
+    //console.log(result.rows); // apenas isso para logar
+    
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao buscar tabela preços');
+  }
+});
+
+app.get('/api/tabelaPrecoLista', authenticateToken, async (req, res) => {
+  try {
+    console.log("carrega tabelaPrecos");
+    const personalid = req.user.personalid;
+
+    const tabPreco = await sql`SELECT tabpreco_id AS "id", tppersonalid AS "personalid", 
+                  tpservicoid AS "servicoid", (SELECT Servico FROM Servicos WHERE Servico_ID=tpservicoid) AS servico,
+                  tplocalid AS "localid", (SELECT Local FROM Locals WHERE Local_ID=tplocalid) AS local,
+                  tpplanoid AS "planoid", public.h2ugetplano(tpplanoid) AS "plano",
+                  tpfrequenciaid AS "frequenciaid", public.h2ugetfrequencia(tpfrequenciaid) AS "frequencia",
+                  tpvalor AS "valor", tpativo AS "ativo"
+      FROM TabPrecos
+      WHERE TPPersonalID = ${personalid}
+      ORDER BY tabpreco_id`;
+    res.json(tabPreco);
+    //console.log(result.rows); // apenas isso para logar
+    
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao buscar tabela preços');
+  }
+});
+
+
+app.post('/api/tabelaPrecoInsert', authenticateToken, async (req, res) => {
+  
+  const personalid = req.user.personalid;
+
+  // tratamento local indefinido
+  if (typeof req.body[`localid`] === 'undefined') {
+    req.body[`localid`] = null;
+  }
+  // tratamento serviço indefinido
+  if (typeof req.body[`servicoid`] === 'undefined') {
+    req.body[`servicoid`] = null;
+  }
+
+  // Agora que os valores estão garantidos, você pode extrair:
+  const {id, planoid, frequenciaid, valor, localid, servicoid, ativo } = req.body;
+
+  //console.error('req.body:', req.body);
+
+  try {
+    const tabelaPreco = await sql`
+      INSERT INTO TabPrecos (tpplanoid, tpfrequenciaid, tplocalid, tpservicoid, tpvalor, tpativo, tppersonalid)
+      VALUES (${planoid}, ${frequenciaid}, ${localid}, ${servicoid}, ${valor}, ${ativo}, ${personalid})
+      RETURNING *`; 
+    res.json({
+      id: tabelaPreco[0].tabPreco_id
+    });
+    console.log('Retornando novo tab preço:', {
+      id: tabelaPreco[0].tabPreco_id
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao cadastrar tabela preço' });
+  }
+});
+
+
+app.put('/api/tabelaPrecoSave', authenticateToken, async (req, res) => {
+
+  // tratamento local indefinido
+  if (typeof req.body[`localid`] === 'undefined') {
+    req.body[`localid`] = null;
+  }
+
+  const {id, planoid, frequenciaid, valor, localid, servicoid, ativo } = req.body;
+
+  // UPDATE
+  try {
+    const tabelaPreco = await sql`
+      UPDATE TabPrecos SET
+       tpplanoid = ${planoid}, tpfrequenciaid = ${frequenciaid}, tplocalid = ${localid}, tpservicoid = ${servicoid}, tpvalor = ${valor},
+       tpativo = ${ativo}
+       WHERE tabPreco_ID = ${id}
+      RETURNING *
+    `;    
+    res.status(201).json(tabelaPreco);
+    } catch (err) {
+      console.error('Erro ao atualizar tabelaPreco:', err);
+      res.status(500).json({ error: 'Erro ao atualizar tabelaPreco' });
+    }
+});
+
 app.get('/api/alunoLista', authenticateToken, async (req, res) => {
   try {
     console.log("carrega alunos");
     const personalid = req.user.personalid;
 
-    const aluno = await sql`SELECT aluno_id id, aluno nome, alufone telefone, aludatanasc datanasc, aludatainicio datainicio, aluemail email, alucpf cpf, aluativo ativo, alucodconvite codigo_convite,
-        AluLocalID AS "localid", (SELECT Local FROM Locals WHERE Local_ID=AluLocalID) Local,
-        AluServicoID AS "servicoid", (SELECT Servico FROM Servicos WHERE Servico_ID=AluServicoID) AS "servico",
-        aludia0, aludia1, aludia2, aludia3, aludia4, aludia5, aludia6, aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6,
-	      CASE WHEN aludia0 = true THEN 'Dom: ' || aluhora0 || CASE WHEN aludia1=true OR aludia2=true OR aludia3=true OR aludia4=true OR aludia5=true OR aludia6=true THEN ' / ' ELSE '' END ELSE '' END ||
-        CASE WHEN aludia1 = true THEN 'Seg: ' || aluhora1 || CASE WHEN aludia2=true OR aludia3=true OR aludia4=true OR aludia5=true OR aludia6=true THEN ' / ' ELSE '' END ELSE '' END ||
-        CASE WHEN aludia2 = true THEN 'Ter: ' || aluhora2 || CASE WHEN aludia3=true OR aludia4=true OR aludia5=true OR aludia6=true THEN ' / ' ELSE '' END ELSE '' END ||
-        CASE WHEN aludia3 = true THEN 'Qua: ' || aluhora3 || CASE WHEN aludia4=true OR aludia5=true OR aludia6=true THEN ' / ' ELSE '' END ELSE '' END ||
-        CASE WHEN aludia4 = true THEN 'Qui: ' || aluhora4 || CASE WHEN aludia5=true OR aludia6=true THEN ' / ' ELSE '' END ELSE '' END ||
-        CASE WHEN aludia5 = true THEN 'Sex: ' || aluhora5 || CASE WHEN aludia6=true THEN ' / ' ELSE '' END ELSE '' END ||
-        CASE WHEN aludia6 = true THEN 'Sab: ' || aluhora6 ELSE '' END aludias, CASE WHEN aluservicoid=2 THEN true ELSE false END AS "mostrarEquipto"
-      FROM Alunos WHERE AluPersonalID = ${personalid}
-      ORDER BY Aluno`;
+    const aluno = await sql`SELECT * FROM h2ualunolista
+      WHERE personalid = ${personalid}
+      ORDER BY nome`;
     res.json(aluno);
     //console.log(result.rows); // apenas isso para logar
     // não usar res.json(result.rows);    // envia resposta corretamente uma única vez
@@ -365,7 +518,8 @@ app.put('/api/alunoSave', authenticateToken, async (req, res) => {
   const {
     id, nome, telefone, datanasc, datainicio, cpf, email, ativo,
     aludia0, aludia1, aludia2, aludia3, aludia4, aludia5, aludia6,
-    aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6, localid, servicoid
+    aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6,
+    planoid, frequenciaid, localid, servicoid
   } = req.body;
 
   console.log("id",id);
@@ -382,7 +536,8 @@ app.put('/api/alunoSave', authenticateToken, async (req, res) => {
        Aluno = ${nome}, AluCPF = ${cpf}, AluDataNasc = ${datanasc}, AluDataInicio = ${datainicio}, AluEmail = ${email},
        AluAtivo = ${ativo}, alufone = ${telefone}, alulocalid = ${localid}, aluservicoid = ${servicoid},
        aludia0 = ${aludia0}, aludia1 = ${aludia1}, aludia2 = ${aludia2}, aludia3 = ${aludia3}, aludia4 = ${aludia4}, aludia5 = ${aludia5}, aludia6 = ${aludia6},
-       aluhora0 = ${aluhora0}, aluhora1 = ${aluhora1}, aluhora2 = ${aluhora2}, aluhora3 = ${aluhora3}, aluhora4 = ${aluhora4}, aluhora5 = ${aluhora5}, aluhora6 = ${aluhora6}
+       aluhora0 = ${aluhora0}, aluhora1 = ${aluhora1}, aluhora2 = ${aluhora2}, aluhora3 = ${aluhora3}, aluhora4 = ${aluhora4}, aluhora5 = ${aluhora5}, aluhora6 = ${aluhora6},
+       aluplanoid = ${planoid}, alufrequenciaid = ${frequenciaid}
        WHERE Aluno_ID = ${id}
       RETURNING *
     `;    
@@ -434,7 +589,8 @@ app.post('/api/alunoInsert', authenticateToken, async (req, res) => {
   const {
     id, nome, telefone, datanasc, datainicio, cpf, email, ativo,
     aludia0, aludia1, aludia2, aludia3, aludia4, aludia5, aludia6,
-    aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6, localid, servicoid
+    aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6, localid, servicoid,
+    planoid, frequenciaid
   } = req.body;
 
   //console.error('req.body:', req.body);
@@ -442,10 +598,10 @@ app.post('/api/alunoInsert', authenticateToken, async (req, res) => {
   try {
     const aluno = await sql`
       INSERT INTO Alunos (aluno, AluCPF, AluDataNasc, AluDataInicio, AluEmail, AluAtivo, alufone, alupersonalid, alucodconvite, alulocalid, aluservicoid,
-      aludia0, aludia1, aludia2, aludia3, aludia4, aludia5, aludia6, aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6)
+      aludia0, aludia1, aludia2, aludia3, aludia4, aludia5, aludia6, aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6, aluplanoid, alufrequenciaid)
       VALUES (${nome}, ${cpf}, ${datanasc}, ${datainicio}, ${email}, ${ativo}, ${telefone}, ${personalid}, ${codigoConvite}, ${localid}, ${servicoid},
       ${aludia0}, ${aludia1}, ${aludia2}, ${aludia3}, ${aludia4}, ${aludia5}, ${aludia6},
-      ${aluhora0}, ${aluhora1}, ${aluhora2}, ${aluhora3}, ${aluhora4}, ${aluhora5}, ${aluhora6})
+      ${aluhora0}, ${aluhora1}, ${aluhora2}, ${aluhora3}, ${aluhora4}, ${aluhora5}, ${aluhora6}, ${planoid}, ${frequenciaid})
       RETURNING *`; 
     res.json({
       id: aluno[0].aluno_id,                         // <- compatível com this.form.patchValue({ alunoid: novoAluno.id });
@@ -625,7 +781,8 @@ app.get('/api/alunos', authenticateToken, async (req, res) => {
     const alunos = await sql`SELECT aluno_id id, aluno nome, alufone telefone, alucodconvite codigo_convite,
                                     aludia0, aludia1, aludia2, aludia3, aludia4, aludia5, aludia6, alulocalid,
                                     aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6, 
-                                    CASE WHEN aluservicoid=2 THEN true ELSE false END AS "mostrarEquipto",
+                                    CASE WHEN aluservicoid=2 THEN true ELSE false END AS "mostrarEquipto", 
+                                    aluplanoid as planoid, alufrequenciaid as frequenciaid,
                                     AluServicoID AS "servicoid", (SELECT Servico FROM Servicos WHERE Servico_ID=AluServicoID) AS "servico"
       FROM alunos WHERE AluPersonalID=${personalid} AND AluAtivo = true
       ORDER BY aluno`;
