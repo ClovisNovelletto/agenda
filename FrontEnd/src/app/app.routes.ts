@@ -8,6 +8,8 @@ import { RegisterComponent } from './login/register/register.component';
 import { EsqueciSenhaComponent } from './login/esqueci-senha/esqueci-senha.component';
 import { ResetarSenhaComponent } from './login/resetar-senha/resetar-senha.component';
 import { FinanceiroComponent } from './financeiro/financeiro.component';
+import { TabelaPrecoListaComponent } from './tabelaPreco/tabelaPreco-lista/tabelaPreco-lista.component';
+import { AlunoPlanoListaComponent } from './financeiro/alunoplano/alunoPlano-lista/alunoPlano-lista.component';
 import { AlunoListaComponent } from './aluno/aluno-lista/aluno-lista.component';
 import { LocalListaComponent } from './local/local-lista/local-lista.component';
 import { EquiptoListaComponent } from './equipto/equipto-lista/equipto-lista.component';
@@ -24,6 +26,8 @@ export const routes: Routes = [
   { path: 'agenda', canActivate: [AuthGuard], loadComponent: () => import('./agenda/agenda-grade/agenda.component').then(m => m.AgendaComponent)},
   { path: 'agendaIndividual', canActivate: [AuthGuard], loadComponent: () => import('./agenda/agenda-individual/agenda-individual.component').then(m => m.AgendaIndividualComponent)},
   { path: 'configuracoes',  canActivate: [AuthGuard], loadComponent: () => import('./configuracoes/configuracoes.component').then(m => m.ConfiguracoesComponent)},
+  { path: 'tabelaPrecoLista',  canActivate: [AuthGuard], loadComponent: () => import('./tabelaPreco/tabelaPreco-lista/tabelaPreco-lista.component').then(m => m.TabelaPrecoListaComponent)},
+  { path: 'alunoPlanoLista',  canActivate: [AuthGuard], loadComponent: () => import('./financeiro/alunoplano/alunoPlano-lista/alunoPlano-lista.component').then(m => m.AlunoPlanoListaComponent)},
   { path: 'alunoLista',  canActivate: [AuthGuard], loadComponent: () => import('./aluno/aluno-lista/aluno-lista.component').then(m => m.AlunoListaComponent)},
   { path: 'localLista',  canActivate: [AuthGuard], loadComponent: () => import('./local/local-lista/local-lista.component').then(m => m.LocalListaComponent)},
   { path: 'anamneseLista',  canActivate: [AuthGuard], loadComponent: () => import('./anamnese/anamnese-lista/anamnese-lista.component').then(m => m.AnamneseListaComponent)},

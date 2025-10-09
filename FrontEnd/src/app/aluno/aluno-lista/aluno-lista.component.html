@@ -28,6 +28,43 @@
     </button>
   </div>
 
+
+  <div class="lista-container">
+    <div class="lista-header">
+      <span>Nome</span>
+      <span>Telefone</span>
+      <span>Dia Hora</span>
+      <span>Plano</span>
+      <span>Local</span>
+	  <span>Serviço</span>
+      <span>Status</span>
+    </div>
+
+    <div class="lista-scroll">
+      <div 
+        class="aluno-item" 
+        *ngFor="let aluno of alunosFiltrados" 
+        (click)="onEditar(aluno)"
+      >
+        <span>{{ aluno.nome }}</span>
+        <span>{{ aluno.telefone }}</span>
+        <span>{{ aluno.aludias }}</span>
+        <!--<span>{{ aluno.datainicio | date:'dd/MM/yy' }}</span>-->
+        <span>{{ aluno.plano }}</span>
+        <span>{{ aluno.local }}</span>
+		    <span>{{ aluno.servico }}</span>
+        <span class="status" [ngClass]="aluno.ativo ? 'ativo' : 'inativo'">
+          <ng-container [ngSwitch]="aluno.ativo">
+            <span *ngSwitchCase="true">✅ Ativo</span>
+            <span *ngSwitchCase="false">❌ Inativo</span>
+          </ng-container>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--
   <div class="lista-scroll">
     <div class="aluno-item" *ngFor="let aluno of alunosFiltrados" (click)="onEditar(aluno)">
       <div class="aluno-info">
@@ -48,5 +85,4 @@
       </button>
     </div>
   </div>
-</div>
-
+-->

@@ -11,5 +11,9 @@ export interface Aluno {
   cpf?: string;
   ativo: boolean;
   diasAula: [];
+  planoid: number;
+  plano: string;
+  frequenciaid: number;
+  frequencia: string;
   mostrarEquipto: boolean;
 }

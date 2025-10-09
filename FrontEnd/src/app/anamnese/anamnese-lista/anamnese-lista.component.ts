@@ -195,7 +195,7 @@ export class AnamneseListaComponent implements OnInit {
     console.log('anamnese lista->form: ', anamnese);
     const dialogRef = this.dialog.open(AnamneseFormComponent, {
       data: {anamnese},
-      width: isMobile ? '90vw' : '500px',
+      width: isMobile ? '90vw' : 'auto',
       height: isMobile ? '90vh' : 'auto',
       panelClass: isMobile ? 'full-screen-dialog' : ''
     });
@@ -212,8 +212,8 @@ export class AnamneseListaComponent implements OnInit {
     const alunoid =this.alunoSelecionado?.id;
     const isMobile = window.innerWidth < 600;
     const dialogRef = this.dialog.open(AnamneseFormComponent, {
-      width: isMobile ? '100vw' : '500px',
-      height: isMobile ? '100vh' : 'auto',
+      width: isMobile ? '90vw' : 'auto',
+      height: isMobile ? '90vh' : 'auto',
       panelClass: isMobile ? 'full-screen-dialog' : '',
       data : {alunoid: alunoid}
 

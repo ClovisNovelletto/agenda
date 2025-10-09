@@ -13,7 +13,8 @@
       <mat-select [(value)]="filtroStatus" (selectionChange)="aplicarFiltro()">
         <mat-option value="Todos">Todos</mat-option>
         <mat-option value="Ativos">Ativos</mat-option>
-        <mat-option value="Inativos">Inativos</mat-option>
+        <mat-option value="Finalizados">Finalizados</mat-option>
+        <mat-option value="Cancelados">Cancelados</mat-option>
       </mat-select>
     </mat-form-field>
     <!--
@@ -23,30 +24,37 @@
     </mat-menu>
     -->
     
-    <button mat-mini-fab style="display: flex; align-items: center !important; justify-content: center !important; background-color: #28a745;" (click)="novoLocal()" aria-label="Novo local">
+    <button mat-mini-fab style="display: flex; align-items: center !important; justify-content: center !important; background-color: #28a745;" (click)="novoAlunoPlano()" aria-label="Novo AlunoPlano">
       <mat-icon style="display: flex; align-items: center !important; justify-content: center !important;">add</mat-icon>
     </button>
   </div>
-  
+
   <div class="lista-container">
     <div class="lista-header">
-      <span>Nome</span>
-      <span>Endereço</span>
+      <span>Aluno</span>
+      <span>Plano</span>
+      <span>Freq.</span>
+      <span>Início</span>
+      <span>Valor</span>
       <span>Status</span>
     </div>
 
     <div class="lista-scroll">
       <div 
         class="aluno-item" 
-        *ngFor="let local of localsFiltrados" 
-        (click)="onEditar(local)"
+        *ngFor="let alunoPlano of alunoPlanosFiltrados" 
+        (click)="onEditar(alunoPlano)"
       >
-        <span>{{ local.nome }}</span>
-        <span>{{ local.endereco }}</span>
-        <span class="status" [ngClass]="local.ativo ? 'ativo' : 'inativo'">
-          <ng-container [ngSwitch]="local.ativo">
-            <span *ngSwitchCase="true">✅ Ativo</span>
-            <span *ngSwitchCase="false">❌ Inativo</span>
+        <span>{{ alunoPlano.aluno }}</span>
+        <span>{{ alunoPlano.plano }}</span>
+        <span>{{ alunoPlano.frequencia }}</span>
+        <span>{{ alunoPlano.dataini | date:'dd/MM/yy' }}</span>
+        <span>R$ {{ alunoPlano.valorreceber | number:'1.2-2' }}</span>
+        <span class="status" [ngClass]="alunoPlano.status.toLowerCase()">
+          <ng-container [ngSwitch]="alunoPlano.status">
+            <span *ngSwitchCase="'Ativo'">✅ Ativo</span>
+            <span *ngSwitchCase="'Finalizado'">⚪ Finalizado</span>
+            <span *ngSwitchCase="'Cancelado'">❌ Cancelado</span>
           </ng-container>
         </span>
       </div>
@@ -54,3 +62,8 @@
   </div>
 </div>
 
+      <!--
+      <button mat-icon-button class="mat-icon-button__icon" color="primary" (click)="onEditar(alunoPlano)">
+        <mat-icon>edit</mat-icon>
+      </button>
+      -->

@@ -92,22 +92,36 @@
   -->
 
     <div style="margin-left: 3px; margin-top: 5px; margin-bottom: 5px">
-        <mat-slide-toggle formControlName="ativo" style="margin-left: 3px; margin-bottom: 5px">Aluno ativo</mat-slide-toggle>
+          <mat-slide-toggle formControlName="ativo" style="margin-left: 3px; margin-bottom: 5px">Aluno ativo</mat-slide-toggle>
     </div>
 
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+      <mat-label>Plano</mat-label>
+      <mat-select formControlName="planoid">
+        <mat-option *ngFor="let p of planos" [value]="p.id">{{ p.nome }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+      <mat-label>Frequência</mat-label>
+      <mat-select formControlName="frequenciaid">
+        <mat-option *ngFor="let f of frequencias" [value]="f.id">{{ f.nome }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    
     <!--dias horas-->
     <div style="margin-top: 16px; margin-bottom: 16px;">
       <label style="color: white !important; margin-left: 8px; font-weight: 50;">Dias de Aula:</label>
 
-      <div formArrayName="diasAula">
+      <div formArrayName="diasAula" class="dias-aula">
         <ng-container *ngFor="let grupo of diasAulaArray.controls; let j = index">
-          <div [formGroupName]="j" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <div [formGroupName]="j" class="dia">
 
             <mat-checkbox formControlName="ativo">
               {{ diasSemana[j] }}
             </mat-checkbox>
 
-            <mat-form-field appearance="fill" style="width: 150px;">
+            <mat-form-field appearance="fill">
               <mat-label>Horário</mat-label>
               <mat-select formControlName="hora">
                 <mat-option *ngFor="let h of horasPossiveis" [value]="h">{{ h }}</mat-option>

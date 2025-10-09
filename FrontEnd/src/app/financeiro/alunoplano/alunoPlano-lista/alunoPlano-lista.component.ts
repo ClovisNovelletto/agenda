@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { AlunoFormComponent } from '../aluno-form/aluno-form.component';
-import { AlunoService } from '../../services/aluno.service';
-import { Aluno } from '../../models/aluno.model';
+import { AlunoPlanoFormComponent } from '../alunoPlano-form/alunoPlano-form.component';
+import { AlunoPlanoService } from '../../../services/alunoPlano.service';
+import { AlunoPlano } from '../../../models/alunoPlano.model';
 import { MatIconModule } from '@angular/material/icon';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -19,37 +19,29 @@ import { MatMenuModule } from '@angular/material/menu';
 //import { IonicModule } from '@ionic/angular';
 
 @Component({
-  selector: 'app-aluno-lista',
+  selector: 'app-alunoplano-lista',
   standalone: true,
    imports: [CommonModule, MatIconModule, MatNativeDateModule, MatSlideToggleModule, MatButtonToggleModule, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatSelectModule, MatMenuModule /*,IonicModule*/] , // Adicione o RouterModule aqui]
-  templateUrl: './aluno-lista.component.html',
-  styleUrls: ['./aluno-lista.component.css'], 
+  templateUrl: './alunoplano-lista.component.html',
+  styleUrls: ['./alunoplano-lista.component.css'], 
 })
-export class AlunoListaComponent implements OnInit {
+export class AlunoPlanoListaComponent implements OnInit {
   filtroTexto: string = "";
   filtroStatus: string = "Todos";
-  alunos: Aluno[] = [];
-  alunosFiltrados: Aluno[] = [];
+  alunoPlanos: AlunoPlano[] = [];
+  alunoPlanosFiltrados: AlunoPlano[] = [];
   ordemCrescente = true;
-  constructor(private dialog: MatDialog, private alunoService: AlunoService) {}
+  constructor(private dialog: MatDialog, private alunoPlanoService: AlunoPlanoService) {}
 
   ngOnInit(): void {
-    this.carregarAlunos();
+    this.carregarAlunoPlanos();
   }
-/*
-  carregarAlunos() {
-    this.alunoService.listar().subscribe(lista => {
-      this.alunos = lista;
-      console.log("lista", lista);
-    });
-  }
-  */
 
-  onEditar(aluno: Aluno) {
+  onEditar(alunoPlano: AlunoPlano) { 
     const isMobile = window.innerWidth < 600;
-    console.log('aluno: ', aluno);
-    const dialogRef = this.dialog.open(AlunoFormComponent, {
-      data: {aluno},
+    console.log('alunoPlano: ', alunoPlano);
+    const dialogRef = this.dialog.open(AlunoPlanoFormComponent, {
+      data: {alunoPlano},
       width: isMobile ? '90vw' : '500px',
       height: isMobile ? '90vh' : 'auto',
       panelClass: isMobile ? 'full-screen-dialog' : ''
@@ -58,21 +50,20 @@ export class AlunoListaComponent implements OnInit {
     dialogRef.afterClosed().subscribe(resultado => {
       if (resultado) {
         console.log("resultado", resultado);
-        this.alunoService.salvar(resultado).subscribe(() => this.carregarAlunos());
+        this.alunoPlanoService.salvar(resultado).subscribe(() => this.carregarAlunoPlanos());
       }
     });
   }
 
-  carregarAlunos() {
-    this.alunoService.listar().subscribe(lista => {
-      this.alunos = lista;
+  carregarAlunoPlanos() {
+    this.alunoPlanoService.listar().subscribe(lista => {
+      this.alunoPlanos = lista;
       this.aplicarFiltro();
-      console.log('this.alunosFiltrados',this.alunosFiltrados);
+      console.log('this.alunoPlanosFiltrados',this.alunoPlanosFiltrados);
     });
   }
 
-
-  aplicarFiltro(): void {
+/*
   this.alunosFiltrados = this.alunos
     .filter(aluno => {
       const correspondeTexto = this.filtroTexto
@@ -86,12 +77,28 @@ export class AlunoListaComponent implements OnInit {
       return correspondeTexto && correspondeStatus;
     })
     .sort((a, b) => a.nome.localeCompare(b.nome)); // <-- ordenação fixa por nome
+*/
+  aplicarFiltro(): void {
+  this.alunoPlanosFiltrados = this.alunoPlanos
+    .filter(alunoPlano => {
+
+      const correspondeTexto = this.filtroTexto
+        ? alunoPlano.aluno.toLowerCase().includes(this.filtroTexto.toLowerCase())
+        : true;
+
+      const correspondeStatus = this.filtroStatus === 'Todos'
+        || (this.filtroStatus === 'Ativos' && alunoPlano.status === 'Ativo')
+        || (this.filtroStatus === 'Finalizados' && alunoPlano.status === 'Finalizado')
+        || (this.filtroStatus === 'Cancelados' && alunoPlano.status === 'Cancelado');
+
+      return correspondeTexto && correspondeStatus;
+    })
   }
 
 
-  novoAluno() {
-    const isMobile = window.innerWidth < 600;
-    const dialogRef = this.dialog.open(AlunoFormComponent, {
+  novoAlunoPlano() {
+    const isMobile = window.innerWidth < 600; 
+    const dialogRef = this.dialog.open(AlunoPlanoFormComponent, {
       width: isMobile ? '90vw' : '500px',
       height: isMobile ? '90vh' : 'auto',
       panelClass: isMobile ? 'full-screen-dialog' : ''
@@ -99,15 +106,15 @@ export class AlunoListaComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(resultado => {
       if (resultado) {
-        this.alunoService.salvar(resultado).subscribe(() => this.carregarAlunos());
+        this.alunoPlanoService.salvar(resultado).subscribe(() => this.carregarAlunoPlanos());
       }
     });
   }
 
 
 
-  ordenarPor(campo: keyof Aluno) {
-    this.alunos.sort((a, b) => {
+  ordenarPor(campo: keyof AlunoPlano) {
+    this.alunoPlanos.sort((a, b) => {
       const valorA = a[campo]?.toString().toLowerCase() || '';
       const valorB = b[campo]?.toString().toLowerCase() || '';
       return this.ordemCrescente ? valorA.localeCompare(valorB) : valorB.localeCompare(valorA);

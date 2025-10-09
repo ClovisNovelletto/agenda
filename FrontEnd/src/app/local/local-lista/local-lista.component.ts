@@ -140,8 +140,8 @@ export class LocalListaComponent implements OnInit {
   novoLocal() {
     const isMobile = window.innerWidth < 600;
     const dialogRef = this.dialog.open(LocalFormComponent, {
-      width: isMobile ? '100vw' : '500px',
-      height: isMobile ? '100vh' : 'auto',
+      width: isMobile ? '90vw' : '500px',
+      height: isMobile ? '90vh' : 'auto',
       panelClass: isMobile ? 'full-screen-dialog' : ''
     });
 

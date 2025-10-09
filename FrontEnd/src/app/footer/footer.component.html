@@ -12,11 +12,23 @@
         <button mat-menu-item routerLink="/agendaIndividual">Individual</button>
       </mat-menu>
 
+
+      <button mat-icon-button class="mat-icon-button__icon" 
+              [matMenuTriggerFor]="menuFinanceiro" routerLinkActive="active" matTooltip="Financeiro">
+        <mat-icon>attach_money</mat-icon>
+      </button>
+
+      <mat-menu #menuFinanceiro="matMenu">
+        <button mat-menu-item routerLink="/tabelaPrecoLista">Tabela Preços</button>
+        <button mat-menu-item routerLink="/alunoPlanoLista">Aluno Planos</button>
+      </mat-menu>
+
+<!--
       <button mat-icon-button class="mat-icon-button__icon"
               routerLink="/financeiro" routerLinkActive="active" matTooltip="Financeiro">
         <mat-icon>attach_money</mat-icon>
       </button>
-      
+    -->      
       <button mat-icon-button class="mat-icon-button__icon" 
               [matMenuTriggerFor]="menuCadastro" routerLinkActive="active" matTooltip="Mais">
         <mat-icon>menu</mat-icon>

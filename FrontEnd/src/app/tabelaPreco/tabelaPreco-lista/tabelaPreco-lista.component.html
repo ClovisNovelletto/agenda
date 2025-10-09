@@ -23,28 +23,34 @@
     </mat-menu>
     -->
     
-    <button mat-mini-fab style="display: flex; align-items: center !important; justify-content: center !important; background-color: #28a745;" (click)="novoLocal()" aria-label="Novo local">
+    <button mat-mini-fab style="display: flex; align-items: center !important; justify-content: center !important; background-color: #28a745;" (click)="novoTabelaPreco()" aria-label="Novo Tabela Preço">
       <mat-icon style="display: flex; align-items: center !important; justify-content: center !important;">add</mat-icon>
     </button>
   </div>
-  
+
   <div class="lista-container">
     <div class="lista-header">
-      <span>Nome</span>
-      <span>Endereço</span>
+      <span>Plano</span>
+      <span>Frequencia</span>
+      <span>Preço</span>
+      <span>Local</span>
+      <span>Serviço</span>
       <span>Status</span>
     </div>
 
     <div class="lista-scroll">
       <div 
         class="aluno-item" 
-        *ngFor="let local of localsFiltrados" 
-        (click)="onEditar(local)"
+        *ngFor="let tabelaPreco of tabelaPrecosFiltrados" 
+        (click)="onEditar(tabelaPreco)"
       >
-        <span>{{ local.nome }}</span>
-        <span>{{ local.endereco }}</span>
-        <span class="status" [ngClass]="local.ativo ? 'ativo' : 'inativo'">
-          <ng-container [ngSwitch]="local.ativo">
+        <span>{{ tabelaPreco.plano }}</span>
+        <span>{{ tabelaPreco.frequencia }}</span>
+        <span>R$ {{ tabelaPreco.valor | number:'1.2-2'}}</span>
+        <span>{{ tabelaPreco.local }}</span>
+        <span>{{ tabelaPreco.servico }}</span>
+        <span class="status" [ngClass]="tabelaPreco.ativo ? 'ativo' : 'inativo'">
+          <ng-container [ngSwitch]="tabelaPreco.ativo">
             <span *ngSwitchCase="true">✅ Ativo</span>
             <span *ngSwitchCase="false">❌ Inativo</span>
           </ng-container>
@@ -53,4 +59,3 @@
     </div>
   </div>
 </div>
-

@@ -1,0 +1,80 @@
+<mat-toolbar color="primary" style="margin-bottom: 10px; margin-top: 5px;">
+  <button mat-icon-button style="display: flex; width: 20px !important; height: 20px !important; align-items: center !important; justify-content: center !important; background-color: black; padding: 7px; margin-right: 10px;" (click)="fechar()">
+    <mat-icon style="display: flex; align-items: center !important; justify-content: center !important;">arrow_back</mat-icon>
+  </button>
+  <span style="font-size: 16px !important; padding: 2px;">Cadastro Tab Preço</span>
+</mat-toolbar>
+
+<div style="margin-bottom: 25px; margin-left: 5px;" class="form-wrapper">
+  <form *ngIf="form" [formGroup]="form" (ngSubmit)="salvar()">
+
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+      <mat-label>Plano</mat-label>
+      <mat-select formControlName="planoid">
+        <mat-option *ngFor="let p of planos" [value]="p.id">{{ p.nome }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+      <mat-label>Frequência</mat-label>
+      <mat-select formControlName="frequenciaid">
+        <mat-option *ngFor="let f of frequencias" [value]="f.id">{{ f.nome }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;" >
+      <mat-label>Valor</mat-label>
+      <input matInput
+             type="number"
+             formControlName="valor"
+             step="0.01"
+             min="0"
+             (blur)="onValorBlur()"/>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+      <mat-label>Servico</mat-label>
+      <input
+        type="text"
+        matInput
+        [formControl]="servicoCtrl"
+        [matAutocomplete]="autoServico"
+        (blur)="onServicoBlur()"
+        required>
+      <mat-autocomplete
+        #autoServico="matAutocomplete"
+        (optionSelected)="onServicoSelecionado($event)">
+        <mat-option *ngFor="let servico of servicosFiltrados" [value]="servico.nome">
+          {{ servico.nome }} 
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>    
+
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+      <mat-label>Local</mat-label>
+      <input
+        type="text"
+        matInput
+        [formControl]="localCtrl"
+        [matAutocomplete]="autoLocal"
+        (blur)="onLocalBlur()">
+      <mat-autocomplete
+        #autoLocal="matAutocomplete"
+        (optionSelected)="onLocalSelecionado($event)">
+        <mat-option *ngFor="let local of localsFiltrados" [value]="local.nome">
+          {{ local.nome }} — {{ local.endereco }}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <div style="margin-left: 3px; margin-top: 5px; margin-bottom: 5px">
+          <mat-slide-toggle formControlName="ativo" style="margin-left: 3px; margin-bottom: 5px">Aluno ativo</mat-slide-toggle>
+    </div>
+
+    <div>
+      <button mat-raised-button type="submit" [disabled]="form.invalid || form.pristine" class="btn-salvar">
+        Salvar
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import type { Aluno } from '../../models/aluno.model';
+import type { TabelaPreco } from '../../models/tabelaPreco.model';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatInputModule } from '@angular/material/input';
@@ -21,7 +21,6 @@ import { MatFormField } from '@angular/material/form-field';
 import { Personal } from '../../models/personal.model';
 import { PersonalService } from '../../services/personal.service';
 import { Observable } from 'rxjs';
-import { ConfigAgenda } from '../../models/configAgenda.model';
 import { map } from 'rxjs/operators';
 import { FormArray, FormControl } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -38,14 +37,14 @@ import { ChangeDetectorRef } from '@angular/core';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 
 @Component({
-  selector: 'app-aluno-form',
+  selector: 'app-tabelaPreco-form',
   imports: [MatInputModule, MatNativeDateModule, MatSlideToggleModule, CommonModule, MatCheckboxModule,
             ReactiveFormsModule, MatFormFieldModule, MatInputModule,  MatSlideToggleModule, MatOptionModule, MatSelectModule,
             MatButtonModule, MatDialogModule, MatIconModule, MatToolbarModule, MatDatepickerModule, MatFormField, MatAutocompleteModule], // Adicione o RouterModule aqui]
-  templateUrl: './aluno-form.component.html',
-  styleUrls: ['./aluno-form.component.css'],
+  templateUrl: './tabelaPreco-form.component.html',
+  styleUrls: ['./tabelaPreco-form.component.css'],
 })
-export class AlunoFormComponent implements OnInit {
+export class TabelaPrecoFormComponent implements OnInit {
   form!: FormGroup;
   locals: any[] = [];
   localCtrl = new FormControl('');
@@ -59,22 +58,7 @@ export class AlunoFormComponent implements OnInit {
   servicoSelecionado: any = null;
   servicoEncontrado: boolean = true;
 
-  horasPossiveis: string[] = [];
-  intervalo: number = 10; // valor padrão
-  horaInicio: number = 6; // valor padrão
-  horaFim: number = 22; // valor padrão
   personal?:  Personal;
-  diasSemana = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-  configAgenda: ConfigAgenda = {
-    diasAtendimento: [],
-    horaInicio: 8,
-    horaFim: 18,
-    intervaloMinutos: 10,
-    mostrarLocal: true, 
-    mostrarServico: true,
-    mostrarEquipto: true,
-    servicoid: 23,
-  };
 
   /*Plano = duração contrato*/
   planos = [
@@ -106,7 +90,7 @@ export class AlunoFormComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private dialogRef: MatDialogRef<AlunoFormComponent>,
+    private dialogRef: MatDialogRef<TabelaPrecoFormComponent>,
     private personalService: PersonalService,
     private http: HttpClient, private cd: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA) public  data: any 
@@ -114,18 +98,12 @@ export class AlunoFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      nome: ['', Validators.required],
-      telefone: ['', Validators.required],
-      ativo: [true],
-      email: [''],
-      cpf: [''],
-      datanasc: [null],
-      datainicio: [null],
-      planoid: [null],
-      frequenciaid: [null],
-      localid: [null, Validators.required],
+      planoid: [null, Validators.required],
+      frequenciaid: [null, Validators.required],
+      valor: [null, Validators.required],
       servicoid: [null, Validators.required],
-      diasAula: this.fb.array([])
+      localid: [null],
+      ativo: [true],
     });
 
     const token = localStorage.getItem('jwt-token');
@@ -134,68 +112,36 @@ export class AlunoFormComponent implements OnInit {
     forkJoin({
       locals: this.http.get<any[]>(`${environment.apiUrl}/locals`, { headers }),
       servicos: this.http.get<any[]>(`${environment.apiUrl}/servicos`, { headers }),
-      config: this.loadPersonal()
-    }).subscribe(({ locals, servicos, config }) => {
+    }).subscribe(({ locals, servicos }) => {
       this.locals = locals;
       this.servicos = servicos;
-      this.configAgenda = config;
-
+      
       // --- Inicializa autocomplete ---
       this.setupLocalAutocomplete();
       this.setupServicoAutocomplete();
-      this.horasPossiveis = this.gerarHorasPossiveis(this.configAgenda.horaInicio, this.configAgenda.horaFim, this.configAgenda.intervaloMinutos);
 
-      // --- Inicializa formArray diasAula ---
-      const formArray = this.form.get('diasAula') as FormArray;
-      for (let i = 0; i < 7; i++) {
-        const estaHabilitado = this.configAgenda.diasAtendimento.includes(i);
-        const grupo = this.fb.group({
-          ativo: [{ value: false, disabled: !estaHabilitado }],
-          hora: [{ value: '', disabled: true }]
-        });
-        grupo.get('ativo')?.valueChanges.subscribe(ativo => {
-          const horaControl = grupo.get('hora');
-          ativo && estaHabilitado ? horaControl?.enable() : horaControl?.disable();
-        });
-        formArray.push(grupo);
-      }
-
-      if (this.data?.aluno) {
-        const localSelecionado = this.locals.find(l => l.id === this.data.aluno.localid);
-        const servicoSelecionado = this.servicos.find(s => s.id === this.data.aluno.servicoid);
+      if (this.data?.tabelaPreco) {
+        const localSelecionado = this.locals.find(l => l.id === this.data.tabelaPreco.localid);
+        const servicoSelecionado = this.servicos.find(s => s.id === this.data.tabelaPreco.servicoid);
 
         this.localSelecionado = localSelecionado;
         this.servicoSelecionado = servicoSelecionado;
 
         // Preenche IDs no form principal
+        console.log("this.data.tabelaPreco.valor", this.data.tabelaPreco.valor);
         this.form.patchValue({
-          nome: this.data.aluno.nome,
-          telefone: this.data.aluno.telefone,
-          ativo: this.data.aluno.ativo,
-          email: this.data.aluno.email,
-          cpf: this.data.aluno.cpf,
-          datanasc: this.data.aluno.datanasc ? new Date(this.data.aluno.datanasc) : null,
-          datainicio: this.data.aluno.datainicio ? new Date(this.data.aluno.datainicio) : null,
-          planoid: this.data.aluno.planoid,
-          frequenciaid: this.data.aluno.frequenciaid,
+          planoid: this.data.tabelaPreco.planoid,
+          frequenciaid: this.data.tabelaPreco.frequenciaid,
           localid: localSelecionado?.id,
-          servicoid: servicoSelecionado?.id
+          servicoid: servicoSelecionado?.id,
+          valor: this.data.tabelaPreco.valor,
+          ativo: this.data.tabelaPreco.ativo,
         });
 
         // Preenche nomes nos autocompletes
         this.localCtrl.setValue(localSelecionado?.nome || '');
         this.servicoCtrl.setValue(servicoSelecionado?.nome || '');
 
-        // Dias de aula
-        const diasAulaArray = this.form.get('diasAula') as FormArray;
-        for (let i = 0; i < 7; i++) {
-          const ativo = this.data.aluno[`aludia${i}`] ?? false;
-          const hora = this.data.aluno[`aluhora${i}`] ?? '';
-          const grupo = diasAulaArray.at(i);
-          grupo.get('ativo')?.setValue(ativo);
-          grupo.get('hora')?.setValue(hora);
-          ativo ? grupo.get('hora')?.enable() : grupo.get('hora')?.disable();
-        }
       }
       else {
         if(servicos.length>0) {
@@ -275,27 +221,16 @@ export class AlunoFormComponent implements OnInit {
       const formValue = this.form.value;
 
       const updated: any = {
-        id: this.data?.aluno?.id ?? null,
-        nome: formValue.nome,
-        telefone: formValue.telefone,
-        ativo: formValue.ativo,
-        email: formValue.email,
-        cpf: formValue.cpf,
+        id: this.data?.tabelaPreco?.id ?? null,
         planoid: formValue.planoid,
         frequenciaid: formValue.frequenciaid,
         localid: this.localSelecionado?.id,
         servicoid: this.servicoSelecionado?.id,
-        datanasc: formValue.datanasc,
-        datainicio: formValue.datainicio,
+        valor: formValue.valor,
+        ativo: formValue.ativo,
       };
 
       const diasAulaArray = this.form.get('diasAula') as FormArray;
-
-      // Garante que percorre todos os 7 dias
-      diasAulaArray.controls.forEach((grupo, i) => {
-        updated[`aludia${i}`] = grupo.get('ativo')?.value;
-        updated[`aluhora${i}`] = grupo.get('hora')?.value || null;
-      });
 
       console.log('updated:', updated);
       this.dialogRef.close(updated);
@@ -306,60 +241,6 @@ export class AlunoFormComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  loadPersonal(): Observable<ConfigAgenda> {
-    return this.personalService.getMe().pipe(
-      map(personal => ({
-        diasAtendimento: [0,1,2,3,4,5,6].filter(i => (personal as any)[`dia${i}`]),
-        horaInicio: personal.hora_inicio,
-        horaFim: personal.hora_fim,
-        intervaloMinutos: personal.intervalo_minutos,
-        mostrarLocal: personal.mostrarLocal,
-        mostrarServico: personal.mostrarServico,
-        mostrarEquipto: personal.mostrarEquipto,
-        servicoid:personal.servicoid
-      }))
-    );
-  }
-
-  gerarHorasPossiveis(inicio: number, fim: number, intervaloMin: number): string[] {
-
-    const horas: string[] = [];
-    const date = new Date();
-    date.setHours(inicio, 0, 0, 0);
-
-    const end = new Date();
-    end.setHours(fim, 0, 0, 0);
-
-    while (date <= end) {
-      const hora = date.getHours().toString().padStart(2, '0');
-      const minuto = date.getMinutes().toString().padStart(2, '0');
-      horas.push(`${hora}:${minuto}`);
-      date.setMinutes(date.getMinutes() + intervaloMin);
-    }
-
-      console.log('inicio:', inicio);
-      console.log('fim:', fim);
-      console.log('intervaloMin:', intervaloMin);
-console.log('horas possíveis:', horas);
-    return horas;
-
-  }
-
-  get diasAulaArray(): FormArray  {
-    return this.form.get('diasAula') as FormArray;
-  }
-/*
-  onLocalSelecionado(event: MatAutocompleteSelectedEvent) {
-    const nomeSelecionado = event.option.value;
-    const local = this.locals.find(l => l.nome === nomeSelecionado);
-    console.log('onLocalSelecionado...',local);
-    if (local) {
-      this.localCtrl.setValue(local.nome);
-      // Aqui você pode também setar no seu form principal, por ex:
-      this.form.get('localid')?.setValue(local.id);
-    }
-  }
-*/
   onLocalSelecionado(event: MatAutocompleteSelectedEvent) {
   const nomeSelecionado = event.option.value;
   const local = this.locals.find(l => l.nome === nomeSelecionado);
@@ -458,32 +339,6 @@ onServicoBlur() {
   }
 }
 
-  /*
-  onLocalSelecionado(event: MatAutocompleteSelectedEvent) {
-    const local = this.locals.find(l => l.nome === event.option.value);
-    console.log('onLocalSelecionado...',local);
-    if (local) {
-      console.log('onLocalSelecionado...entrou',local);
-      this.localCtrl.setValue(local.nome, { emitEvent: true });
-      this.localSelecionado = local;
-
-      // Marcar como alterado
-      this.localCtrl.markAsDirty();
-      this.localCtrl.markAsTouched();
-    }
-  }
-    */
-  /*
-  onLocalSelecionado(event: MatAutocompleteSelectedEvent) {
-
-    const selecionado = this.locals.find(l => l.nome === event.option.value);
-    console.log('selecionado', selecionado);
-    if (selecionado) {
-      this.localSelecionado = selecionado;
-      this.form.get('localid')?.setValue(selecionado.id);
-    }
-  }*/
-
   onLocalSelected(nome: string) {
     console.log('onLocalSelected...');
     const local = this.locals.find(a => a.nome === nome);
@@ -512,6 +367,34 @@ onServicoBlur() {
     } else {
       this.form.patchValue({ servicoid: '' });
     }
+  }
+
+  xxxonValorBlur(event: any) {
+    console.log('blur gerou');
+    const raw = event.target.value.replace(/[^\d,.-]/g, '').replace(',', '.');
+    console.log('raw: ', raw);
+    const num = parseFloat(raw);
+    console.log('num: ', num);
+    this.form.get('valor')?.setValue(isNaN(num) ? null : num);
+  }
+
+  onValorBlur() {
+    const control = this.form.get('valor');
+    const valor = control?.value;
+
+    if (valor !== null && valor !== undefined && valor !== '') {
+      // força duas casas
+      control?.setValue(parseFloat(valor).toFixed(2));
+    }
+  }
+
+  xxxformatarMoeda(valor: any) {
+    console.log('valor gerou: ', valor);
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+      minimumFractionDigits: 2,
+    }).format(valor || 0);
   }
 
 }

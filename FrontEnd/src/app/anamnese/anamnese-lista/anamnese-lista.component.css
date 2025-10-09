@@ -9,7 +9,7 @@ html, body {
   flex-direction: column;
   height: 100%;
   padding: 0px;
-  /*height: calc(100vh - 64px);*/
+  height: calc(100vh - 64px);
 }
 
 .toolbar {
@@ -90,7 +90,8 @@ html, body {
 
 .empty {
   text-align: center;
-  color: #ffabf3;
+  /*color: #ffabf3;*/
+  color: hwb(202 38% 17%);
   padding: 16px;
 }
 
@@ -120,7 +121,7 @@ html, body {
   max-width: 520px;
   float: left; 
   overflow-y: auto;
-  background-color: #cf9ccf;
+  background-color: hwb(202 38% 17%);
   border-right: 1px solid #ddd;
   border-radius: 6px;
   padding: 0px;
@@ -140,8 +141,10 @@ html, body {
 
 .corFonte {
   /*color: #004d40 !important;*/
-  color: rgb(201, 189, 189) !important;
-  font-weight: bolnormal;
+/*  color: rgb(201, 189, 189) !important;*/
+  font-weight: normal;
+  color: hwb(202 38% 17%) ;
+  background-color: white;
 }
 
 table.mat-table {
@@ -169,10 +172,11 @@ td.mat-cell {
   padding-right: 3px;
   font-size: 13px;
 }
+
 .mat-column-titulo {
   width: 150px;
-  padding-left: 3px;
-  padding-right: 3px;
+  padding-left: 2px;
+  padding-right: 2px;
 }
 
 .mat-column-descricao {
@@ -180,6 +184,66 @@ td.mat-cell {
   padding-left: 3px;
   padding-right: 3px;
   white-space: pre-line;
+}
+
+.tabela-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+
+}
+
+.tabela-header {
+  width: 100%;
+  table-layout: fixed;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  /*height: 20px!important;*/
+  background-color: hwb(202 38% 17%)!important;
+  border-bottom: 1px solid #eee;
+  /*height: 20px !important;*/ /* diminui a altura do header */
+  /*min-height: 20px !important;*/
+}
+
+.tabela-body {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.tabela-body table {
+  width: 100%;
+  table-layout: fixed;
+}
+/*
+.tabela-header .mat-header-row {
+  height: 20px;
+}*/
+
+.tabela-header-linha {
+  padding: 0 4px 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.tabela-header .mat-header-cell {
+  padding: 0 8px; 
+  line-height: 20px;
+  font-size: 14px; 
+}
+/*
+::ng-deep .tabela-header .mat-header-row {
+  height: 20px;
+}*/
+
+
+::ng-deep .mat-mdc-checkbox.mat-accent .mdc-checkbox__background {
+  border-color: white !important; /* cor da borda */
+  background-color: hwb(202 38% 17%) !important; /* cor do preenchimento */
+}
+
+::ng-deep .mat-mdc-checkbox-checked .mdc-checkbox__checkmark-path {
+  stroke: white !important; /* cor do ícone ✓ */
 }
 
 @media (max-width: 768px) {
@@ -213,84 +277,22 @@ td.mat-cell {
     padding: 0px 0px 0px 0px!important;
     font-size: 12px;
   }
+  
   .mat-column-data {
-    width: 50px;
-    padding: 0px;
+    width: 60px;
     font-size: 12px;
   }
+
   .mat-column-titulo {
-    width: 50px;
-    padding: 0px;
+    width: 60px;
     font-size: 12px;
   }
 
   .mat-column-descricao {
-    width: 100px;
-    padding: 0px;
+    width: 90px;
     font-size: 12px;
     white-space: pre-line;
   }
 
 }
-
-.tabela-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-height: 0;
-
-}
-
-.tabela-header {
-  width: 100%;
-  table-layout: fixed;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  height: 30px!important;
-  background-color: #cf9ccf;
-  border-bottom: 1px solid #eee;
-
-}
-
-.tabela-body {
-  flex: 1;
-  overflow-y: auto;
-  min-height: 0;
-}
-
-.tabela-body table {
-  width: 100%;
-  table-layout: fixed;
-}
-
-.tabela-header .mat-header-row {
-  height: 40px; 
-}
-
-.tabela-header-linha {
-  padding: 0 4px 8px;
-  border-bottom: 1px solid #eee;
-}
-
-.tabela-header .mat-header-cell {
-  padding: 0 8px; 
-  line-height: 40px; 
-  font-size: 14px; 
-}
-
-::ng-deep .tabela-header .mat-header-row {
-  height: 40px;
-}
-
-.custom-height {
-  --mat-form-field-density: -1!important; 
-  height: 80px !important; 
-  margin-left: 3px;
-  margin-right: 5px;
-  margin-bottom: 5px;
-  width: 150px;
-  font-size: 10px!important;
-  padding: 0px!important;
-}
-
 
