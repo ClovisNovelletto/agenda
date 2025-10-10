@@ -22,8 +22,8 @@ import { MatMenuModule } from '@angular/material/menu';
   selector: 'app-alunoplano-lista',
   standalone: true,
    imports: [CommonModule, MatIconModule, MatNativeDateModule, MatSlideToggleModule, MatButtonToggleModule, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatSelectModule, MatMenuModule /*,IonicModule*/] , // Adicione o RouterModule aqui]
-  templateUrl: './alunoplano-lista.component.html',
-  styleUrls: ['./alunoplano-lista.component.css'], 
+  templateUrl: './alunoPlano-lista.component.html',
+  styleUrls: ['./alunoPlano-lista.component.css'], 
 })
 export class AlunoPlanoListaComponent implements OnInit {
   filtroTexto: string = "";
