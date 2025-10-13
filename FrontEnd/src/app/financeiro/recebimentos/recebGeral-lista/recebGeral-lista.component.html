@@ -1,0 +1,89 @@
+<div class="tela-container">
+  <div class="filtros">
+    <!--
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px;">
+      <mat-label>Pesquisar</mat-label>
+      <input matInput [(ngModel)]="filtroTexto" (keyup.enter)="aplicarFiltro()" />
+      <button mat-icon-button matSuffix (click)="aplicarFiltro()">
+        <mat-icon>search</mat-icon>
+      </button>
+    </mat-form-field>
+    -->
+
+      <mat-form-field appearance="fill" class="custom-height" style="margin-left: 3px; margin-bottom: 0px; height: 50px;">
+        <mat-label style="font-size: 15px;">Mês Filtro:</mat-label>
+        <mat-select 
+          [(value)]="mesSelecionadoLabel" 
+          (selectionChange)="onMonthSelected($event)">
+          <mat-option *ngFor="let mes of meses" [value]="mes">
+            {{ mes.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+    
+
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 0px; height: 50px;">
+      <mat-label>Status</mat-label>
+      <mat-select [(value)]="filtroStatus" (selectionChange)="aplicarFiltro()">
+        <mat-option value="Todos">Todos</mat-option>
+        <mat-option value="Não Recebidos">Não Recebidos</mat-option>
+        <mat-option value="Recebidos">Recebidos</mat-option>
+        <mat-option value="Renegociados">Renegociados</mat-option>
+        <mat-option value="Cancelados">Cancelados</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!--
+    <mat-menu #menuOrdenar="matMenu">
+      <button mat-menu-item (click)="ordenarPor('nome')">Nome</button>
+      <button mat-menu-item (click)="ordenarPor('telefone')">Telefone</button>
+    </mat-menu>
+    -->
+    
+    <button mat-mini-fab style="display: flex; align-items: center !important; justify-content: center !important; background-color: #28a745;" (click)="novoRecebGeral()" aria-label="Novo RecebGeral">
+      <mat-icon style="display: flex; align-items: center !important; justify-content: center !important;">add</mat-icon>
+    </button>
+  </div>
+
+  <div class="lista-container">
+    <div class="lista-header">
+      <span>Aluno</span>
+      <span>Vencto</span>
+      <span>Recbto</span>
+      <span>Valor</span>
+      <span>Forma Receb</span>
+      <span>Status</span>
+    </div>
+
+    <div class="lista-scroll">
+      <div 
+        class="aluno-item" 
+        *ngFor="let recebGeral of recebGeralsFiltrados" 
+        (click)="onEditar(recebGeral)"
+      >
+        <span>{{ recebGeral.aluno }}</span>
+        <span>{{ recebGeral.datavcto | date:'dd/MM/yy'}}</span>
+        <span>{{ recebGeral.datarcto | date:'dd/MM/yy'}}</span>
+        <span>R$ {{ recebGeral.valor | number:'1.2-2' }}</span>
+        <span>{{ recebGeral.formapagto }}</span>
+        <span class="status" [ngClass]="recebGeral.status.toLowerCase()">
+          <ng-container [ngSwitch]="recebGeral.status">
+            <span *ngSwitchCase="'Não Recebido'">✅ Não Recebido</span>
+            <span *ngSwitchCase="'Recebido'">⚪ Recebido</span>
+            <span *ngSwitchCase="'Cancelado'">❌ Cancelado</span>
+            <span *ngSwitchCase="'Renegociado'">❌ Renegociado</span>
+          </ng-container>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+      <!--
+      <button mat-icon-button class="mat-icon-button__icon" color="primary" (click)="onEditar(recebGeral)">
+        <mat-icon>edit</mat-icon>
+      </button>
+      -->

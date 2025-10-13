@@ -39,18 +39,6 @@ export class AgendaService {
 
   //getAulasDoAlunoMes(alunoid: number, ano: number, mes1a12: number): Observable<Aula[]> {
   getAulasDoAlunoMes(payload: {alunoid: number, ano: number, mes1a12: number}): Observable<Aula[]> {
-    //const params = new HttpParams()
-    //  .set('alunoid', alunoid)
-    //  .set('ano', String(ano))
-    //  .set('mes', String(mes1a12)); // 1..12
-    //return this.http.get<Aula[]>('/api/aulas/por-mes', { params });
-
-/*    const payload = {
-        alunoid: alunoid,
-        ano: String(ano),
-        mes: String(mes1a12),
-    };*/
-
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
     return this.http.post<Aula[]>(`${environment.apiUrl}/agendaAluno`, payload, { headers });

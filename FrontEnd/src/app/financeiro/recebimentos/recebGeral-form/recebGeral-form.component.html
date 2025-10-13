@@ -1,0 +1,76 @@
+<mat-toolbar color="primary" style="margin-bottom: 10px; margin-top: 5px;">
+  <button mat-icon-button style="display: flex; width: 20px !important; height: 20px !important; align-items: center !important; justify-content: center !important; background-color: black; padding: 7px; margin-right: 10px;" (click)="fechar()">
+    <mat-icon style="display: flex; align-items: center !important; justify-content: center !important;">arrow_back</mat-icon>
+  </button>
+  <span style="font-size: 16px !important; padding: 2px;">Cadastro de Aluno</span>
+</mat-toolbar>
+
+<div style="margin-bottom: 25px; margin-left: 5px;" class="form-wrapper">
+  <form *ngIf="form" [formGroup]="form" (ngSubmit)="salvar()">
+
+
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+      <mat-label>Aluno</mat-label>
+      <input
+        type="text"
+        matInput
+        [formControl]="alunoCtrl"
+        [matAutocomplete]="autoAluno"
+        (blur)="onAlunoBlur()"
+        required>
+      <mat-autocomplete
+        #autoAluno="matAutocomplete"
+        (optionSelected)="onAlunoSelecionado($event)">
+        <mat-option *ngFor="let aluno of alunosFiltrados" [value]="aluno.nome">
+          {{ aluno.nome }} 
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;" >
+      <mat-label>Valor</mat-label>
+      <input matInput
+             type="number"
+             formControlName="valor"
+             step="0.01"
+             min="0"
+             (blur)="onValorBlur()"/>
+    </mat-form-field>
+    
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+      <mat-label>Vencto</mat-label>
+
+      <input matInput [matDatepicker]="pickerDataVcto" formControlName="datavcto">
+      <mat-datepicker-toggle matSuffix [for]="pickerDataVcto"></mat-datepicker-toggle>
+      <mat-datepicker #pickerDataVcto></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+      <mat-label>Recbto</mat-label>
+
+      <input matInput [matDatepicker]="pickerDataRcto" formControlName="datarcto">
+      <mat-datepicker-toggle matSuffix [for]="pickerDataRcto"></mat-datepicker-toggle>
+      <mat-datepicker #pickerDataRcto></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+      <mat-label>Forma Pagamento</mat-label>
+      <mat-select formControlName="formapagtoid">
+        <mat-option *ngFor="let fp of formaspagamento" [value]="fp.id">{{ fp.nome }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+      <mat-label>Status</mat-label>
+      <mat-select formControlName="statusid">
+        <mat-option *ngFor="let st of status" [value]="st.id">{{ st.nome }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div>
+      <button mat-raised-button type="submit" [disabled]="form.invalid || form.pristine" class="btn-salvar">
+        Salvar
+      </button>
+    </div>
+  </form>
+</div>
