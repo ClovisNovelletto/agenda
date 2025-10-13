@@ -319,6 +319,108 @@ app.post('/api/equiptoInsert', authenticateToken, async (req, res) => {
 
 /*----------------------------------------------------------*/
 
+
+app.post('/api/recebGeralLista', authenticateToken, async (req, res) => {
+  try {
+    console.log("carrega RecebGeralLista");
+    const personalid = req.user.personalid;
+    if (typeof req.body[`alunoid`] === 'undefined') {
+      req.body[`alunoid`] = null;
+    } 
+    const {alunoid, ano, mes1a12} = req.body;
+    console.log("alunoid: ", alunoid);
+    console.log("ano: ", ano);
+    console.log("mes1a12: ", mes1a12);
+
+
+    const recebGeral = await sql`SELECT *
+      FROM h2urecebimentoslista
+      WHERE personalid = ${personalid} AND EXTRACT(YEAR FROM datavcto)=${ano} AND (alunoid=${alunoid} OR COALESCE(${alunoid},0) = 0) AND EXTRACT(MONTH FROM datavcto) =${mes1a12} 
+      ORDER BY aluno, datavcto`;
+    res.json(recebGeral);
+    //console.log(result.rows); // apenas isso para logar
+    
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao buscar recebGeral');
+  }
+});
+/*
+        id: this.data?.recebGeral?.id ?? null,
+        alunoid: this.alunoSelecionado?.id,
+        datavcto: formValue.datavcto,
+        datarcto: formValue.datarcto,
+        valor: formValue.valor,
+        formapagtoid: formValue.formapagtoid,
+        statusid: formValue.statusid,*/
+
+
+app.post('/api/recebGeralInsert', authenticateToken, async (req, res) => {
+  
+  const personalid = req.user.personalid;
+
+  // tratamento local indefinido
+  if (typeof req.body[`formapagtoid`] === 'undefined') {
+    req.body[`formapagtoid`] = null;
+  }
+  // tratamento serviço indefinido
+  if (typeof req.body[`statusid`] === 'undefined') {
+    req.body[`statusid`] = null;
+  }
+
+  // Agora que os valores estão garantidos, você pode extrair:
+  const {alunoid, datavcto, datarcto, valor, formapagtoid, statusid } = req.body;
+
+  //console.error('req.body:', req.body);
+
+  try {
+    const recebGeral = await sql`
+      INSERT INTO recebimentos (recpersonalid, recalunoid, recvalor, recdatavcto, recdatareceb, recformapagtoid, recstatus)
+      VALUES (${personalid}, ${alunoid}, ${valor}, ${datavcto}, ${datarcto}, ${formapagtoid}, ${statusid} )
+      RETURNING *`; 
+    res.json({
+      id: recebGeral[0].recebimento_id
+    });
+    console.log('Retornando novo recebimento:', {
+      id: recebGeral[0].recebimento_id
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao cadastrar recebimento' });
+  }
+});
+
+
+app.put('/api/recebGeralSave', authenticateToken, async (req, res) => {
+
+
+  // tratamento local indefinido
+  if (typeof req.body[`formapagtoid`] === 'undefined') {
+    req.body[`formapagtoid`] = null;
+  }
+  // tratamento serviço indefinido
+  if (typeof req.body[`statusid`] === 'undefined') {
+    req.body[`statusid`] = null;
+  }
+
+  // Agora que os valores estão garantidos, você pode extrair:
+  const {id, alunoid, datavcto, datarcto, valor, formapagtoid, statusid } = req.body;
+  
+  // UPDATE
+  try {
+    const recebGeral = await sql`
+      UPDATE recebimentos SET recalunoid=${alunoid}, recvalor=${valor}, recdatavcto=${datavcto}, 
+                              recdatareceb=${datarcto}, recformapagtoid=${formapagtoid}, recstatus=${statusid}
+       WHERE recebimento_ID = ${id}
+      RETURNING *
+    `;    
+    res.status(201).json(recebGeral);
+    } catch (err) {
+      console.error('Erro ao atualizar recebGeral:', err);
+      res.status(500).json({ error: 'Erro ao atualizar recebGeral' });
+    }
+});
+
 app.get('/api/alunoPlanoLista', authenticateToken, async (req, res) => {
   try {
     console.log("carrega AlunoPlanoLista");
