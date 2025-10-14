@@ -319,34 +319,54 @@ app.post('/api/equiptoInsert', authenticateToken, async (req, res) => {
 
 /*----------------------------------------------------------*/
 
-
-app.post('/api/recebGeralLista', authenticateToken, async (req, res) => {
+app.post('/api/recebimentoAlunoLista', authenticateToken, async (req, res) => {
   try {
-    console.log("carrega RecebGeralLista");
+    console.log("carrega RecebimentoAlunoLista");
     const personalid = req.user.personalid;
     if (typeof req.body[`alunoid`] === 'undefined') {
       req.body[`alunoid`] = null;
     } 
-    const {alunoid, ano, mes1a12} = req.body;
+    const {alunoid, ano} = req.body;
     console.log("alunoid: ", alunoid);
     console.log("ano: ", ano);
-    console.log("mes1a12: ", mes1a12);
 
-
-    const recebGeral = await sql`SELECT *
+    const recebimento = await sql`SELECT *
       FROM h2urecebimentoslista
-      WHERE personalid = ${personalid} AND EXTRACT(YEAR FROM datavcto)=${ano} AND (alunoid=${alunoid} OR COALESCE(${alunoid},0) = 0) AND EXTRACT(MONTH FROM datavcto) =${mes1a12} 
+      WHERE personalid = ${personalid} AND EXTRACT(YEAR FROM datavcto)=${ano} AND alunoid=${alunoid} 
       ORDER BY aluno, datavcto`;
-    res.json(recebGeral);
+    res.json(recebimento);
     //console.log(result.rows); // apenas isso para logar
     
   } catch (err) {
     console.error(err);
-    res.status(500).send('Erro ao buscar recebGeral');
+    res.status(500).send('Erro ao buscar recebimento');
+  }
+});
+
+app.post('/api/recebimentoLista', authenticateToken, async (req, res) => {
+  try {
+    console.log("carrega RecebimentoLista");
+    const personalid = req.user.personalid;
+    const {ano, mes1a12} = req.body;
+
+    console.log("ano: ", ano);
+    console.log("mes1a12: ", mes1a12);
+
+
+    const recebimento = await sql`SELECT *
+      FROM h2urecebimentoslista
+      WHERE personalid = ${personalid} AND EXTRACT(YEAR FROM datavcto)=${ano} AND EXTRACT(MONTH FROM datavcto) =${mes1a12} 
+      ORDER BY aluno, datavcto`;
+    res.json(recebimento);
+    //console.log(result.rows); // apenas isso para logar
+    
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao buscar recebimento');
   }
 });
 /*
-        id: this.data?.recebGeral?.id ?? null,
+        id: this.data?.recebimento?.id ?? null,
         alunoid: this.alunoSelecionado?.id,
         datavcto: formValue.datavcto,
         datarcto: formValue.datarcto,
@@ -355,7 +375,7 @@ app.post('/api/recebGeralLista', authenticateToken, async (req, res) => {
         statusid: formValue.statusid,*/
 
 
-app.post('/api/recebGeralInsert', authenticateToken, async (req, res) => {
+app.post('/api/recebimentoInsert', authenticateToken, async (req, res) => {
   
   const personalid = req.user.personalid;
 
@@ -374,15 +394,15 @@ app.post('/api/recebGeralInsert', authenticateToken, async (req, res) => {
   //console.error('req.body:', req.body);
 
   try {
-    const recebGeral = await sql`
+    const recebimento = await sql`
       INSERT INTO recebimentos (recpersonalid, recalunoid, recvalor, recdatavcto, recdatareceb, recformapagtoid, recstatus)
       VALUES (${personalid}, ${alunoid}, ${valor}, ${datavcto}, ${datarcto}, ${formapagtoid}, ${statusid} )
       RETURNING *`; 
     res.json({
-      id: recebGeral[0].recebimento_id
+      id: recebimento[0].recebimento_id
     });
     console.log('Retornando novo recebimento:', {
-      id: recebGeral[0].recebimento_id
+      id: recebimento[0].recebimento_id
     });
   } catch (err) {
     console.error(err);
@@ -391,7 +411,7 @@ app.post('/api/recebGeralInsert', authenticateToken, async (req, res) => {
 });
 
 
-app.put('/api/recebGeralSave', authenticateToken, async (req, res) => {
+app.put('/api/recebimentoSave', authenticateToken, async (req, res) => {
 
 
   // tratamento local indefinido
@@ -408,16 +428,16 @@ app.put('/api/recebGeralSave', authenticateToken, async (req, res) => {
   
   // UPDATE
   try {
-    const recebGeral = await sql`
+    const recebimento = await sql`
       UPDATE recebimentos SET recalunoid=${alunoid}, recvalor=${valor}, recdatavcto=${datavcto}, 
                               recdatareceb=${datarcto}, recformapagtoid=${formapagtoid}, recstatus=${statusid}
        WHERE recebimento_ID = ${id}
       RETURNING *
     `;    
-    res.status(201).json(recebGeral);
+    res.status(201).json(recebimento);
     } catch (err) {
-      console.error('Erro ao atualizar recebGeral:', err);
-      res.status(500).json({ error: 'Erro ao atualizar recebGeral' });
+      console.error('Erro ao atualizar recebimento:', err);
+      res.status(500).json({ error: 'Erro ao atualizar recebimento' });
     }
 });
 
