@@ -9,7 +9,7 @@
       </button>
     </mat-form-field>
     -->
-    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px;">
+    <mat-form-field appearance="fill">
       <mat-label>Status</mat-label>
       <mat-select [(value)]="filtroStatus" (selectionChange)="aplicarFiltro()">
         <mat-option value="Todos">Todos</mat-option>
@@ -32,7 +32,7 @@
   <div class="lista-container">
     <div class="lista-header">
       <span>Plano</span>
-      <span>Frequencia</span>
+      <span>Freq</span>
       <span>Preço</span>
       <span>Local</span>
       <span>Serviço</span>
@@ -47,7 +47,7 @@
       >
         <span>{{ tabelaPreco.plano }}</span>
         <span>{{ tabelaPreco.frequencia }}</span>
-        <span>R$ {{ tabelaPreco.valor | number:'1.2-2'}}</span>
+        <span>{{ tabelaPreco.valor | number:'1.2-2'}}</span>
         <span>{{ tabelaPreco.local }}</span>
         <span>{{ tabelaPreco.servico }}</span>
         <span class="status" [ngClass]="tabelaPreco.ativo ? 'ativo' : 'inativo'">

@@ -1,16 +1,17 @@
 <div class="page" >
-  <mat-toolbar color="primary" class="toolbar">
-    <button mat-icon-button class="btn-voltar" (click)="fechar()">
-      <mat-icon>arrow_back</mat-icon>
-    </button>
-    <span class="titulo">Agenda do Aluno</span>
-    <span class="spacer"></span>
+  <!--<mat-toolbar color="primary" class="toolba">-->
+    <div class="filtros">
+      <button mat-icon-button class="btn-voltar" (click)="fechar()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <span class="titulo">Agenda do Aluno</span>
 
-    <!-- seletor de mês (apenas mês/ano) -->
 
-      <mat-dialog-content style="width: 150px; height: 65px;">
+      <!-- seletor de mês (apenas mês/ano) -->
+
+      <mat-dialog-content >
         <mat-form-field appearance="fill" class="custom-height">
-          <mat-label style="font-size: 15px;">Mês Filtro:</mat-label>
+          <mat-label>Mês Filtro:</mat-label>
           <mat-select 
             [(value)]="mesSelecionadoLabel" 
             (selectionChange)="onMonthSelected($event)">
@@ -20,8 +21,8 @@
           </mat-select>
         </mat-form-field>
       </mat-dialog-content>
-  
-  </mat-toolbar>
+    </div>
+
 
   <!--<div class="container">-->
   <div class="agenda-layout" >

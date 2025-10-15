@@ -55,11 +55,10 @@ button.mat-mini-fab mat-icon {
 
 .filtros {
   position: sticky;
-  top: 2px;
+  top: 0px;
   background: #494646;
   z-index: 10;
-  padding: 6px;
-  border-bottom: 1px solid #ccc;
+  padding: 0px 8px 2px 0px;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -102,7 +101,8 @@ main.conteudo {
 
 .lista-header {
   display: grid;
-  grid-template-columns: 1.5fr 0.8fr 0.8fr 1fr 1fr 1.4fr;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 0.5fr;
+  align-items: center;
   background: #2a2a2a;
   color: #ddd;
   font-weight: 600;
@@ -117,8 +117,9 @@ main.conteudo {
 }
 
 .aluno-item {
+  cursor: pointer;
   display: grid;
-  grid-template-columns: 1.5fr 0.8fr 0.8fr 1fr 1fr 1.4fr;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 0.5fr;
   align-items: center;
   padding: 8px 10px;
   color: #eee;
@@ -137,22 +138,6 @@ main.conteudo {
   background: #383838;
 }
 
-.status {
-  font-weight: 500;
-}
-
-.status.ativo {
-  color: #4caf50;
-}
-
-.status.finalizado {
-  color:rgb(47, 99, 168)
-}
-
-.status.cancelado {
-  color:rgb(190, 55, 55)
-}
-
 /* Scrollbar leve */
 .lista-scroll::-webkit-scrollbar {
   width: 6px;
@@ -162,7 +147,37 @@ main.conteudo {
   border-radius: 4px;
 }
 
+.status-col {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.status-dot.recebido {
+  background-color: #4caf50; /* verde */
+}
+
+.status-dot.naoRecebido {
+  background-color: #ffeb3b; /* amarelo */
+}
+
+.status-dot.vencido {
+  background-color: #f44336; /* vermelho */
+}
+
+.status-dot.cancelado {
+  background-color: #9e9e9e; /* cinza */
+}
+
+.status-dot.renegociado {
+  background-color: #2196f3; /* azul */
+}
 
 @media (max-width: 600px) {
 
@@ -173,5 +188,4 @@ main.conteudo {
   .aluno-item {
     font-size: 10px;
   }
-
 }

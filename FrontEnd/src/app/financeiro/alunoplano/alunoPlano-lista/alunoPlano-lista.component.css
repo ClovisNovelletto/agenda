@@ -55,11 +55,10 @@ button.mat-mini-fab mat-icon {
 
 .filtros {
   position: sticky;
-  top: 2px;
+  top: 0px;
   background: #494646;
   z-index: 10;
-  padding: 6px;
-  border-bottom: 1px solid #ccc;
+  padding: 0px 8px 2px 0px;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -102,7 +101,7 @@ main.conteudo {
 
 .lista-header {
   display: grid;
-  grid-template-columns: 1.5fr 1.5fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1.5fr 1.3fr 1fr 1.1fr 1.1fr 1fr;
   background: #2a2a2a;
   color: #ddd;
   font-weight: 600;
@@ -118,7 +117,7 @@ main.conteudo {
 
 .aluno-item {
   display: grid;
-  grid-template-columns: 1.5fr 1.5fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1.5fr 1.3fr 1fr 1.1fr 1.1fr 1fr;
   align-items: center;
   padding: 8px 10px;
   color: #eee;
@@ -161,8 +160,6 @@ main.conteudo {
   background: #555;
   border-radius: 4px;
 }
-
-
 
 @media (max-width: 600px) {
 

@@ -10,8 +10,8 @@
     </mat-form-field>
     -->
 
-      <mat-form-field appearance="fill" class="custom-height" style="margin-left: 3px; margin-bottom: 0px; height: 50px;">
-        <mat-label style="font-size: 15px;">Mês Filtro:</mat-label>
+      <mat-form-field appearance="fill">
+        <mat-label>Mês Filtro:</mat-label>
         <mat-select 
           [(value)]="mesSelecionadoLabel" 
           (selectionChange)="onMonthSelected($event)">
@@ -23,7 +23,7 @@
 
     
 
-    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 0px; height: 50px;">
+    <mat-form-field appearance="fill">
       <mat-label>Status</mat-label>
       <mat-select [(value)]="filtroStatus" (selectionChange)="aplicarFiltro()">
         <mat-option value="Todos">Todos</mat-option>
@@ -41,7 +41,7 @@
     </mat-menu>
     -->
     
-    <button mat-mini-fab style="display: flex; align-items: center !important; justify-content: center !important; background-color: #28a745;" (click)="novoRecebGeral()" aria-label="Novo RecebGeral">
+    <button mat-mini-fab style="display: flex; align-items: center !important; justify-content: center !important; background-color: #28a745;" (click)="novoRecebimento()" aria-label="Novo Recebimento">
       <mat-icon style="display: flex; align-items: center !important; justify-content: center !important;">add</mat-icon>
     </button>
   </div>
@@ -52,28 +52,33 @@
       <span>Vencto</span>
       <span>Recbto</span>
       <span>Valor</span>
-      <span>Forma Receb</span>
+      <span>Rec Em</span>
       <span>Status</span>
     </div>
 
     <div class="lista-scroll">
       <div 
         class="aluno-item" 
-        *ngFor="let recebGeral of recebGeralsFiltrados" 
-        (click)="onEditar(recebGeral)"
+        *ngFor="let recebimento of recebimentosFiltrados" 
+        (click)="onEditar(recebimento)"
       >
-        <span>{{ recebGeral.aluno }}</span>
-        <span>{{ recebGeral.datavcto | date:'dd/MM/yy'}}</span>
-        <span>{{ recebGeral.datarcto | date:'dd/MM/yy'}}</span>
-        <span>R$ {{ recebGeral.valor | number:'1.2-2' }}</span>
-        <span>{{ recebGeral.formapagto }}</span>
-        <span class="status" [ngClass]="recebGeral.status.toLowerCase()">
-          <ng-container [ngSwitch]="recebGeral.status">
-            <span *ngSwitchCase="'Não Recebido'">✅ Não Recebido</span>
-            <span *ngSwitchCase="'Recebido'">⚪ Recebido</span>
-            <span *ngSwitchCase="'Cancelado'">❌ Cancelado</span>
-            <span *ngSwitchCase="'Renegociado'">❌ Renegociado</span>
-          </ng-container>
+        <span>{{ recebimento.aluno }}</span>
+        <span>{{ recebimento.datavcto | date:'dd/MM/yy'}}</span>
+        <span>{{ recebimento.datarcto | date:'dd/MM/yy'}}</span>
+        <span>{{ recebimento.valor | number:'1.2-2' }}</span>
+        <span>{{ recebimento.formapagto }}</span>
+        <span class="status-col">
+          <span
+            class="status-dot"
+            [ngClass]="{
+              recebido: recebimento.status === 'Recebido',
+              naoRecebido: recebimento.status === 'Não Recebido' && !isVencido(recebimento),
+              vencido: recebimento.status === 'Não Recebido' && isVencido(recebimento),
+              cancelado: recebimento.status === 'Cancelado',
+              renegociado: recebimento.status === 'Renegociado'
+            }"
+            matTooltip="{{ getTooltip(recebimento) }}"
+          ></span>
         </span>
       </div>
     </div>

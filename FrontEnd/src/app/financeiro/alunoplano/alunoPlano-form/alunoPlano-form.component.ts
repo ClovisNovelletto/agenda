@@ -86,6 +86,14 @@ export class AlunoPlanoFormComponent implements OnInit {
     { id: 3, nome: 'Débito'},
     { id: 4, nome: 'Crédito'},
   ]
+
+  /*status*/
+  status =[
+    { id: 1, nome: 'Ativo'},
+    { id: 2, nome: 'Finalizado'},
+    { id: 3, nome: 'Cancelado'},
+  ]
+  
   constructor(
     private fb: FormBuilder, private alunoPlanoService: AlunoPlanoService,
     private dialogRef: MatDialogRef<AlunoPlanoFormComponent>,
@@ -105,6 +113,7 @@ export class AlunoPlanoFormComponent implements OnInit {
       valorreceber: [null],
       diavcto: [5, Validators.required],
       formapagtoid: [2, Validators.required],
+      statusid: [1, Validators.required],
     });
     //this.form.get('valorreceber')?.disable();
 
@@ -137,6 +146,7 @@ console.log("this.data", this.data)
           valorreceber: this.data.alunoPlano.valorreceber,
           diavcto: this.data.alunoPlano.diavcto,
           formapagtoid: this.data.alunoPlano.formapagtoid,
+          statusid: this.data.alunoPlano.statusid,
         });
 
         // Preenche nomes nos autocompletes
@@ -193,6 +203,7 @@ console.log("this.data", this.data)
         valorreceber: formValue.valorreceber,
         diavcto: formValue.diavcto,
         formapagtoid: formValue.formapagtoid,
+        statusid: formValue.statusid,
       };
 
       console.log('updated:', updated);

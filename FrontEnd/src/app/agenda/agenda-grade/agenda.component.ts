@@ -985,9 +985,38 @@ console.log('teste vai:');
     });
   }
 
+  gerarRecebimentos(mesSelecionado: { dataInicio: Date, dataFim: Date }) {
+    this.mostrarSeletorMes = false;
+
+    const payload = {
+      data_inicio: dayjs(mesSelecionado.dataInicio).format('YYYY-MM-DD'),
+      data_fim: dayjs(mesSelecionado.dataFim).format('YYYY-MM-DD'),
+    };
+    const token = localStorage.getItem('jwt-token');
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    this.http.post(`${environment.apiUrl}/recebimentosGerar`, payload, { headers }).subscribe({
+      next: () => {
+        this.snackBar.open('Recebimentos gerados com sucesso!', 'Fechar', { duration: 3000 });
+        //this.appointments$.next([]);
+        //this.appointments$ = new BehaviorSubject<Appointment[]>([]);
+        //this.carregamentosFeitos = [];
+        //this.loadAppointments(); // ⬅️ recarrega os dados após sucesso
+        //setTimeout(() => this.cd.markForCheck());
+      },
+      error: err => {
+        this.snackBar.open('Erro ao gerar recebimentos!', 'Fechar', { duration: 3000 });
+      }
+    });
+  }
+
+  
   abrirDialogoGerarAgenda() {
     const dialogRef = this.dialog.open(DialogGerarAgendaComponent, {
-      width: '360px'
+      width: '360px',
+      data: {
+        titulo: "Gerar Agendamentos do Mês",
+        mensagem: "Selecione um mês para gerar os Agendamentos com base nos dias e horários cadastrados no Alunos Ativos", // 
+      }  
     });
 
     dialogRef.afterClosed().subscribe((mesSelecionado) => {
@@ -997,7 +1026,39 @@ console.log('teste vai:');
     });
   }
 
+  abrirDialogoGerarRecebto() {
+    const dialogRef = this.dialog.open(DialogGerarAgendaComponent, {
+      width: '360px',
+      data: {
+        titulo: "Gerar Recebimentos do Mês",
+        mensagem: "Selecione um mês para gerar os recebimentos com base nos Aluno Planos ativos cadastrados", // 
+      }  
+    });
+
+    dialogRef.afterClosed().subscribe((mesSelecionado) => {
+      if (mesSelecionado) {
+        this.gerarRecebimentos(mesSelecionado);
+      }
+    });
+  }
     
+  abrirDialogoGerarAgendaRecebto() {
+    const dialogRef = this.dialog.open(DialogGerarAgendaComponent, {
+      width: '360px',
+      data: {
+        titulo: "Gerar Agenda + Recebtos do Mês",
+        mensagem: "Selecione um mês para gerar os agendamentos com base nos dias e horários cadastrados no Alunos Ativos + recebimentos com base nos Aluno Planos ativos cadastrados", // 
+      }  
+    });
+
+    dialogRef.afterClosed().subscribe((mesSelecionado) => {
+      if (mesSelecionado) {
+        this.gerarAgenda(mesSelecionado);
+        this.gerarRecebimentos(mesSelecionado);
+      }
+    });
+  }
+
   saveAppointment(
     agenda_id: BigInteger,
     /*titulo: string,*/

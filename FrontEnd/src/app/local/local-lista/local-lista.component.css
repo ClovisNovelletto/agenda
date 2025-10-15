@@ -15,10 +15,16 @@ html, body {
 }
 
 .filtros {
+  position: sticky;
+  top: 0px;
+  background: #494646;
+  z-index: 10;
+  padding: 0px 8px 2px 0px;
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
   align-items: center;
+  flex-shrink: 0;
   overflow: visible;
 }
 
@@ -78,21 +84,6 @@ button.mat-mini-fab mat-icon {
   flex: 1;
   overflow-y: auto;
   min-height: 0; 
-  overflow: visible;
-}
-
-.filtros {
-  position: sticky;
-  top: 2px;
-  background: #494646;
-  z-index: 10;
-  padding: 6px;
-  border-bottom: 1px solid #ccc;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-  flex-shrink: 0;
   overflow: visible;
 }
 

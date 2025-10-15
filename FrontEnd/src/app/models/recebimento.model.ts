@@ -1,4 +1,4 @@
-export interface RecebGeral {
+export interface Recebimento {
   id: number;
   personalid: number;
   personal: string;

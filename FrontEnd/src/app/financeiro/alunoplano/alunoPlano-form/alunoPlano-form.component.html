@@ -104,6 +104,13 @@
       <mat-datepicker #pickerDataFim></mat-datepicker>
     </mat-form-field>
 
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+      <mat-label>Status</mat-label>
+      <mat-select formControlName="statusid">
+        <mat-option *ngFor="let st of status" [value]="st.id">{{ st.nome }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
     <div>
       <button mat-raised-button type="submit" [disabled]="form.invalid || form.pristine" class="btn-salvar">
         Salvar

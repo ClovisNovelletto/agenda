@@ -1,0 +1,151 @@
+
+<div class="page" >
+  <!--
+  <mat-toolbar color="primary" class="toolbar">
+    <button mat-icon-button class="btn-voltar" (click)="fechar()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <span class="titulo">Receb</span>
+    <span class="spacer"></span>
+  -->
+    <!-- seletor de mês (apenas mês/ano) -->
+  <div class="filtros">
+    <mat-form-field appearance="fill">
+      <mat-label>Ano Filtro:</mat-label>
+        <mat-select 
+          [(value)]="anoSelecionadoLabel" 
+          (selectionChange)="onYearSelected($event)">
+          <mat-option *ngFor="let ano of anos" [value]="ano">
+            {{ ano.label }}
+          </mat-option>
+      </mat-select>
+    </mat-form-field>
+    
+    <button mat-mini-fab style="display: flex; align-items: center !important; justify-content: center !important; background-color: #28a745;" (click)="novoRecebimento()" aria-label="Novo Recebimento">
+      <mat-icon style="display: flex; align-items: center !important; justify-content: center !important;">add</mat-icon>
+    </button>
+  </div>
+  <!--</mat-toolbar>-->
+
+  <!--<div class="container">-->
+  <div class="agenda-layout" >
+    <!-- Sidebar Alunos -->
+    <aside class="sidebar">
+
+      <div class="sidebar-header">Alunos</div>
+
+      <div class="aluno-lista">
+        <mat-checkbox 
+            *ngFor="let aluno of alunos; trackBy: trackByAlunoId"
+            [checked]="alunoSelecionado!.id === aluno.id"
+            (change)="selecionarAluno(aluno)">
+            {{ aluno.nome }} 
+        </mat-checkbox>
+
+        <div class="empty" *ngIf="!carregandoAlunos && alunos.length === 0">
+            Nenhum aluno ativo.
+        </div>
+      </div>
+    
+    </aside>
+
+    
+    <main class="content">
+
+      <div class="tabela-container">
+        <table mat-table [dataSource]="[]" class="tabela-header">
+            <ng-container matColumnDef="vencto">
+                <th mat-header-cell *matHeaderCellDef>Vencto</th>
+            </ng-container>
+
+            <ng-container matColumnDef="recebto">
+                <th mat-header-cell *matHeaderCellDef>Recebto</th>
+            </ng-container>
+
+            <ng-container matColumnDef="valor">
+                <th mat-header-cell *matHeaderCellDef>Valor</th>
+            </ng-container>
+
+            <ng-container matColumnDef="formapagto">
+                <th mat-header-cell *matHeaderCellDef>Rec Em</th>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>Status</th>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="['vencto','recebto','valor', 'formapagto', 'status']" style="height: 32px !important;"></tr>
+        </table>
+      
+      <div class="tabela-wrap" *ngIf="alunoSelecionado">
+        <div class="loading" *ngIf="carregandoRecebimentos">
+          <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
+        </div>
+
+        <table mat-table [dataSource]="dataSource" *ngIf="!carregandoRecebimentos">
+
+            <ng-container matColumnDef="vencto">
+                <td mat-cell *matCellDef="let row" class="corFonte">
+                {{ toDate(row?.datavcto) | date:'dd/MM/yy' }} 
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="recebto">
+                <td mat-cell *matCellDef="let row" class="corFonte">
+                <span *ngIf="row?.datarcto"> 
+                  {{ toDate(row?.datarcto) | date:'dd/MM/yy' }} 
+                </span> 
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="valor">
+                <td mat-cell *matCellDef="let row" class="corFonte">
+                {{ row.valor || '—' }}
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="formapagto">
+                <td mat-cell *matCellDef="let row" class="corFonte">
+                {{ row.formapagto || '—' }}
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+                <td mat-cell *matCellDef="let row" class="corFonte">
+                
+                <span
+                  class="status-dot"
+                  [ngClass]="{
+                    recebido: row.status === 'Recebido',
+                    naoRecebido: row.status === 'Não Recebido' && !isVencido(row),
+                    vencido: row.status === 'Não Recebido' && isVencido(row),
+                    cancelado: row.status === 'Cancelado',
+                    renegociado: row.status === 'Renegociado'
+                  }"
+                  matTooltip="{{ getTooltip(row) }}"
+                ></span>
+
+                </td>
+            </ng-container>
+
+
+
+            <tr style="min-height: 30px!important; height: 30px!important;"
+                mat-row
+                *matRowDef="let row; columns: displayedColumns;"
+                (click)="recebimentosEditar(row)">
+            </tr>
+          
+        </table>
+        
+        <div class="empty" *ngIf="!carregandoRecebimentos && dataSource.data.length === 0" >
+          Aluno sem recebimentos.
+        </div>
+
+      </div>
+    </div>
+    </main>
+  </div>
+</div>
+
+                <!--[ngClass]="rowClass(row.status)"-->

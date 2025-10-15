@@ -15,7 +15,8 @@ import { LocalListaComponent } from './local/local-lista/local-lista.component';
 import { EquiptoListaComponent } from './equipto/equipto-lista/equipto-lista.component';
 import { ConfiguracoesServicosComponent } from './configuracoes-servicos/configuracoes-servicos.component';
 import { AnamneseListaComponent} from './anamnese/anamnese-lista/anamnese-lista.component'
-import { RecebGeralListaComponent} from './financeiro/recebimentos/recebGeral-lista/recebGeral-lista.component'
+import { RecebGeralListaComponent} from './financeiro/recebimentos/geral/recebGeral-lista/recebGeral-lista.component'
+import { RecebIndividualListaComponent} from './financeiro/recebimentos/individual/recebIndividual-lista.component'
 import { HomeComponent } from './home/home.component';
 import { AuthGuard } from './auth.guard';
 import { AppComponent } from './app.component';
@@ -29,7 +30,8 @@ export const routes: Routes = [
   { path: 'configuracoes',  canActivate: [AuthGuard], loadComponent: () => import('./configuracoes/configuracoes.component').then(m => m.ConfiguracoesComponent)},
   { path: 'tabelaPrecoLista',  canActivate: [AuthGuard], loadComponent: () => import('./tabelaPreco/tabelaPreco-lista/tabelaPreco-lista.component').then(m => m.TabelaPrecoListaComponent)},
   { path: 'alunoPlanoLista',  canActivate: [AuthGuard], loadComponent: () => import('./financeiro/alunoplano/alunoPlano-lista/alunoPlano-lista.component').then(m => m.AlunoPlanoListaComponent)},
-  { path: 'recebGeralLista',  canActivate: [AuthGuard], loadComponent: () => import('./financeiro/recebimentos/recebGeral-lista/recebGeral-lista.component').then(m => m.RecebGeralListaComponent)},  
+  { path: 'recebGeralLista',  canActivate: [AuthGuard], loadComponent: () => import('./financeiro/recebimentos/geral/recebGeral-lista/recebGeral-lista.component').then(m => m.RecebGeralListaComponent)},  
+  { path: 'recebIndividualLista',  canActivate: [AuthGuard], loadComponent: () => import('./financeiro/recebimentos/individual/recebIndividual-lista.component').then(m => m.RecebIndividualListaComponent)},  
   { path: 'alunoLista',  canActivate: [AuthGuard], loadComponent: () => import('./aluno/aluno-lista/aluno-lista.component').then(m => m.AlunoListaComponent)},
   { path: 'localLista',  canActivate: [AuthGuard], loadComponent: () => import('./local/local-lista/local-lista.component').then(m => m.LocalListaComponent)},
   { path: 'anamneseLista',  canActivate: [AuthGuard], loadComponent: () => import('./anamnese/anamnese-lista/anamnese-lista.component').then(m => m.AnamneseListaComponent)},

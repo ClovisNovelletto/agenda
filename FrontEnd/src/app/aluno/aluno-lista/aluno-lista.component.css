@@ -16,11 +16,18 @@ html, body {
   overflow: visible;
 }
 
+
 .filtros {
+  position: sticky;
+  top: 0px;
+  background: #494646;
+  z-index: 10;
+  padding: 0px 8px 2px 0px;
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
   align-items: center;
+  flex-shrink: 0;
   overflow: visible;
 }
 
@@ -84,21 +91,6 @@ button.mat-mini-fab mat-icon {
   overflow: visible;
 }
 
-.filtros {
-  position: sticky;
-  top: 2px;
-  background: #494646;
-  z-index: 10;
-  padding: 6px;
-  border-bottom: 1px solid #ccc;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-  flex-shrink: 0;
-  overflow: visible;
-}
-
 .filtros mat-form-field {
   flex: 1 1 100px;
   min-width: 90px;
@@ -143,7 +135,7 @@ main.conteudo {
 }
 
 .lista-scroll {
-  max-height: 60vh;
+  /*max-height: 60vh;*/
   overflow-y: auto;
 }
 

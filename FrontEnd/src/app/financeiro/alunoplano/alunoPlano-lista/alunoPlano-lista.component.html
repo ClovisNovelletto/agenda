@@ -1,6 +1,6 @@
 <div class="tela-container">
   <div class="filtros">
-    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px;">
+    <mat-form-field appearance="fill">
       <mat-label>Pesquisar</mat-label>
       <input matInput [(ngModel)]="filtroTexto" (keyup.enter)="aplicarFiltro()" />
       <button mat-icon-button matSuffix (click)="aplicarFiltro()">
@@ -8,7 +8,7 @@
       </button>
     </mat-form-field>
 
-    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px;">
+    <mat-form-field appearance="fill">
       <mat-label>Status</mat-label>
       <mat-select [(value)]="filtroStatus" (selectionChange)="aplicarFiltro()">
         <mat-option value="Todos">Todos</mat-option>
@@ -49,7 +49,7 @@
         <span>{{ alunoPlano.plano }}</span>
         <span>{{ alunoPlano.frequencia }}</span>
         <span>{{ alunoPlano.dataini | date:'dd/MM/yy' }}</span>
-        <span>R$ {{ alunoPlano.valorreceber | number:'1.2-2' }}</span>
+        <span>{{ alunoPlano.valorreceber | number:'1.2-2' }}</span>
         <span class="status" [ngClass]="alunoPlano.status.toLowerCase()">
           <ng-container [ngSwitch]="alunoPlano.status">
             <span *ngSwitchCase="'Ativo'">✅ Ativo</span>

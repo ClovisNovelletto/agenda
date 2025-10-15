@@ -1,7 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import type { AlunoPlano } from '../../../models/alunoPlano.model';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatInputModule } from '@angular/material/input';
@@ -19,7 +18,6 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatOptionModule } from '@angular/material/core';
 import { MatFormField } from '@angular/material/form-field';
 import { Observable } from 'rxjs';
-import { ConfigAgenda } from '../../../models/configAgenda.model';
 import { map } from 'rxjs/operators';
 import { FormArray, FormControl } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -33,17 +31,17 @@ import { startWith } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';
 import { ChangeDetectorRef } from '@angular/core';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { RecebGeralService } from '../../../services/recebGeral.service';
+import { RecebimentosService } from '../../../services/recebimentos.service';
 
 @Component({
-  selector: 'app-recebGeral-form',
+  selector: 'app-recebimentos-form',
   imports: [MatInputModule, MatNativeDateModule, MatSlideToggleModule, CommonModule, MatCheckboxModule,
             ReactiveFormsModule, MatFormFieldModule, MatInputModule,  MatSlideToggleModule, MatOptionModule, MatSelectModule,
             MatButtonModule, MatDialogModule, MatIconModule, MatToolbarModule, MatDatepickerModule, MatFormField, MatAutocompleteModule], // Adicione o RouterModule aqui]
-  templateUrl: './recebGeral-form.component.html',
-  styleUrls: ['./recebGeral-form.component.css'],
+  templateUrl: './recebimentos-form.component.html',
+  styleUrls: ['./recebimentos-form.component.css'],
 })
-export class RecebGeralFormComponent implements OnInit {
+export class RecebimentosFormComponent implements OnInit {
   form!: FormGroup;
   alunos: any[] = [];
   alunoCtrl = new FormControl('');
@@ -67,8 +65,8 @@ export class RecebGeralFormComponent implements OnInit {
     { id: 4, nome: 'Crédito'},
   ]
   constructor(
-    private fb: FormBuilder, private recebGeralService: RecebGeralService,
-    private dialogRef: MatDialogRef<RecebGeralFormComponent>,
+    private fb: FormBuilder, private recebimentosService: RecebimentosService,
+    private dialogRef: MatDialogRef<RecebimentosFormComponent>,
     private http: HttpClient, private cd: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA) public  data: any 
   ) {}
@@ -96,19 +94,19 @@ export class RecebGeralFormComponent implements OnInit {
       this.setupAlunoAutocomplete();
 
 console.log("this.data", this.data)
-      if (this.data?.recebGeral) {
-        const alunoSelecionado = this.alunos.find(l => l.id === this.data.recebGeral.alunoid);
+      if (this.data?.recebimentos) {
+        const alunoSelecionado = this.alunos.find(l => l.id === this.data.recebimentos.alunoid);
 
         this.alunoSelecionado = alunoSelecionado;
 
         // Preenche IDs no form principal
         this.form.patchValue({
-          alunoid: this.data.recebGeral.alunoid,
-          datavcto: this.data.recebGeral.datavcto ? new Date(this.data.recebGeral.datavcto) : null,
-          datarcto: this.data.recebGeral.datarcto ? new Date(this.data.recebGeral.datarcto) : null,
-          valor: this.data.recebGeral.valor,
-          formapagtoid: this.data.recebGeral.formapagtoid,
-          statusid: this.data.recebGeral.statusid,
+          alunoid: this.data.recebimentos.alunoid,
+          datavcto: this.data.recebimentos.datavcto ? new Date(this.data.recebimentos.datavcto) : null,
+          datarcto: this.data.recebimentos.datarcto ? new Date(this.data.recebimentos.datarcto) : null,
+          valor: this.data.recebimentos.valor,
+          formapagtoid: this.data.recebimentos.formapagtoid,
+          statusid: this.data.recebimentos.statusid,
         });
 
         // Preenche nomes nos autocompletes
@@ -154,7 +152,7 @@ console.log("this.data", this.data)
       const formValue = this.form.value;
 
       const updated: any = {
-        id: this.data?.recebGeral?.id ?? null,
+        id: this.data?.recebimentos?.id ?? null,
         alunoid: this.alunoSelecionado?.id,
         datavcto: formValue.datavcto,
         datarcto: formValue.datarcto,

@@ -1,6 +1,6 @@
 <div class="tela-container">
   <div class="filtros">
-    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px;">
+    <mat-form-field appearance="fill">
       <mat-label>Pesquisar</mat-label>
       <input matInput [(ngModel)]="filtroTexto" (keyup.enter)="aplicarFiltro()" />
       <button mat-icon-button matSuffix (click)="aplicarFiltro()">
@@ -8,7 +8,7 @@
       </button>
     </mat-form-field>
 
-    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px;">
+    <mat-form-field appearance="fill">
       <mat-label>Status</mat-label>
       <mat-select [(value)]="filtroStatus" (selectionChange)="aplicarFiltro()">
         <mat-option value="Todos">Todos</mat-option>

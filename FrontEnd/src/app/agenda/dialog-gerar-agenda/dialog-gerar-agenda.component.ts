@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import dayjs from 'dayjs';
 import { MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 
@@ -26,8 +26,10 @@ import { MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 export class DialogGerarAgendaComponent implements OnInit {
   meses: { label: string, dataInicio: Date, dataFim: Date }[] = [];
   mesSelecionado: any;
-
-  constructor(public dialogRef: MatDialogRef<DialogGerarAgendaComponent>) {}
+  titulo: string = "Gerar Recebimentos do Mês";
+  mensagem: string = "Selecione um mês para gerar os recebimentos com base nos Aluno Planos ativos cadastrados";
+  
+  constructor(public dialogRef: MatDialogRef<DialogGerarAgendaComponent>, @Inject(MAT_DIALOG_DATA) public  data: any ) {}
 
   ngOnInit(): void {
     const hoje = dayjs();
@@ -41,6 +43,15 @@ export class DialogGerarAgendaComponent implements OnInit {
 
       if (i === 0) this.mesSelecionado = item; // Seleciona o mês atual por padrão
     }
+
+    if (this.data?.titulo) {
+      this.titulo = this.data.titulo;
+    }
+    if (this.data?.mensagem) {
+      this.mensagem = this.data.mensagem;
+    }
+      
+
   }
 
   confirmar() {
