@@ -203,14 +203,14 @@ app.post('/api/login', async (req, res) => {
      const result = await sql`SELECT id, password, tipo_usuario, forcarlogin FROM users WHERE UPPER(email) = ${email}`;
 
     if (result.length > 0) {
-      console.log("result ok");
+      //console.log("result ok");
 
       const storedHash = result[0].password;
-      console.log("storedHash", storedHash);
+      //console.log("storedHash", storedHash);
       const resultSenhaValida = await sql`
         SELECT crypt(${password}, ${storedHash}) = ${storedHash} AS is_valid, crypt(${password}, ${storedHash}) teste
       `;
-      console.log("resultSenhaValida[0].teste", resultSenhaValida[0].teste);
+      //console.log("resultSenhaValida[0].teste", resultSenhaValida[0].teste);
       if (resultSenhaValida[0].is_valid) {      
         console.log("result válido");
         // tratamento para pegar personal ou aluno
@@ -327,8 +327,8 @@ app.post('/api/recebimentoAlunoLista', authenticateToken, async (req, res) => {
       req.body[`alunoid`] = null;
     } 
     const {alunoid, ano} = req.body;
-    console.log("alunoid: ", alunoid);
-    console.log("ano: ", ano);
+    //console.log("alunoid: ", alunoid);
+    //console.log("ano: ", ano);
 
     const recebimento = await sql`SELECT *
       FROM h2urecebimentoslista
@@ -349,8 +349,8 @@ app.post('/api/recebimentoLista', authenticateToken, async (req, res) => {
     const personalid = req.user.personalid;
     const {ano, mes1a12} = req.body;
 
-    console.log("ano: ", ano);
-    console.log("mes1a12: ", mes1a12);
+    //console.log("ano: ", ano);
+    //console.log("mes1a12: ", mes1a12);
 
 
     const recebimento = await sql`SELECT *
@@ -497,15 +497,52 @@ app.post('/api/alunoPlanoInsert', authenticateToken, async (req, res) => {
   }
 });
 
+
+app.put('/api/alunoPlanoSave', authenticateToken, async (req, res) => {
+  
+  const personalid = req.user.personalid;
+
+  // tratamento local indefinido
+  if (typeof req.body[`localid`] === 'undefined') {
+    req.body[`localid`] = null;
+  }
+  // tratamento serviço indefinido
+  if (typeof req.body[`servicoid`] === 'undefined') {
+    req.body[`servicoid`] = null;
+  }
+//console.log(req.body);
+  // Agora que os valores estão garantidos, você pode extrair:
+  const {alunoid, dataini, datafim, planoid, frequenciaid, valortabela, valordesconto, valorreceber, diavcto, formapagtoid, statusid } = req.body;
+
+  //console.error('req.body:', req.body);
+
+  try {
+    const alunoPlano = await sql`
+      UPDATE alunosplanos SET apalunoid=${alunoid}, applanoid=${planoid}, apfrequenciaid=${frequenciaid}, /*aptabprecoid,*/
+           apdataini=${dataini}, apdatafim=${datafim}, apvalortabela=${valortabela}, apvalordesconto=${valortabela},
+           apvalorreceber=${valorreceber}, apdiavcto=${diavcto}, apformapagtoid=${formapagtoid}, apstatus=${statusid}
+      RETURNING *`; 
+    res.json({
+      id: alunoPlano[0].alunosplano_id
+    });
+    console.log('Retornando alunoPlano alterado:', {
+      id: alunoPlano[0].alunosplano_id
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao alterar alunoPlano' });
+  }
+});
+
 app.post('/api/precoTabela', authenticateToken, async (req, res) => {
   try {
     console.log("carrega tabelaPrecos");
     const personalid = req.user.personalid;
     const {alunoid, planoid, frequenciaid} = req.body;
-console.log("personalid", personalid);
-console.log("alunoid", alunoid);
-console.log("planoid", planoid);
-console.log("frequenciaid", frequenciaid);
+//console.log("personalid", personalid);
+//console.log("alunoid", alunoid);
+//console.log("planoid", planoid);
+//console.log("frequenciaid", frequenciaid);
 
 
     const tabPreco = await sql`SELECT h2ugetprecotabela(${personalid}, ${alunoid}, ${planoid}, ${frequenciaid}) AS "valorTabela"`;
@@ -644,12 +681,12 @@ app.put('/api/alunoSave', authenticateToken, async (req, res) => {
     planoid, frequenciaid, localid, servicoid
   } = req.body;
 
-  console.log("id",id);
-  console.log("nome",nome);
-  console.log("telefone",telefone);
-  console.log("localid",localid);
-  console.log("servicoid",servicoid);
-  console.log("datainicio",datainicio);
+  //console.log("id",id);
+  //console.log("nome",nome);
+  //console.log("telefone",telefone);
+  //console.log("localid",localid);
+  //console.log("servicoid",servicoid);
+  //console.log("datainicio",datainicio);
 
   // UPDATE
   try {
@@ -806,14 +843,14 @@ app.get('/api/agendas', authenticateToken, async (req, res) => {
 app.put('/api/anamneseSave', authenticateToken, async (req, res) => {
   const personalid = req.user.personalid;
   const {id, dataAnamnese, titulo, peso, altura, idade, objetivo, principalRecl, alimentacao, historicosaude, fatoresrisco, medicamentos, sono, descricao} = req.body;
-console.log('id', id);
-console.log('andata', dataAnamnese);
-console.log('antitulo', titulo);
-console.log('andescricao', descricao);
-console.log('anidade', idade);
-console.log('anpeso', peso);
-console.log('anobjetivo', objetivo);
-console.log('principalRecl', principalRecl);
+//console.log('id', id);
+//console.log('andata', dataAnamnese);
+//console.log('antitulo', titulo);
+//console.log('andescricao', descricao);
+//console.log('anidade', idade);
+//console.log('anpeso', peso);
+//console.log('anobjetivo', objetivo);
+//console.log('principalRecl', principalRecl);
   try {
     const anamnese = await sql`
       UPDATE Anamneses SET andata = ${dataAnamnese},
@@ -1060,10 +1097,10 @@ app.get('/api/personal/me', authenticateToken, async (req, res) => {
                             	           ELSE null
                                     END AS "servicoid"
          FROM Personals WHERE Personal_ID = ${personalid}`;
-    console.log(personalid);
-    console.log(result[0]);
+    //console.log(personalid);
+    //console.log(result[0]);
     res.json(result[0] ?? {}); 
-    console.log(personalid);
+    //console.log(personalid);
   } catch(err) {
       console.error(err);
     res.status(500).send('Erro ao buscar configurações do personal');
@@ -1231,7 +1268,7 @@ app.post('/api/register-aluno', authenticateToken, async (req, res) => {
 app.put('/api/personal/configuracoes', authenticateToken, async (req, res) => {
   const { diasAtendimento, horaInicio, horaFim, intervaloMinutos, mostrarLocal, mostrarServico, mostrarEquipto } = req.body;
   const personalid = req.user.personalid;
-  console.log("req.body", req.body);
+  //console.log("req.body", req.body);
   try {
     //const result = await pool.query(`
     //  UPDATE Personals SET
@@ -1262,7 +1299,7 @@ app.put('/api/personal/configuracoes', authenticateToken, async (req, res) => {
 app.put('/api/agendasDescricao', authenticateToken, async (req, res) => {
   const { agenda_id, descricao } = req.body;
   const personalid = req.user.personalid;
-  console.log("agenda_id", agenda_id);
+  //console.log("agenda_id", agenda_id);
 
   try {
     const agenda = await sql`
@@ -1292,14 +1329,14 @@ app.put('/api/agendas', authenticateToken, async (req, res) => {
   } 
 
   const { agenda_id, alunoid, localid, servicoid, equiptoid, data, /*hora,*/ /*titulo,*/ /*descricao,*/ statusid } = req.body;
-  console.log("agenda_id", agenda_id);
-  console.log("data", data);
+  //console.log("agenda_id", agenda_id);
+  //console.log("data", data);
 
   const dataHora = new Date(req.body.data);
 
   // Adiciona 3 horas (10800000 ms)
   const dataCorrigida = new Date(dataHora.getTime() - 0 * 60 * 60 * 1000);
-  console.log("dataCorrigida", dataCorrigida);
+  //console.log("dataCorrigida", dataCorrigida);
   //const isProd = process.env.NODE_ENV === 'production'
   //const dataCorrigida = isProd
   //? new Date(dataHora.getTime() - 3 * 60 * 60 * 1000)
@@ -1348,13 +1385,33 @@ app.put('/api/agendaStatus', authenticateToken, async (req, res) => {
     }
 });
 
+
+app.post('/api/recebimentosGerar', authenticateToken, async (req, res) => {
+  const personalid = req.user.personalid;
+  const {data_inicio, data_fim} = req.body;
+
+  //console.error('personalid:', personalid);
+  //console.error('data_inicio:', data_inicio);
+  //console.error('data_fim:', data_fim);
+
+  try {
+    const recebimentos = await sql`
+    CALL public.h2uGerarRecebimentos(${data_inicio}, ${data_fim}, ${personalid})`;
+    res.status(201).json(recebimentos);
+  } catch (err) {
+    console.error('Erro ao gerar recebimentos do mês:', err);
+    res.status(500).json({ error: 'Erro ao inserir recebimentos' });
+  }
+
+});
+
 app.post('/api/agendaGerar', authenticateToken, async (req, res) => {
   const personalid = req.user.personalid;
   const {data_inicio, data_fim} = req.body;
 
-  console.error('personalid:', personalid);
-  console.error('data_inicio:', data_inicio);
-  console.error('data_fim:', data_fim);
+  //console.error('personalid:', personalid);
+  //console.error('data_inicio:', data_inicio);
+  //console.error('data_fim:', data_fim);
   try {
     await sql`DELETE FROM Agendas WHERE AgPersonalID=${personalid} AND AgData>=${data_inicio} AND AgData<=${data_fim} AND AgStatus IN(1,3); /*Pedente ou Cancelado*/`;
   } catch (err) {
@@ -1365,7 +1422,8 @@ app.post('/api/agendaGerar', authenticateToken, async (req, res) => {
   try {
     const agenda = await sql`
     INSERT INTO Agendas(Agenda, AgPersonalID, AgAlunoID, AgLocalID, AgServicoID, AgEquiptoID, AgData, AgStatus) --ON CONFLICT DO NOTHING
-    SELECT 'Teste', ${personalid}, AlunoID, LocalID, ServicoID, EquiptoID, datahora + interval '3 hour', 1 FROM h2ugetagendaEquipto(${data_inicio}, ${data_fim}, ${personalid})
+    SELECT 'Teste', ${personalid}, AlunoID, LocalID, ServicoID, EquiptoID, datahora + interval '3 hour', 1
+      FROM h2ugetagendaEquipto(${data_inicio}, ${data_fim}, ${personalid})
     ON CONFLICT DO NOTHING
     RETURNING *`;
     res.status(201).json(agenda);
@@ -1381,9 +1439,9 @@ app.post('/api/agendaAluno', authenticateToken, async (req, res) => {
     console.log("carrega agenda do aluno");
     const personalid = req.user.personalid;
     const {alunoid, ano, mes1a12} = req.body;
-    console.log("alunoid: ", alunoid);
-    console.log("ano: ", ano);
-    console.log("mes1a12: ", mes1a12);
+    //console.log("alunoid: ", alunoid);
+    //console.log("ano: ", ano);
+    //console.log("mes1a12: ", mes1a12);
     const agendas = await sql`SELECT * FROM agendaslista WHERE PersonalID = ${personalid} AND AlunoID = ${alunoid} AND EXTRACT(YEAR FROM Date)=${ano} AND EXTRACT(MONTH FROM Date) =${mes1a12} ORDER BY Date`;
     res.json(agendas);
   } catch (err) {
@@ -1397,8 +1455,8 @@ app.post('/api/agendaPorPeriodo', authenticateToken, async (req, res) => {
     console.log("carrega agenda");
     const personalid = req.user.personalid;
     const {data_inicio, data_fim} = req.body;
-    console.log("data_inicio: ", data_inicio);
-    console.log("data_fim: ", data_fim);
+    //console.log("data_inicio: ", data_inicio);
+    //console.log("data_fim: ", data_fim);
     const agendas = await sql`SELECT * FROM agendaslista WHERE PersonalID = ${personalid} AND Date>=${data_inicio} AND Date <=${data_fim}`;
     res.json(agendas);
   } catch (err) {
@@ -1424,18 +1482,18 @@ app.post('/api/agendas', authenticateToken, async (req, res) => {
 
   const { alunoid, localid, servicoid, equiptoid, data, statusid } = req.body;
   
-  console.log("alunoid", alunoid);
-  console.log("localid",localid );
-  console.log("servicoid", servicoid);
-  console.log("equiptoid", equiptoid);
-  console.log("data", data);
-  console.log("statusid", statusid);
-  console.log("personalid", personalid);
+  //console.log("alunoid", alunoid);
+  //console.log("localid",localid );
+  //console.log("servicoid", servicoid);
+  //console.log("equiptoid", equiptoid);
+  //console.log("data", data);
+  //console.log("statusid", statusid);
+  //console.log("personalid", personalid);
 
 
   //console.log(req);
-  console.log(req.user.email);
-  console.log(req.user.personalid);
+  //console.log(req.user.email);
+  //console.log(req.user.personalid);
 
 
   const dataHora = new Date(req.body.data);
@@ -1450,9 +1508,9 @@ app.post('/api/agendas', authenticateToken, async (req, res) => {
 //const dataCorrigida = dataHoraLocal.utc().toDate();
 
 const dataCorrigida = dayjs(req.body.data).tz('America/Sao_Paulo').utc().toDate();
-console.log("req.body.data", req.body.data);
-console.log("dataCorrigida", dataCorrigida);
-console.log("req.body.data", req.body);
+//console.log("req.body.data", req.body.data);
+//console.log("dataCorrigida", dataCorrigida);
+//console.log("req.body.data", req.body);
   try {
 
     const agenda = await sql`
@@ -1507,11 +1565,11 @@ app.post('/api/register', async (req, res) => {
 app.post('/api/cadastro-personal', async (req, res) => {
 const { nome, email, usuario, senha } = req.body;
 const tipousuario = 2;
-console.log("req.body", req.body);
-console.log("nome", nome);
-console.log("email", email);
-console.log("usuario", usuario);
-console.log("senha", senha);
+//console.log("req.body", req.body);
+//console.log("nome", nome);
+//console.log("email", email);
+//console.log("usuario", usuario);
+//console.log("senha", senha);
 
   try {
     const user = await sql`
@@ -1521,7 +1579,7 @@ console.log("senha", senha);
     const userid  = user[0].id;
     //res.json("userid:", userid);
 
-    console.log("userid", userid);
+    //console.log("userid", userid);
 
     const personal = await sql`
       INSERT INTO Personals(Personal, PerEmail, PerUserID)
