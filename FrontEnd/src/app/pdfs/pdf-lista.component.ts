@@ -33,7 +33,7 @@ export class PdfListaComponent implements OnInit {
 
   async abrirPDF(nome: string) {
     try {
-        await this.pdfService.abrirPDF(nome, false);
+        await this.pdfService.abrirPDF(nome, false, true);
     } catch (err) {
         console.error('Erro ao abrir PDF:', err);
     }
@@ -41,7 +41,7 @@ export class PdfListaComponent implements OnInit {
 
   async baixarPDF(nome: string) {
     try {
-        await this.pdfService.abrirPDF(nome, true);
+        await this.pdfService.abrirPDF(nome, true, true);
     } catch (err) {
         console.error('Erro ao download PDF:', err);
     }

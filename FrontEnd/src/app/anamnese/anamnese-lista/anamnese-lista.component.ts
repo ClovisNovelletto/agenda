@@ -288,6 +288,20 @@ export class AnamneseListaComponent implements OnInit {
             [
               {
                 text: [
+                  { text: 'Título: ', color: '#0070C0', bold: true }, // label colorido
+                  { text: row.titulo } // valor normal
+                ],
+                style: 'info'
+              }
+            ]
+          ]
+        },  
+
+        {
+          columns: [
+            [
+              {
+                text: [
                   { text: 'Profissional: ', color: '#0070C0', bold: true }, // label colorido
                   { text: row.personal } // valor normal
                 ],
@@ -335,9 +349,9 @@ export class AnamneseListaComponent implements OnInit {
               },
             ],
           ],
-          columnGap: 10,
+          columnGap: 0,
           widths: ['*', 'auto'],
-          margin: [0, 0, 0, 0],
+          margin: [0, 0, 0, 5],
         },
 
         // Divisor
@@ -373,7 +387,7 @@ export class AnamneseListaComponent implements OnInit {
       styles: {
         header: { fontSize: 20, bold: true, color: '#1b5e20' },        // verde escuro H2U
         info: { fontSize: 11, margin: [0, 2] },
-        sectionHeader: { fontSize: 13, bold: true, color: '#ff6f00', margin: [0, 10, 0, 4] }, // laranja vibrante
+        sectionHeader: { fontSize: 13, bold: true, color: '#ff6f00', margin: [0, 0, 0, 2] }, // laranja vibrante
         sectionText: { fontSize: 11, margin: [0, 0, 0, 10], alignment: 'justify' },
       },
 

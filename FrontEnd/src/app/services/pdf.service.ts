@@ -5,6 +5,9 @@ import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
 import { Share } from '@capacitor/share';
 import { HttpClient } from '@angular/common/http';
 import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+
+(pdfMake as any).vfs = pdfFonts.vfs;
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +20,63 @@ export class PdfService {
   /**
    * Salva PDF em local visível (Android) ou sandbox (Web)
    */
-  async salvarPDF(nomeArquivo: string, dataBase64: string): Promise<void> {
+
+  async salvarPDF(nomeArquivo: string, docDef: any) {
+    //alert(`Iniciando salvarPDF: ${nomeArquivo}`);
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    try {
+      const pdfDoc = (pdfMake as any).createPdf(docDef);
+      //alert('pdfDoc criado com sucesso');
+
+      if (isMobile) {
+        //alert('Vai salvar no mobile');
+        pdfDoc.getBase64(async (data: string) => {
+          //alert('Callback do getBase64 chamado!');
+          try {
+            await Filesystem.writeFile({
+              path: nomeArquivo,
+              data,
+              directory: Directory.Data,
+            });
+
+            //alert(`Arquivo salvo: ${nomeArquivo}`);
+            await this.abrirPDF(nomeArquivo, false, false);
+          } catch (err) {
+            alert('Erro ao salvar: ' + JSON.stringify(err));
+          }
+        });
+      } else {
+        pdfDoc.getBase64(async (data: string) => {
+          //alert('Callback do getBase64 chamado!');
+          try {
+            await Filesystem.writeFile({
+              path: nomeArquivo,
+              data,
+              directory: Directory.Documents,
+            });
+
+            //alert(`Arquivo salvo: ${nomeArquivo}`);
+            await this.abrirPDF(nomeArquivo, false, false);
+          } catch (err) {
+            alert('Erro ao salvar: ' + JSON.stringify(err));
+          }
+        });        
+        //alert('Rodando no navegador');
+        this.abrirPDF(nomeArquivo, false, false);
+        //pdfDoc.getBlob((blob: Blob) => {
+        //  const link = document.createElement('a');
+        //  link.href = URL.createObjectURL(blob);
+        //  link.download = nomeArquivo;
+        //  link.click();
+        //});
+      }
+    } catch (err) {
+      alert('Erro geral: ' + err);
+    }
+  }
+
+  async salvarPDFversãopermissão(nomeArquivo: string, dataBase64: string): Promise<void> {
     const plataforma = Capacitor.getPlatform();
 
     const options =
@@ -25,8 +84,7 @@ export class PdfService {
         ? {
             path: `${this.pastaAndroid}/${nomeArquivo}`,
             data: dataBase64,
-            /*directory: Directory.ExternalStorage,*/
-            directory: Directory.Documents,
+            directory: Directory.ExternalStorage,
             recursive: true
           }
         : {
@@ -39,7 +97,7 @@ export class PdfService {
     try {
       await Filesystem.writeFile(options);
       //alert(`✅ PDF salvo em ${plataforma === 'android' ? 'Downloads/h2u' : 'Documents'}`);
-      this.abrirPDF(nomeArquivo, false);
+      this.abrirPDF(nomeArquivo, false, false);
       console.log(`✅ PDF salvo em ${plataforma === 'android' ? 'Downloads/h2u' : 'Documents'}`);
     } catch (err) {
       alert(`Erro ao salvar PDF: ${err}`);
@@ -50,13 +108,30 @@ export class PdfService {
   /**
    * Lista PDFs gravados
    */
+    async listarPDFsanterior(): Promise<string[]> {
+    try {
+      const result = await Filesystem.readdir({
+        path: `${this.pastaAndroid}`,
+        directory: Directory.External
+        /*directory: Directory.Data*/
+      });
+
+      return result.files
+        .filter(f => f.name.endsWith('.pdf'))
+        .map(f => f.name);
+    } catch (err) {
+      console.error('Erro ao listar PDFs:', err);
+      return [];
+    }
+  }
+
   async listarPDFs(): Promise<string[]> {
     const plataforma = Capacitor.getPlatform();
 
     const options =
       plataforma === 'android'
         /*? { path: this.pastaAndroid, directory: Directory.ExternalStorage }*/
-        ? { path: this.pastaAndroid, directory: Directory.Documents }
+        ? { path: this.pastaAndroid, directory: Directory.External }
         : { path: '', directory: Directory.Documents };
 
     try {
@@ -74,14 +149,18 @@ export class PdfService {
    * Abre PDF (FileOpener no Android / window.open no Web)
    * -> se falhar no Android, faz Share automático
    */
-  async abrirPDF(nomeArquivo: string, download: boolean): Promise<void> {
+  async abrirPDF(nomeArquivo: string, download: boolean, external: boolean): Promise<void> {
     const plataforma = Capacitor.getPlatform();
 
     if (plataforma === 'android') {
-      const caminho = `/storage/emulated/0/Download/${this.pastaAndroid}/${nomeArquivo}`;
-      //const caminho = `/storage/emulated/0/Download/${nomeArquivo}`;
+      /*const caminho = `/storage/emulated/0/Download/${this.pastaAndroid}/${nomeArquivo}`;*/
+      const caminho = `/storage/emulated/0/Download/${nomeArquivo}`;
       try {
-        await this.sharePDFAndroid(nomeArquivo);
+        if (external) {
+          await this.sharePDFAndroidExternal(nomeArquivo);
+        }else{
+          await this.sharePDFAndroid(nomeArquivo);
+        }
         console.log('📖 PDF compartilhado');
         //console.log('📖 PDF aberto com FileOpener');
       } catch (err) {
@@ -105,6 +184,13 @@ export class PdfService {
         const url = URL.createObjectURL(blob);
         if (!download) {
           window.open(url, '_blank');
+          //const blobUrl = URL.createObjectURL(blob);
+          //const a = document.createElement('a');
+          //a.href = blobUrl;
+          //a.download = nomeArquivo; // força o nome
+          //a.target = '_blank';
+          //a.click();
+
         } else {
           // 🔹 Cria link temporário para forçar nome do arquivo correto
           const a = document.createElement('a');
@@ -126,12 +212,78 @@ export class PdfService {
    * Compartilha PDF (fallback no Android)
    */
 
-  
-    async sharePDFAndroid(nomeArquivo: string) {
+  async sharePDFAndroid(nomeArquivo: string) {
+    try {
+      const file = await Filesystem.readFile({
+        path: nomeArquivo,
+        directory: Directory.Data
+      });
+
+      //alert(`file: ${file}`);
+      // nome único para evitar cache do Android
+      const timestamp = new Date().getTime();
+      const nomeUnico = `${nomeArquivo.replace('.pdf','')}_${timestamp}.pdf`;
+
+      //alert(`timestamp: ${timestamp}`);
+      //alert(`nomeUnico: ${nomeUnico}`);
+
+      // cria pasta pública se não existir
+      try {
+        await Filesystem.stat({
+          path: this.pastaAndroid,
+          directory: Directory.External
+        });
+        // pasta já existe, não precisa criar
+      } catch (e) {
+        // pasta não existe, cria
+        try {
+          await Filesystem.mkdir({
+            path: this.pastaAndroid,
+            directory: Directory.External,
+            recursive: true
+          });
+        } catch (e: any) {
+          if (e.code !== 'EEXIST') throw e; // ignora se já existe
+        }
+      }
+
+      //alert(`mkdir passou:`);
+      // salva a cópia na pasta pública
+      await Filesystem.writeFile({
+        /*path: `${this.pastaAndroid}/${nomeUnico}`,*/
+        path: `${this.pastaAndroid}/${nomeArquivo}`,
+        data: file.data,
+        directory: Directory.External
+      });
+
+      //alert(`writefile passou`);
+      // obtém URI pública
+      const publicUri = await Filesystem.getUri({
+        /*path: `${this.pastaAndroid}/${nomeUnico}`,*/
+        path: `${this.pastaAndroid}/${nomeArquivo}`,
+        directory: Directory.External
+      });
+
+      //alert(`publicUri: ${publicUri}`);
+      await Share.share({
+        title: 'Visualizar PDF',
+        text: 'Abrir PDF gerado',
+        url: publicUri.uri,
+        dialogTitle: 'Abrir com...'
+      });
+
+    } catch (err) {
+      console.error('Erro ao compartilhar PDF:', err);
+      alert(`Não foi possível compartilhar o arquivo. ${err}`);
+    }
+  }
+    async sharePDFAndroidExternal(nomeArquivo: string) {
+      //alert('entrou no share.');
       try {
         const fileUri = await Filesystem.getUri({
-          path: nomeArquivo,
-          directory: Directory.Documents
+          path: `${this.pastaAndroid}/${nomeArquivo}`,
+          /*directory: Directory.Documents*/
+          directory: Directory.External
         });
   
         console.log('URI obtida:', fileUri.uri);
@@ -150,7 +302,7 @@ export class PdfService {
 
     private async sharePDFAndroidNaoFoi(caminho: string) {
     try {
-alert(`caminho ${caminho}`);
+      alert(`caminho ${caminho}`);
       const plataforma = Capacitor.getPlatform();
     
       // pega apenas o nome do arquivo
@@ -235,12 +387,13 @@ alert(`arquivo. ${arquivo}`);
   }
 
   async gerarESalvarPDF(nomePdf: string, docDef: any) {
-    const pdfDocGenerator = pdfMake.createPdf(docDef);
+    await this.salvarPDF(nomePdf, docDef);
+    //const pdfDocGenerator = pdfMake.createPdf(docDef);
 
-    pdfDocGenerator.getBase64(async (base64Data) => {
-      await this.salvarPDF(nomePdf, base64Data);
-      console.log('PDF salvo com sucesso!');
-    });
+    //pdfDocGenerator.getBase64(async (base64Data) => {
+    //  await this.salvarPDF(nomePdf, base64Data);
+    //  console.log('PDF salvo com sucesso!');
+    //});
   }
 
   async excluirPDF(nomeArquivo: string) {
@@ -257,13 +410,15 @@ alert(`arquivo. ${arquivo}`);
         await Filesystem.deleteFile({
           path: `${this.pastaAndroid}/${nomeArquivo}`,
           /*directory: Directory.ExternalStorage,*/
-          directory: Directory.Documents,
+          directory: Directory.External,
+          /*directory: Directory.Data,*/
         });
       } else {
         // --- WINDOWS / WEB ---
         await Filesystem.deleteFile({
           path: nomeArquivo,
           directory: Directory.Documents,
+          /*directory: Directory.Data,*/
         });
       }
 /*
@@ -284,7 +439,5 @@ alert(`arquivo. ${arquivo}`);
     }
   }
 }
-
-
 
 //file:///storage/emulated/0/Documents/Anamnese_06-10-2025_a%20teste%20plano.pdf
