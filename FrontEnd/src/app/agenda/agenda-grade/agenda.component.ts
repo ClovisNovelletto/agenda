@@ -108,7 +108,7 @@ export class AgendaComponent implements OnInit, AfterViewInit {
       this.translateX = 0; // reseta posição
     }
   }
-
+/* 16/10/25
   onSwipe(event: any) {
     console.log('SWIPE EVENT:', event);
     if (event.direction === Hammer.DIRECTION_LEFT) {
@@ -118,7 +118,7 @@ export class AgendaComponent implements OnInit, AfterViewInit {
       this.previousWeek();
     }
   }
-
+*/
   @ViewChildren(CdkDropList) dropLists!: QueryList<CdkDropList>;
   connectedDropLists: CdkDropList[] = [];
   weekDates: Date[] = [];

@@ -1,0 +1,85 @@
+<!--
+<div class="lista-pdfs">
+  <h2>PDFs Salvos</h2>
+
+  <div *ngIf="carregando">Carregando...</div>
+
+  <ul *ngIf="!carregando && pdfs.length > 0">
+    <li *ngFor="let nome of pdfs">
+      📄
+      <a href="#" (click)="abrirPDF(nome)">
+        {{ nome }}
+      </a>
+    </li>
+  </ul>
+
+  <div *ngIf="!carregando && pdfs.length === 0">
+    Nenhum PDF encontrado.
+  </div>
+</div>
+
+<div class="pdfs-container">
+  <h2>📄 PDFs Salvos</h2>
+
+  <div *ngIf="carregando">Carregando...</div>
+
+    <ng-container *ngFor="let pdf of pdfs">
+    <div class="pdf-item">
+        <span>{{ pdf }}</span>
+        <button mat-icon-button (click)="abrirPDF(pdf)">
+        <mat-icon>visibility</mat-icon>
+        </button>
+        <button mat-icon-button (click)="baixarPDF(pdf)">
+        <mat-icon>download</mat-icon>
+        </button>
+    </div>
+    </ng-container>
+
+  <div *ngIf="!carregando && pdfs.length === 0">
+    Nenhum PDF encontrado.
+  </div>
+</div>
+-->
+
+<div class="pdfs-container">
+  <h2>📄 PDFs Salvos</h2>
+
+  <div *ngIf="carregando">Carregando...</div>
+
+  <div *ngFor="let pdf of pdfs" class="pdf-item mat-elevation-z2">
+    <span class="pdf-name">{{ pdf }}</span>
+
+    <div class="pdf-actions">
+      <button
+        mat-icon-button
+        color="primary"
+        matTooltip="Abrir PDF"
+        (click)="abrirPDF(pdf)"
+      >
+        <mat-icon>visibility</mat-icon>
+      </button>
+
+      <button
+        mat-icon-button
+        color="accent"
+        matTooltip="Baixar PDF"
+        (click)="baixarPDF(pdf)"
+      >
+        <mat-icon>download</mat-icon>
+      </button>
+
+      <button
+        mat-icon-button
+        color="warn"
+        matTooltip="Excluir PDF"
+        (click)="excluirPDF(pdf)">
+        <mat-icon>delete</mat-icon>
+    </button>
+    
+    </div>
+  </div>
+
+  <div *ngIf="!carregando && pdfs.length === 0">
+    Nenhum PDF encontrado.
+  </div>  
+</div>

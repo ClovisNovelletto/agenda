@@ -30,6 +30,7 @@ export interface Anamnese {
     objetivo: string;
     pricipalRecl: string;
     descricao: Text;
+    aluno: string;
 }
 
 @Injectable({

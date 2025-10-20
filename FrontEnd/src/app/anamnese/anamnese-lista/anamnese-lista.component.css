@@ -250,6 +250,17 @@ td.mat-cell {
   stroke: white !important; /* cor do ícone ✓ */
 }
 
+.pdf-icon mat-icon {
+  color: #e53935; /* vermelho mais forte */
+  opacity: 0.9;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.pdf-icon:hover mat-icon {
+  transform: scale(1.2);
+  opacity: 1;
+}
+
 @media (max-width: 768px) {
   .sidebar-header {
     font-weight: 600;

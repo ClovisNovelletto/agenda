@@ -45,7 +45,28 @@ import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDialogModule } from '@angular/material/dialog';
 import { AnamneseFormComponent } from '../anamnese-form/anamnese-form.component';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+import { TDocumentDefinitions } from 'pdfmake/interfaces';
+//import { registerWebPlugin } from '@capacitor/core';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+//import { Capacitor } from '@capacitor/core';
+//import { Browser } from '@capacitor/browser';
+import { Share } from '@capacitor/share';
+import { PdfService } from '../../services/pdf.service';
 
+//import fs from 'fs';
+
+//import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
+//import { provide } from '@angular/core';
+//registerWebPlugin(Filesystem);
+
+(pdfMake as any).vfs = pdfFonts.vfs;
+
+//import pdfMake from 'pdfmake/build/pdfmake';
+//import pdfFonts from 'pdfmake/build/vfs_fonts';
+
+//pdfMake.vfs = pdfFonts.pdfMake.vfs;
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -53,9 +74,11 @@ dayjs.extend(timezone);
   selector: 'app-anamnese-lista',
   templateUrl: './anamnese-lista.component.html',
   styleUrls: ['./anamnese-lista.component.css'],
+  standalone: true,
   imports: [MatToolbarModule, MatIconModule, MatButtonModule, MatListModule, MatTableModule, MatProgressSpinnerModule, MatFormFieldModule, 
             MatInputModule, MatDatepickerModule, MatNativeDateModule, CommonModule, MatCheckboxModule, FormsModule,
             MatSelectModule],
+  //providers: [FileOpener]
   })
  
 export class AnamneseListaComponent implements OnInit {
@@ -78,7 +101,7 @@ export class AnamneseListaComponent implements OnInit {
 
   constructor(private anamneseService: AnamneseService, private authService: AuthService,
               private cd: ChangeDetectorRef, private personalService: PersonalService, private bottomSheet: MatBottomSheet, 
-              private http: HttpClient, private dialog: MatDialog
+              private http: HttpClient, private dialog: MatDialog, private pdfService: PdfService
   ) {}
 
   ngOnInit(): void {
@@ -226,4 +249,482 @@ export class AnamneseListaComponent implements OnInit {
     });
    
   }
+
+  async generateAnamnesePDF(row: any, event?: MouseEvent) {
+    if (event) event.stopPropagation();
+    //const logoBase64 = fs.readFileSync('src/assets/icons/logo.png', { encoding: 'base64' });
+    //console.log('data:image/png;base64,' + logoBase64);
+    const dataFormatada = dayjs(row.data).format('DD-MM-YYYY');
+    const nomeLimpo = row.aluno.replace(/\s+/g, '_');
+    const nomePdf = `Anamnese_${dataFormatada}_${nomeLimpo}.pdf`;
+
+    //const logoBase64 = 'icons/logo.png'; // coloque aqui o base64 do logo H2U
+    const logoBase64 = await this.pdfService.getLogoBase64();
+
+    const docDef = {
+      pageSize: 'A4',
+      pageMargins: [40, 40, 40, 40],
+      content: [
+        // Logo + Título
+
+        {
+          columns: [
+            { image: logoBase64, width: 30 },          // coluna do logo
+            { text: 'Relatório de Anamnese', style: 'header', alignment: 'center' } // coluna do título
+          ],
+          columnGap: 0,   // espaço entre as colunas
+          widths: ['auto', '*'],  // 'auto' para o logo, '*' ocupa o resto do espaço para o título
+          margin: [0, 0, 0, 20] // margem inferior do bloco
+        },
+
+        // Divisor
+        { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 1, color: '#e0e0e0' }] },
+        { text: ' ', margin: [0, 0] },
+
+        // Informações principais em duas colunas
+
+        {
+          columns: [
+            [
+              {
+                text: [
+                  { text: 'Profissional: ', color: '#0070C0', bold: true }, // label colorido
+                  { text: row.personal } // valor normal
+                ],
+                style: 'info'
+              },
+              {
+                text: [
+                  { text: 'Aluno/Paciente: ', color: '#0070C0', bold: true },
+                  { text: row.aluno }
+                ],
+                style: 'info'
+              },
+              {
+                text: [
+                  { text: 'Data: ', color: '#0070C0', bold: true },
+                  { text: dataFormatada }
+                ],
+                style: 'info'
+              },
+            ],
+            [
+              {
+                text: [
+                  { text: 'Peso: ', color: '#0070C0', bold: true },
+                  { text: `${row.peso} kg` }
+                ],
+                style: 'info',
+                alignment: 'right'
+              },
+              {
+                text: [
+                  { text: 'Altura: ', color: '#0070C0', bold: true },
+                  { text: `${row.altura} m` }
+                ],
+                style: 'info',
+                alignment: 'right'
+              },
+              {
+                text: [
+                  { text: 'Idade: ', color: '#0070C0', bold: true },
+                  { text: `${row.idade} anos` }
+                ],
+                style: 'info',
+                alignment: 'right'
+              },
+            ],
+          ],
+          columnGap: 10,
+          widths: ['*', 'auto'],
+          margin: [0, 0, 0, 0],
+        },
+
+        // Divisor
+        { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 1, color: '#e0e0e0' }] },
+        { text: ' ', margin: [0, 0] },
+
+        // Seções detalhadas com cores vibrantes
+        { text: 'Objetivo', style: 'sectionHeader' },
+        { text: row.objetivo || '-', style: 'sectionText' },
+
+        { text: 'Principal Reclamação', style: 'sectionHeader' },
+        { text: row.principalrecl || '-', style: 'sectionText' },
+
+        { text: 'Hábitos Alimentares', style: 'sectionHeader' },
+        { text: row.alimentacao || '-', style: 'sectionText' },
+
+        { text: 'Medicamentos', style: 'sectionHeader' },
+        { text: row.medicamentos || '-', style: 'sectionText' },
+
+        { text: 'Histórico de Saúde', style: 'sectionHeader' },
+        { text: row.historicosaude || '-', style: 'sectionText' },
+
+        { text: 'Fatores de Risco', style: 'sectionHeader' },
+        { text: row.fatoresrisco || '-', style: 'sectionText' },
+
+        { text: 'Sono', style: 'sectionHeader' },
+        { text: row.sono || '-', style: 'sectionText' },
+
+        { text: 'Descrição Geral', style: 'sectionHeader' },
+        { text: row.descricao || '-', style: 'sectionText' },
+      ],
+
+      styles: {
+        header: { fontSize: 20, bold: true, color: '#1b5e20' },        // verde escuro H2U
+        info: { fontSize: 11, margin: [0, 2] },
+        sectionHeader: { fontSize: 13, bold: true, color: '#ff6f00', margin: [0, 10, 0, 4] }, // laranja vibrante
+        sectionText: { fontSize: 11, margin: [0, 0, 0, 10], alignment: 'justify' },
+      },
+
+      defaultStyle: {
+        font: 'Roboto',
+      },
+    };
+
+    this.pdfService.gerarESalvarPDF(nomePdf, docDef);
+  }
+
+  async generateAnamnesePDFPadrao(row: any, event?: MouseEvent) {
+    if (event) event.stopPropagation();
+    const dataFormatada = dayjs(row.data).format('DD-MM-YYYY');
+    const nomeLimpo = row.aluno.replace(/\s+/g, '_');
+    const nomePdf = `Anamnese_${dataFormatada}_${nomeLimpo}.pdf`;
+
+    const docDef = {
+      pageSize: 'A4',
+      pageMargins: [40, 60, 40, 60],
+      content: [
+        // Cabeçalho
+        {
+          text: 'Relatório de Anamnese',
+          style: 'header',
+          alignment: 'center',
+          margin: [0, 0, 0, 20],
+        },
+
+        // Bloco com informações principais
+        {
+          columns: [
+            [
+              { text: `Profissional: ${row.personal}`, style: 'info' },
+              { text: `Aluno/Paciente: ${row.aluno}`, style: 'info' },
+              { text: `Data: ${dataFormatada}`, style: 'info' },
+            ],
+            [
+              { text: `Peso: ${row.peso} kg`, style: 'info' },
+              { text: `Altura: ${row.altura} m`, style: 'info' },
+              { text: `Idade: ${row.idade} anos`, style: 'info' },
+            ],
+          ],
+          columnGap: 20,
+          margin: [0, 0, 0, 15],
+        },
+
+        { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 1, color: '#cccccc' }] },
+        { text: ' ', margin: [0, 10] },
+
+        // Seções de texto
+        { text: 'Objetivo', style: 'sectionHeader' },
+        { text: row.objetivo || '-', style: 'sectionText' },
+
+        { text: 'Principal Reclamação', style: 'sectionHeader' },
+        { text: row.pricipalrecl || '-', style: 'sectionText' },
+
+        { text: 'Hábitos Alimentares', style: 'sectionHeader' },
+        { text: row.alimentacao || '-', style: 'sectionText' },
+
+        { text: 'Medicamentos', style: 'sectionHeader' },
+        { text: row.medicamentos || '-', style: 'sectionText' },
+
+        { text: 'Histórico de Saúde', style: 'sectionHeader' },
+        { text: row.historicosaude || '-', style: 'sectionText' },
+
+        { text: 'Fatores de Risco', style: 'sectionHeader' },
+        { text: row.fatoresrisco || '-', style: 'sectionText' },
+
+        { text: 'Sono', style: 'sectionHeader' },
+        { text: row.sono || '-', style: 'sectionText' },
+
+        { text: 'Descrição Geral', style: 'sectionHeader' },
+        { text: row.descricao || '-', style: 'sectionText' },
+      ],
+
+      styles: {
+        header: { fontSize: 20, bold: true, color: '#1b5e20' },
+        info: { fontSize: 11, margin: [0, 2] },
+        sectionHeader: { fontSize: 13, bold: true, color: '#2e7d32', margin: [0, 10, 0, 4] },
+        sectionText: { fontSize: 11, margin: [0, 0, 0, 10], alignment: 'justify' },
+      },
+    };
+    this.pdfService.gerarESalvarPDF(nomePdf, docDef);
+  }
+/*
+  async generateAnamnesePDFxxx(row: any, event?: MouseEvent) {
+    if (event) event.stopPropagation();
+    const dataFormatada = dayjs(row.data).format('DD-MM-YYYY');
+    const nomePdf = `Anamnese_${dataFormatada}_${row.aluno}.pdf`;
+
+    const docDef = {
+      content: [
+        { text: 'Relatório de Anamnese', style: 'header' },
+        { text: `Título: ${row.titulo}` },
+        { text: `Aluno: ${row.aluno}` },
+        { text: `Data: ${dataFormatada}` },
+      ],
+      styles: {
+        header: { fontSize: 18, bold: true, margin: [0, 0, 0, 10] },
+      }
+    };
+
+    const pdfDoc = (pdfMake as any).createPdf(docDef);
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      pdfDoc.getBase64(async (data: string) => {
+        try {
+          // ⚠️ Importante: não use Encoding.UTF8
+          await Filesystem.writeFile({
+            path: nomePdf,
+            data, // base64 puro
+            directory: Directory.Documents
+          });
+
+          alert(`✅ PDF salvo em Documentos como ${nomePdf}`);
+
+          const fileUri = await Filesystem.getUri({
+            path: nomePdf,
+            directory: Directory.Documents
+          });
+
+          // 🔗 Se quiser apenas abrir:
+          await Browser.open({ url: fileUri.uri });
+
+          // 🔗 Se quiser compartilhar:
+          await Share.share({
+            title: 'Anamnese',
+            text: 'Segue o PDF gerado pelo app.',
+            url: fileUri.uri,
+            dialogTitle: 'Compartilhar PDF'
+          });
+        } catch (err) {
+          console.error('Erro ao salvar ou abrir PDF', err);
+          alert('❌ Falha ao salvar ou abrir o PDF.');
+        }
+      });
+    } else {
+      // 💻 Computador: download direto
+      pdfDoc.getBlob((blob: Blob) => {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = nomePdf;
+        link.click();
+      });
+    }
+  }
+
+  async generateAnamnesePDFmaisuma(row: any, event?: MouseEvent) {
+    if (event) event.stopPropagation();
+    const dataFormatada = dayjs(row.data).format('DD-MM-YYYY');
+    const nomePdf = `Anamnese_${dataFormatada}_${row.aluno}.pdf`;
+
+    const docDef = {
+      content: [
+        { text: 'Relatório de Anamnese', style: 'header' },
+        { text: `Título: ${row.titulo}` },
+        { text: `Aluno: ${row.aluno}` },
+        { text: `Data: ${dataFormatada}` },
+      ],
+      styles: {
+        header: { fontSize: 18, bold: true, margin: [0, 0, 0, 10] },
+      }
+    };
+
+    const pdfDoc = (pdfMake as any).createPdf(docDef);
+    const platform = Capacitor.getPlatform();
+
+    if (platform === 'android' || platform === 'ios') {
+      pdfDoc.getBase64(async (data: string) => {
+        try {
+          // tenta salvar internamente (funciona em Android 15)
+          await Filesystem.writeFile({
+            path: nomePdf,
+            data,
+            directory: Directory.Data
+          });
+          alert(`PDF salvo internamente (${nomePdf})`);
+
+          const uriResult = await Filesystem.getUri({
+            path: nomePdf,
+            directory: Directory.Data
+          });
+
+          await Browser.open({ url: uriResult.uri });
+
+        } catch (err) {
+          alert(`Falha ao salvar internamente, tentando download...erro: ${err}`);
+
+          // fallback → faz download igual no navegador
+          try {
+            pdfDoc.getBlob((blob: Blob) => {
+              const link = document.createElement('a');
+              link.href = URL.createObjectURL(blob);
+              link.download = nomePdf;
+              link.click();
+              alert(`PDF salvo em download (${nomePdf})`);
+            });
+            const uriResult = await Filesystem.getUri({
+              path: nomePdf,
+              directory: Directory.Data
+            });
+
+            await Browser.open({ url: uriResult.uri });
+          } catch (err) {
+            alert(`Falha ao salvar em download...erro: ${err}`);
+          }
+        }
+      });
+    } else {
+      // navegador
+      pdfDoc.getBlob((blob: Blob) => {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = nomePdf;
+        link.click();
+      });
+    }
+  }
+
+
+  generateAnamnesePDFoutra(row: any, event?: MouseEvent) {
+    if (event) event.stopPropagation();
+    const dataFormatada = dayjs(row.data).format('DD-MM-YYYY');
+    const nomePdf = `Anamnese_${dataFormatada}_${row.aluno}.pdf`;
+
+    const docDef = {
+      content: [
+        { text: 'Relatório de Anamnese', style: 'header' },
+        { text: `Título: ${row.titulo}` },
+        { text: `Aluno: ${row.aluno}` },
+        { text: `Data: ${dataFormatada}` },
+      ],
+      styles: {
+        header: { fontSize: 18, bold: true, margin: [0, 0, 0, 10] },
+      }
+    };
+
+    const pdfDoc = (pdfMake as any).createPdf(docDef);
+    const platform = Capacitor.getPlatform();
+
+    if (platform === 'android' || platform === 'ios') {
+      pdfDoc.getBase64(async (data: string) => {
+        try {
+          await Filesystem.requestPermissions();
+          await Filesystem.writeFile({
+            path: nomePdf,
+            data,
+            directory: Directory.Data // ou Directory.ExternalStorage
+          });
+          alert(`PDF salvo com sucesso em ${nomePdf}`);
+        } catch (err) {
+          console.error('Erro ao salvar PDF:', err);
+          alert('Falha ao salvar o PDF.');
+        }
+      });
+    } else {
+      pdfDoc.getBlob((blob: Blob) => {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = nomePdf;
+        link.click();
+      });
+    }
+  }
+
+  generateAnamnesePDFanterior(row: any, event?: MouseEvent) {
+    if (event) event.stopPropagation();
+    const dataFormatada = dayjs(row.data).format('DD-MM-YYYY');
+    const nomePdf = `Anamnese_${dataFormatada}_${row.aluno}.pdf`;
+
+    const docDef = {
+      content: [
+        { text: 'Relatório de Anamnese', style: 'header' },
+        { text: `Título: ${row.titulo}` },
+        { text: `Aluno: ${row.aluno}` },
+        { text: `Data: ${dataFormatada}` },
+      ],
+      styles: {
+        header: { fontSize: 18, bold: true, margin: [0, 0, 0, 10] },
+      }
+    };
+
+    const pdfDoc = (pdfMake as any).createPdf(docDef);
+
+    // Detecta se é mobile
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      pdfDoc.getBase64(async (data: string) => {
+        await Filesystem.writeFile({
+          path: nomePdf,
+          data: data,
+          directory: Directory.External,
+          encoding: Encoding.UTF8
+        })
+      });
+    } else  {
+      pdfDoc.getBlob((blob: Blob) => {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = nomePdf;
+        link.click();
+      });
+    }
+    //const files = await Filesystem.readdir({ directory: Directory.External });
+    //console.log('Arquivos:', files.files);
+  }
+
+  generateAnamnesePDFold(row: any, event?: MouseEvent) {
+    if (event) event.stopPropagation();
+
+    const dataFormatada = dayjs(row.data).format('DD-MM-YYYY');
+    const nomePdf = `Anamnese_${dataFormatada}_${row.aluno}.pdf`;
+
+    const docAnamnese: TDocumentDefinitions = {
+      content: [
+        { text: 'Relatório de Anamnese', style: 'header' },
+        { text: `Título: ${row.titulo}` },
+        { text: `Aluno: ${row.aluno}` },
+        { text: `Data: ${dataFormatada}` }
+      ],
+      styles: {
+        header: { fontSize: 18, bold: true, margin: [0, 0, 0, 10] },
+        subheader: { fontSize: 14, bold: true, margin: [0, 10, 0, 5] }
+      }
+    };
+
+    const pdfDocGenerator = (pdfMake as any).createPdf(docAnamnese);
+
+    // Detecta se é mobile
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      // Para mobile, força o download com blob
+      pdfDocGenerator.getBlob((blob: Blob) => {
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = nomePdf;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(blobUrl);
+      });
+    } else {
+      // Para desktop: abre nova aba com nome automático
+      pdfDocGenerator.download(nomePdf);
+    }
+  }
+*/
+
 }

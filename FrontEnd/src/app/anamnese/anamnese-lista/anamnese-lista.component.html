@@ -6,7 +6,7 @@
     <span class="titulo">Anamneses do Aluno</span>
     <span class="spacer"></span>
 
-    <!-- seletor de mês (apenas mês/ano) -->
+
     <button mat-mini-fab style="display: flex; align-items: center !important; justify-content: center !important; background-color: #28a745;" (click)="anamneseNova()" aria-label="Nova Anamnese">
       <mat-icon style="display: flex; align-items: center !important; justify-content: center !important;">add</mat-icon>
     </button>
@@ -65,6 +65,13 @@
             <ng-container matColumnDef="data">
                 <td mat-cell *matCellDef="let row" class="corFonte">
                 {{ toDate(row.data) | date:'dd/MM/yy' }} 
+                <button
+                  mat-icon-button
+                  class="pdf-icon"
+                  matTooltip="Gerar PDF"
+                  (click)="generateAnamnesePDF(row, $event)">
+                  <mat-icon>picture_as_pdf</mat-icon>
+                </button>
                 </td>
             </ng-container>
 

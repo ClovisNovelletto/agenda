@@ -141,21 +141,21 @@ html, body {
 
 .fab-btnVoltar {
   position: fixed;
-  bottom: calc(var(--safe-bottom, 40px) + 156px);
+  bottom: 156px; /*calc(var(--safe-bottom, 40px) + 156px);*/
   right: 25px;
   z-index: 100;
 }
 
 .fab-btnAvancar {
   position: fixed;
-  bottom: calc(var(--safe-bottom, 40px) + 106x);
+  bottom: 106px; /*calc(var(--safe-bottom, 40px) + 106x);*/
   right: 25px;
   z-index: 100;
 }
 
 .fab-container {
   position: fixed;
-  bottom: calc(var(--safe-bottom, 40px) + 56px);
+  bottom: 56px; /*calc(var(--safe-bottom, 40px) + 56px);*/
   right: 25px;
   z-index: 100;
 }

@@ -22,10 +22,11 @@ registerLocaleData(localePt);
 import { MAT_DATE_LOCALE, MAT_DATE_FORMATS, DateAdapter } from '@angular/material/core';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
-import 'hammerjs';
-import { HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
-import { H2uHammerConfig } from './app/agenda/h2u.hammer.config'
-import { HammerModule } from '@angular/platform-browser';
+//import 'hammerjs';
+//import { HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
+//import { H2uHammerConfig } from './app/agenda/h2u.hammer.config'
+//import { HammerModule } from '@angular/platform-browser';
+import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
 
 export const MY_DATE_FORMATS = {
   parse: {
@@ -46,15 +47,31 @@ bootstrapApplication(AppComponent, {
     HeaderComponent,
     importProvidersFrom(MatNativeDateModule),
     provideAnimations(),
-    { provide: HAMMER_GESTURE_CONFIG, useClass: H2uHammerConfig },
-    importProvidersFrom(HammerModule), // <- aqui você registra o HammerModule
-    /*{ provide: HAMMER_GESTURE_CONFIG, useClass: H2uHammerConfig },*/
     { provide: LOCALE_ID, useValue: 'pt-BR' },
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
     { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
+    [FileOpener]
   ]
 }).catch(err => console.error(err));
 
+
+/*versão anterior a 16/10/25
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideRouter(routes), // Configura as rotas para o aplicativo
+    provideHttpClient(),
+    HeaderComponent,
+    importProvidersFrom(MatNativeDateModule),
+    provideAnimations(),
+    { provide: HAMMER_GESTURE_CONFIG, useClass: H2uHammerConfig },
+    importProvidersFrom(HammerModule), // <- aqui você registra o HammerModule
+    { provide: LOCALE_ID, useValue: 'pt-BR' },
+    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
+    [FileOpener], [File]
+  ]
+}).catch(err => console.error(err));
+*/
 /*
 import { bootstrapApplication } from '@angular/platform-browser';
 import { AppComponent } from './app/app.component';

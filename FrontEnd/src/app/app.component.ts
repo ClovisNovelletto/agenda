@@ -13,6 +13,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { Router } from '@angular/router';
 import { FooterComponent } from './footer/footer.component';
 import { TopComponent } from './top/top.component';
+import { Filesystem, Directory } from '@capacitor/filesystem';
 
 @Component({
     selector: 'app-root',
@@ -34,6 +35,7 @@ export class AppComponent {
       this.isLoggedIn = status; // Atualiza automaticamente com base no estado
       console.log('app Estado atualizado:', this.isLoggedIn);
     });
+    Filesystem.requestPermissions();
   }
 
   logout() {

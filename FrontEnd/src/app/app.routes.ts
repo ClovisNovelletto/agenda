@@ -18,6 +18,7 @@ import { AnamneseListaComponent} from './anamnese/anamnese-lista/anamnese-lista.
 import { RecebGeralListaComponent} from './financeiro/recebimentos/geral/recebGeral-lista/recebGeral-lista.component'
 import { RecebIndividualListaComponent} from './financeiro/recebimentos/individual/recebIndividual-lista.component'
 import { HomeComponent } from './home/home.component';
+import { PdfListaComponent } from './pdfs/pdf-lista.component';
 import { AuthGuard } from './auth.guard';
 import { AppComponent } from './app.component';
 
@@ -35,6 +36,7 @@ export const routes: Routes = [
   { path: 'alunoLista',  canActivate: [AuthGuard], loadComponent: () => import('./aluno/aluno-lista/aluno-lista.component').then(m => m.AlunoListaComponent)},
   { path: 'localLista',  canActivate: [AuthGuard], loadComponent: () => import('./local/local-lista/local-lista.component').then(m => m.LocalListaComponent)},
   { path: 'anamneseLista',  canActivate: [AuthGuard], loadComponent: () => import('./anamnese/anamnese-lista/anamnese-lista.component').then(m => m.AnamneseListaComponent)},
+  { path: 'pdfsLista',  canActivate: [AuthGuard], loadComponent: () => import('./pdfs/pdf-lista.component').then(m => m.PdfListaComponent)},
   { path: 'configuracoesServicos',  canActivate: [AuthGuard], loadComponent: () => import('./configuracoes-servicos/configuracoes-servicos.component').then(m => m.ConfiguracoesServicosComponent)},
   { path: 'equiptoLista',  canActivate: [AuthGuard], loadComponent: () => import('./equipto/equipto-lista/equipto-lista.component').then(m => m.EquiptoListaComponent)},
   { path: 'financeiro', component: FinanceiroComponent, canActivate: [AuthGuard]},
