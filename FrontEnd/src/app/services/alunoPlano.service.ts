@@ -19,7 +19,7 @@ export class AlunoPlanoService {
   listar(): Observable<AlunoPlano[]> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    return this.http.get<AlunoPlano[]>(`${environment.apiUrl}/alunoPlanoLista`, { headers });
+    return this.http.get<AlunoPlano[]>(`${environment.apiUrl}/financeiro/alunoPlanoLista`, { headers });
   }
 
   salvar(alunoPlano: AlunoPlano): Observable<AlunoPlano> {
@@ -28,15 +28,15 @@ export class AlunoPlanoService {
     console.log('alunoPlano: ', alunoPlano);
 
     if (alunoPlano.id) {
-      return this.http.put<AlunoPlano>(`${environment.apiUrl}/alunoPlanoSave`, alunoPlano, { headers });
+      return this.http.put<AlunoPlano>(`${environment.apiUrl}/financeiro/alunoPlanoSave`, alunoPlano, { headers });
     } else {
-      return this.http.post<AlunoPlano>(`${environment.apiUrl}/alunoPlanoInsert`, alunoPlano, { headers });
+      return this.http.post<AlunoPlano>(`${environment.apiUrl}/financeiro/alunoPlanoInsert`, alunoPlano, { headers });
     }
   }
 
   getValorTabela(payload: {alunoid: number, planoid: number, frequenciaid: number}): Observable<PrecoTabela[]> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    return this.http.post<PrecoTabela[]>(`${environment.apiUrl}/precoTabela`, payload, { headers });
+    return this.http.post<PrecoTabela[]>(`${environment.apiUrl}/tabelaPreco/precoTabela`, payload, { headers });
   }
 }

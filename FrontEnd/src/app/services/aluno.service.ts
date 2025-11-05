@@ -15,7 +15,7 @@ export class AlunoService {
   listar(): Observable<Aluno[]> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    return this.http.get<Aluno[]>(`${environment.apiUrl}/alunoLista`, { headers });
+    return this.http.get<Aluno[]>(`${environment.apiUrl}/aluno/alunoLista`, { headers });
     //return this.http.get<Aluno[]>(this.baseUrl);
   }
 
@@ -26,9 +26,9 @@ console.log('aluno: ', aluno);
 
     if (aluno.id) {
       //return this.http.put<Aluno>(`${this.baseUrl}/${aluno.id}`, aluno);
-      return this.http.put<Aluno>(`${environment.apiUrl}/alunoSave`, aluno, { headers });
+      return this.http.put<Aluno>(`${environment.apiUrl}/aluno/alunoSave`, aluno, { headers });
     } else {
-      return this.http.post<Aluno>(`${environment.apiUrl}/alunoInsert`, aluno, { headers });
+      return this.http.post<Aluno>(`${environment.apiUrl}/aluno/alunoInsert`, aluno, { headers });
       //return this.http.post<Aluno>(this.baseUrl, aluno);
     }
   }

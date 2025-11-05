@@ -15,7 +15,7 @@ export class EquiptoService {
   listar(): Observable<Equipto[]> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    return this.http.get<Equipto[]>(`${environment.apiUrl}/equiptoLista`, { headers });
+    return this.http.get<Equipto[]>(`${environment.apiUrl}/equipto/equiptoLista`, { headers });
     //return this.http.get<Local[]>(this.baseUrl);
   }
 
@@ -25,9 +25,9 @@ export class EquiptoService {
 console.log('equipto: ', equipto);
 
     if (equipto.id) {
-      return this.http.put<Equipto>(`${environment.apiUrl}/equiptoSave`, equipto, { headers });
+      return this.http.put<Equipto>(`${environment.apiUrl}/equipto/equiptoSave`, equipto, { headers });
     } else {
-      return this.http.post<Equipto>(`${environment.apiUrl}/equiptoInsert`, equipto, { headers });
+      return this.http.post<Equipto>(`${environment.apiUrl}/equipto/equiptoInsert`, equipto, { headers });
     }
   }
 }

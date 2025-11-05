@@ -1,0 +1,46 @@
+h2 {
+  margin-bottom: 1.5rem;
+  color: #fff;
+}
+
+mat-form-field {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.btn-reset {
+  width: 70%;
+  padding: 0.7rem;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  background-color: #00c853 !important;
+  color: white !important;
+  font-weight: 600;
+}
+
+.links {
+  margin-top: 1rem;
+}
+
+.links a {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}
+
+a {
+  color: #ffa726;
+}
+
+.login-form {
+  width: 70%;
+  margin-bottom: 0.75rem;
+  padding: 0.6rem;
+  font-size: 1rem;
+}

@@ -24,28 +24,18 @@ export class PersonalService {
   getConfiguracoes(): Observable<Personal> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    return this.http.get<Personal>(`${environment.apiUrl}/personal/me`, { headers });
-    //return this.http.get<Personal>('/api/personal/me');
+    return this.http.get<Personal>(`${environment.apiUrl}/personal/personal/me`, { headers });
   }
 
-  /*
-  getConfiguracoes(): Observable<ConfigPersonal> {
-    const token = localStorage.getItem('jwt-token');
-    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    //return this.http.get<ConfigPersonal>('/api/personal/configuracoes', { headers }s);
-    //return this.http.get<Personal>('/api/personal/me', { headers });
-  }
-*/
   salvarConfiguracoes(config: ConfigPersonal): Observable<any> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    return this.http.put(`${environment.apiUrl}/personal/configuracoes`, config, { headers });
+    return this.http.put(`${environment.apiUrl}/personal/personal/configuracoes`, config, { headers });
   }
     
   getMe(): Observable<Personal> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    return this.http.get<Personal>(`${environment.apiUrl}/personal/me`, { headers });
-    //return this.http.get<Personal>('/api/personal/me');
+    return this.http.get<Personal>(`${environment.apiUrl}/personal/personal/me`, { headers });
   }
 }

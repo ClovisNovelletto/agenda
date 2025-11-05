@@ -43,13 +43,13 @@ export class AnamneseService {
   getAlunosAtivos(personalid: number): Observable<Aluno[]> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    return this.http.get<Aluno[]>(`${environment.apiUrl}/alunoLista`, { headers });
+    return this.http.get<Aluno[]>(`${environment.apiUrl}/aluno/alunoLista`, { headers });
   }
 
   getAnamnesesAluno(payload: {alunoid: number}): Observable<Anamnese[]> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    return this.http.post<Anamnese[]>(`${environment.apiUrl}/anamnesesLista`, payload, { headers });
+    return this.http.post<Anamnese[]>(`${environment.apiUrl}/anamnese/anamnesesLista`, payload, { headers });
   }
 
 
@@ -60,9 +60,9 @@ console.log('anamnese: ', anamnese);
 
     if (anamnese.id) {
       //return this.http.put<Aluno>(`${this.baseUrl}/${aluno.id}`, aluno);
-      return this.http.put<Aluno>(`${environment.apiUrl}/anamneseSave`, anamnese, { headers });
+      return this.http.put<Aluno>(`${environment.apiUrl}/anamnese/anamneseSave`, anamnese, { headers });
     } else {
-      return this.http.post<Aluno>(`${environment.apiUrl}/anamneseInsert`, anamnese, { headers });
+      return this.http.post<Aluno>(`${environment.apiUrl}/anamnese/anamneseInsert`, anamnese, { headers });
       //return this.http.post<Aluno>(this.baseUrl, aluno);
     }
   }

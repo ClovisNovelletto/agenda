@@ -19,17 +19,9 @@ export class AgendaStatusService {
   constructor(private http: HttpClient) {}
 
   getStatus(): Observable<AgendaStatus[]> {
-  const token = localStorage.getItem('jwt-token');
-  const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-  console.log("entrou no serviço");
-  return this.http.get<AgendaStatus[]>(`${environment.apiUrl}/agendaStatus`, { headers });
-}
-
-//  getStatus(): Observable<AgendaStatus> {
-//    const token = localStorage.getItem('jwt-token');
-//    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-//    return this.http.get<AgendaStatus>(`${environment.apiUrl}/agendaStatus`, { headers });
-//    return this.http.get<AgendaStatus[]>(`${environment.apiUrl}/agendaStatus`, { headers });
- 
-
+    const token = localStorage.getItem('jwt-token');
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    console.log("entrou no serviço");
+    return this.http.get<AgendaStatus[]>(`${environment.apiUrl}/agenda/agendaStatus`, { headers });
+  }
 }

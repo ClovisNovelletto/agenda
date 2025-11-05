@@ -29,3 +29,90 @@ h2 {
   width: 100%;
   max-width: 400px;
 }
+
+.links {
+  margin-top: 1rem;
+}
+
+.links a {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}
+
+.campo-form {
+  margin-left: 3px;
+  margin-bottom: 5px; 
+  /*height: 36px;*/
+  width: 100%;
+  padding: 0px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  --mat-form-field-density: -4!important;
+}
+
+::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+}
+
+.password-strength {
+  width: 50%;
+  height: 10px;
+  background-color: #eee;
+  border-radius: 3px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.strength-bar {
+  height: 50%;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.password-strength-text {
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.password-rules {
+  font-size: 13px;
+  color: #bbb;
+  margin-top: 6px;
+  align-items: left;
+  text-align: left;
+}
+.password-rules ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.password-rules li {
+  margin-bottom: 3px;
+  transition: color 0.3s;
+}
+.password-rules li.valid {
+  color: #27ae60;
+  font-weight: 500;
+}
+
+/* Para remover o espaço extra abaixo da label, caso seja necessário */
+.mat-form-field-wrapper .mat-form-field-flex {
+    padding-bottom: 5px;
+}
+
+/* Para ajustar o rótulo (label) também */
+.mat-form-field-label-wrapper .mat-label-wrapper {
+    height: 30px; /* ou outro valor desejado */
+}
+
+.lado-alado {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  height: 10px;
+}

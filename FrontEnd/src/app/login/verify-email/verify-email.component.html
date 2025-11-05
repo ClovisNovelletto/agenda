@@ -1,0 +1,39 @@
+<app-auth-layout>
+
+  <div *ngIf="success; else invalidToken">
+    <h2>E-mail verificado!</h2>
+    <p>Seu e-mail foi confirmado com sucesso.</p>
+    <button mat-raised-button class="btn-nova" color="primary" (click)="router.navigate(['/login'])">
+      Ir para o login
+    </button>
+  </div>
+
+  <ng-template #invalidToken>
+    <h2>Token inválido ou expirado</h2>
+    <p>O link de verificação não é mais válido.</p>
+    <button mat-raised-button class="btn-nova" color="accent" (click)="router.navigate(['/register'])">
+      Criar nova conta
+    </button>
+  </ng-template>    
+<!--
+<div class="verify-containe" [ngClass]="{ success: success, error: !success }">
+  <div class="verify-car">
+    <div class="icon">
+      <mat-icon *ngIf="success" class="success-icon">check_circle</mat-icon>
+      <mat-icon *ngIf="!success" class="error-icon">error</mat-icon>
+    </div>
+
+    <h1 class="title">
+      {{ success ? 'E-mail verificado!' : 'Verificação de e-mail' }}
+    </h1>
+
+    <p class="mensagem">{{ mensagem }}</p>
+
+    <button *ngIf="success" mat-raised-button color="primary" routerLink="/login" class="btn">
+      Ir para o login
+    </button>
+  </div>
+</div>
+-->
+
+</app-auth-layout>

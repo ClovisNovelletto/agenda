@@ -32,15 +32,12 @@ export class AgendaService {
   getAlunosAtivos(personalid: number): Observable<Aluno[]> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    return this.http.get<Aluno[]>(`${environment.apiUrl}/alunoLista`, { headers });
-    //const params = new HttpParams().set('personalid', personalid);
-    //return this.http.get<Aluno[]>('/api/alunos/ativos', { params });
+    return this.http.get<Aluno[]>(`${environment.apiUrl}/aluno/alunoLista`, { headers });
   }
 
-  //getAulasDoAlunoMes(alunoid: number, ano: number, mes1a12: number): Observable<Aula[]> {
   getAulasDoAlunoMes(payload: {alunoid: number, ano: number, mes1a12: number}): Observable<Aula[]> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    return this.http.post<Aula[]>(`${environment.apiUrl}/agendaAluno`, payload, { headers });
+    return this.http.post<Aula[]>(`${environment.apiUrl}/agenda/agendaAluno`, payload, { headers });
   }
 }

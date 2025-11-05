@@ -300,8 +300,7 @@ console.log("this.alunoSelecionado: ", this.alunoSelecionado)
 
     }
 
-    /*this.http.get<any[]>('/api/alunos', { headers }).subscribe(data => {*/
-    this.http.get<any[]>(`${environment.apiUrl}/alunos`, { headers }).subscribe(data => {    
+    this.http.get<any[]>(`${environment.apiUrl}/aluno/alunos`, { headers }).subscribe(data => {    
       this.alunos = data;
 
       this.alunoCtrl.valueChanges
@@ -319,8 +318,7 @@ console.log("this.alunoSelecionado: ", this.alunoSelecionado)
         });
     });
 
-    /*  this.http.get<any[]>('/api/locals', { headers }).subscribe(data => {*/
-    this.http.get<any[]>(`${environment.apiUrl}/locals`, { headers }).subscribe(data => {    
+    this.http.get<any[]>(`${environment.apiUrl}/local/locals`, { headers }).subscribe(data => {    
       this.locals = data;
 
       this.localCtrl.valueChanges
@@ -338,7 +336,7 @@ console.log("this.alunoSelecionado: ", this.alunoSelecionado)
         });
     });
 
-    this.http.get<any[]>(`${environment.apiUrl}/equiptos`, { headers }).subscribe(data => {    
+    this.http.get<any[]>(`${environment.apiUrl}/equipto/equiptos`, { headers }).subscribe(data => {    
       this.equiptos = data;
 
       this.equiptoCtrl.valueChanges
@@ -360,7 +358,7 @@ console.log("this.alunoSelecionado: ", this.alunoSelecionado)
 console.log("equiptosFiltrados: ", this.equiptosFiltrados)      
 console.log("this.equiptoEncontrado: ", this.equiptoEncontrado)
 
-    this.http.get<any[]>(`${environment.apiUrl}/servicos`, { headers }).subscribe(data => {    
+    this.http.get<any[]>(`${environment.apiUrl}/servico/servicos`, { headers }).subscribe(data => {    
       this.servicos = data;
 
       this.servicoCtrl.valueChanges
@@ -496,8 +494,7 @@ console.log("this.equiptoEncontrado: ", this.equiptoEncontrado)
         const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
         const body = { nome: result.nome, telefone: result.telefone };
 
-        /*this.http.post('/api/alunos', body, { headers }).subscribe((novoAluno: any) => {*/
-        this.http.post(`${environment.apiUrl}/alunos`, body, { headers }).subscribe((novoAluno: any) => {
+        this.http.post(`${environment.apiUrl}/aluno/alunos`, body, { headers }).subscribe((novoAluno: any) => {
           // Adiciona o novo aluno à lista e atualiza o campo de seleção
           console.log('Novo aluno recebido do backend:', novoAluno);
           //this.alunos.push(novoAluno);
@@ -535,8 +532,7 @@ console.log("this.equiptoEncontrado: ", this.equiptoEncontrado)
         const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
         const body = { nome: result.nome, endereco: result.endereco };
 
-        /*this.http.post('/api/locals', body, { headers }).subscribe((novoLocal: any) => {*/
-        this.http.post(`${environment.apiUrl}/locals`, body, { headers }).subscribe((novoLocal: any) => {
+        this.http.post(`${environment.apiUrl}/local/locals`, body, { headers }).subscribe((novoLocal: any) => {
           // Adiciona o novo local à lista e atualiza o campo de seleção
           console.log('Novo local recebido do backend:', novoLocal);
           //this.locals.push(novoLocal);

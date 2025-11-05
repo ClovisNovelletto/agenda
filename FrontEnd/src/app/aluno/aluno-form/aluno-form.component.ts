@@ -132,8 +132,8 @@ export class AlunoFormComponent implements OnInit {
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
 
     forkJoin({
-      locals: this.http.get<any[]>(`${environment.apiUrl}/locals`, { headers }),
-      servicos: this.http.get<any[]>(`${environment.apiUrl}/servicos`, { headers }),
+      locals: this.http.get<any[]>(`${environment.apiUrl}/local/locals`, { headers }),
+      servicos: this.http.get<any[]>(`${environment.apiUrl}/servico/servicos`, { headers }),
       config: this.loadPersonal()
     }).subscribe(({ locals, servicos, config }) => {
       this.locals = locals;

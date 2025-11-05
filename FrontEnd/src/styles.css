@@ -126,3 +126,24 @@ mat-icon {
 .snackbar-preline {
   white-space: pre-line;
 }
+
+/* Estilo global para snackbar de erro */
+.cdk-overlay-container .snackbar-error {
+  --mdc-snackbar-container-color: #e53935 !important; /* vermelho forte */
+  --mdc-snackbar-supporting-text-color: #fff !important;
+  --mdc-snackbar-action-color: #fff !important;
+  font-weight: 600;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+/* opcional - sucesso e aviso */
+.cdk-overlay-container .snackbar-success {
+  --mdc-snackbar-container-color: #43a047 !important; /* verde */
+  --mdc-snackbar-supporting-text-color: #fff !important;
+}
+
+.cdk-overlay-container .snackbar-warning {
+  --mdc-snackbar-container-color: #ffb300 !important; /* amarelo */
+  --mdc-snackbar-supporting-text-color: #000 !important;
+}

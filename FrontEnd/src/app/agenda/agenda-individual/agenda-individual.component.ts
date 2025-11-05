@@ -366,7 +366,7 @@ export class AgendaIndividualComponent implements OnInit {
 
         const token = localStorage.getItem('jwt-token');
         const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-        this.http.put(`${environment.apiUrl}/agendaStatus`, updated, { headers }).subscribe({
+        this.http.put(`${environment.apiUrl}/agenda/agendaStatus`, updated, { headers }).subscribe({
           next: () => {
             console.log('Compromisso atualizado com sucesso!');
             this.carregarAulas();
@@ -509,17 +509,12 @@ console.log('teste vai:');
 
     console.log('Compromisso dados enviados!');
     //console.log(compromisso);
-console.log('comp:', comp);
+    console.log('comp:', comp);
     if (!(compromisso.agenda_id == null)) {
-      /*this.http.put('/api/agendas', compromisso, { headers }).subscribe({*/
-      this.http.put(`${environment.apiUrl}/agendas`, compromisso, { headers }).subscribe({
+      this.http.put(`${environment.apiUrl}/agenda/agendas`, compromisso, { headers }).subscribe({
         next: () => {
           console.log('Compromisso atualizado com sucesso!');
           this.carregarAulas();
-          // Aqui você pode recarregar a agenda ou dar feedback ao usuário
-          // Atualiza localmente:
-          
-          // Atualiza tela sem carregar dados
 
         },
         error: (err) => {
@@ -527,8 +522,7 @@ console.log('comp:', comp);
         }
       });
     }else{
-      /*this.http.post('/api/agendas', compromisso, { headers }).subscribe({*/
-      this.http.post(`${environment.apiUrl}/agendas`, compromisso, { headers }).subscribe({
+      this.http.post(`${environment.apiUrl}/agenda/agendas`, compromisso, { headers }).subscribe({
         next: () => {
           console.log('Compromisso inserido com sucesso!');
           // Aqui você pode recarregar a agenda ou dar feedback ao usuário
@@ -554,7 +548,7 @@ console.log('comp:', comp);
     console.log('Compromisso descrição dados enviados!');
 
     if (comp.agenda_id) {
-      this.http.put(`${environment.apiUrl}/agendasDescricao`, compromisso, { headers }).subscribe({
+      this.http.put(`${environment.apiUrl}/agenda/agendasDescricao`, compromisso, { headers }).subscribe({
         next: () => {
           this.carregarAulas();
           console.log('Compromisso atualizado com sucesso!');
@@ -571,7 +565,7 @@ console.log('comp:', comp);
   loadLocals(): Observable<any[]> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({Authorization: `Bearer ${token}` });    
-    return this.http.get<Local[]>(`${environment.apiUrl}/locals`, {headers})
+    return this.http.get<Local[]>(`${environment.apiUrl}/local/locals`, {headers})
     .pipe(
       tap(data => this.locals = data)
     );
@@ -580,7 +574,7 @@ console.log('comp:', comp);
   loadEquiptos(): Observable<any[]> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({Authorization: `Bearer ${token}` });    
-    return this.http.get<Equipto[]>(`${environment.apiUrl}/equiptos`, {headers})
+    return this.http.get<Equipto[]>(`${environment.apiUrl}/equipto/equiptos`, {headers})
         .pipe(
       tap(data => this.equiptos = data)
     );
@@ -589,7 +583,7 @@ console.log('comp:', comp);
   loadServicos(): Observable<any[]> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({Authorization: `Bearer ${token}` });    
-    return this.http.get<Servico[]>(`${environment.apiUrl}/servicos`, {headers})
+    return this.http.get<Servico[]>(`${environment.apiUrl}/servico/servicos`, {headers})
         .pipe(
       tap(data => this.servicos = data)
     );

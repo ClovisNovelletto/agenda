@@ -55,24 +55,13 @@ export class ConfiguracoesServicosComponent implements OnInit {
 
 
     forkJoin({
-      todos: this.http.get<any[]>(`${environment.apiUrl}/configuracoesServicos`, { headers }),
-      selecionados: this.http.get<number[]>(`${environment.apiUrl}/personals/me/configuracoesServicos`, { headers })
+      todos: this.http.get<any[]>(`${environment.apiUrl}/configuracao/configuracoesServicos`, { headers }),
+      selecionados: this.http.get<number[]>(`${environment.apiUrl}/personal/personals/me/configuracoesServicos`, { headers })
     }).subscribe(({ todos, selecionados }) => {
       this.servicos = todos;
       this.servicosSelecionados = selecionados;
     });
       
-    // Carrega lista de todos os serviços
-/*    this.http.get<any[]>(`${environment.apiUrl}/configuracoesServicos`, { headers })
-      .subscribe(data => {
-        this.servicos = data;
-
-        // Carrega serviços que o personal já atende
-        this.http.get<number[]>(`${environment.apiUrl}/personals/me/configuracoesServicos`, { headers })
-          .subscribe(ids => {
-            this.servicosSelecionados = ids;
-          });
-      });*/
   }
 
   salvarServicos() {
@@ -80,7 +69,7 @@ export class ConfiguracoesServicosComponent implements OnInit {
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
 //    const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
 
-    this.http.post(`${environment.apiUrl}/personals/me/configuracoesServicos`, this.servicosSelecionados, { headers })
+    this.http.post(`${environment.apiUrl}/personal/personals/me/configuracoesServicos`, this.servicosSelecionados, { headers })
       .subscribe(() => {
         //this.snackBar.open('Serviços atualizados com sucesso!', 'Fechar', { duration: 3000 });
         //alert('Serviços atualizados com sucesso!');

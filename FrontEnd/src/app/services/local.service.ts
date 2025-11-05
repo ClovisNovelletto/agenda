@@ -15,7 +15,7 @@ export class LocalService {
   listar(): Observable<Local[]> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    return this.http.get<Local[]>(`${environment.apiUrl}/localLista`, { headers });
+    return this.http.get<Local[]>(`${environment.apiUrl}/local/localLista`, { headers });
     //return this.http.get<Local[]>(this.baseUrl);
   }
 
@@ -26,9 +26,9 @@ console.log('local: ', local);
 
     if (local.id) {
       //return this.http.put<Local>(`${this.baseUrl}/${local.id}`, local);
-      return this.http.put<Local>(`${environment.apiUrl}/localSave`, local, { headers });
+      return this.http.put<Local>(`${environment.apiUrl}/local/localSave`, local, { headers });
     } else {
-      return this.http.post<Local>(`${environment.apiUrl}/localInsert`, local, { headers });
+      return this.http.post<Local>(`${environment.apiUrl}/local/localInsert`, local, { headers });
       //return this.http.post<Local>(this.baseUrl, local);
     }
   }

@@ -1,1 +1,29 @@
-<p>esqueci-senha works!</p>
+<app-auth-layout>
+    <h2>Redefinir Senha</h2>
+    <form [formGroup]="form" (ngSubmit)="sendReset()">
+    <div>
+        <input class="login-form"
+        type="email"
+        formControlName="email"
+        placeholder="Digite seu e-mail"
+        >
+        <!-- mensagem de erro -->
+        <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched" class="error">
+        <small *ngIf="form.get('email')?.errors?.['required']">
+            O e-mail é obrigatório.
+        </small>
+        <small *ngIf="form.get('email')?.errors?.['email']">
+            Informe um e-mail válido.
+        </small>
+        </div>
+    </div>
+
+    <button class="btn-reset" type="submit" [disabled]="form.invalid">
+        Redefinir senha
+    </button>
+
+    <div class="links">
+      <a routerLink="/login">Voltar ao login</a>
+    </div>
+    </form>
+</app-auth-layout>

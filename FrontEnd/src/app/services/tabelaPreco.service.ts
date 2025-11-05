@@ -15,7 +15,7 @@ export class TabelaPrecoService {
   listar(): Observable<TabelaPreco[]> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    return this.http.get<TabelaPreco[]>(`${environment.apiUrl}/tabelaPrecoLista`, { headers });
+    return this.http.get<TabelaPreco[]>(`${environment.apiUrl}/tabelaPreco/tabelaPrecoLista`, { headers });
   }
 
   salvar(tabelaPreco: TabelaPreco): Observable<TabelaPreco> {
@@ -24,9 +24,9 @@ export class TabelaPrecoService {
 console.log('tabelaPreco: ', tabelaPreco);
 
     if (tabelaPreco.id) {
-      return this.http.put<TabelaPreco>(`${environment.apiUrl}/tabelaPrecoSave`, tabelaPreco, { headers });
+      return this.http.put<TabelaPreco>(`${environment.apiUrl}/tabelaPreco/tabelaPrecoSave`, tabelaPreco, { headers });
     } else {
-      return this.http.post<TabelaPreco>(`${environment.apiUrl}/tabelaPrecoInsert`, tabelaPreco, { headers });
+      return this.http.post<TabelaPreco>(`${environment.apiUrl}/tabelaPreco/tabelaPrecoInsert`, tabelaPreco, { headers });
     }
   }
 }

@@ -7,6 +7,7 @@ import { LoginComponent } from './login/login/login.component';
 import { RegisterComponent } from './login/register/register.component';
 import { EsqueciSenhaComponent } from './login/esqueci-senha/esqueci-senha.component';
 import { ResetarSenhaComponent } from './login/resetar-senha/resetar-senha.component';
+import { VerifyEmailComponent } from './login/verify-email/verify-email.component';
 import { FinanceiroComponent } from './financeiro/financeiro.component';
 import { TabelaPrecoListaComponent } from './tabelaPreco/tabelaPreco-lista/tabelaPreco-lista.component';
 import { AlunoPlanoListaComponent } from './financeiro/alunoplano/alunoPlano-lista/alunoPlano-lista.component';
@@ -44,6 +45,8 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'esqueci-senha', component: EsqueciSenhaComponent },
   { path: 'resetar-senha', component: ResetarSenhaComponent },
+  { path: 'verify-email', component: VerifyEmailComponent },
+
 ];
 
 

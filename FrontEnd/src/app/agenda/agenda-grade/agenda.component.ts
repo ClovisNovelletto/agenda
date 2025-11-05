@@ -360,7 +360,7 @@ export class AgendaComponent implements OnInit, AfterViewInit {
   loadAlunos(): Observable<any[]> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({Authorization: `Bearer ${token}` });    
-  return this.http.get<any[]>(`${environment.apiUrl}/alunos`, { headers })
+  return this.http.get<any[]>(`${environment.apiUrl}/aluno/alunos`, { headers })
     .pipe(
       tap(data => this.alunos = data) // atualiza a variável
     );
@@ -369,7 +369,7 @@ export class AgendaComponent implements OnInit, AfterViewInit {
   loadLocals(): Observable<any[]> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({Authorization: `Bearer ${token}` });    
-    return this.http.get<Local[]>(`${environment.apiUrl}/locals`, {headers})
+    return this.http.get<Local[]>(`${environment.apiUrl}/local/locals`, {headers})
     .pipe(
       tap(data => this.locals = data)
     );
@@ -378,7 +378,7 @@ export class AgendaComponent implements OnInit, AfterViewInit {
   loadEquiptos(): Observable<any[]> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({Authorization: `Bearer ${token}` });    
-    return this.http.get<Equipto[]>(`${environment.apiUrl}/equiptos`, {headers})
+    return this.http.get<Equipto[]>(`${environment.apiUrl}/equipto/equiptos`, {headers})
         .pipe(
       tap(data => this.equiptos = data)
     );
@@ -387,7 +387,7 @@ export class AgendaComponent implements OnInit, AfterViewInit {
   loadServicos(): Observable<any[]> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({Authorization: `Bearer ${token}` });    
-    return this.http.get<Servico[]>(`${environment.apiUrl}/servicos`, {headers})
+    return this.http.get<Servico[]>(`${environment.apiUrl}/servico/servicos`, {headers})
         .pipe(
       tap(data => this.servicos = data)
     );
@@ -542,7 +542,7 @@ console.log("this.personal?.servicoid: ", this.configAgenda.servicoid);
     console.log('Compromisso descrição dados enviados!');
 
     if (comp.agenda_id) {
-      this.http.put(`${environment.apiUrl}/agendasDescricao`, compromisso, { headers }).subscribe({
+      this.http.put(`${environment.apiUrl}/agenda/agendasDescricao`, compromisso, { headers }).subscribe({
         next: () => {
           console.log('Compromisso atualizado com sucesso!');
           
@@ -603,8 +603,7 @@ console.log("this.personal?.servicoid: ", this.configAgenda.servicoid);
     //console.log(compromisso);
 
     if (!(compromisso.agenda_id == null)) {
-      /*this.http.put('/api/agendas', compromisso, { headers }).subscribe({*/
-      this.http.put(`${environment.apiUrl}/agendas`, compromisso, { headers }).subscribe({
+      this.http.put(`${environment.apiUrl}/agenda/agendas`, compromisso, { headers }).subscribe({
         next: () => {
           console.log('Compromisso atualizado com sucesso!');
           // Atualiza tela sem carregar dados
@@ -638,8 +637,7 @@ console.log("this.personal?.servicoid: ", this.configAgenda.servicoid);
         }
       });
     }else{
-      /*this.http.post('/api/agendas', compromisso, { headers }).subscribe({*/
-      this.http.post(`${environment.apiUrl}/agendas`, compromisso, { headers }).subscribe({
+      this.http.post(`${environment.apiUrl}/agenda/agendas`, compromisso, { headers }).subscribe({
         next: (novoCompromisso: any) => {
           console.log('Compromisso inserido com sucesso!');
           // Aqui você pode recarregar a agenda ou dar feedback ao usuário
@@ -929,7 +927,7 @@ console.log('teste vai:');
 
         const token = localStorage.getItem('jwt-token');
         const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-        this.http.put(`${environment.apiUrl}/agendaStatus`, updated, { headers }).subscribe({
+        this.http.put(`${environment.apiUrl}/agenda/agendaStatus`, updated, { headers }).subscribe({
           next: () => {
             console.log('Compromisso atualizado com sucesso!');
             // Aqui você pode recarregar a agenda ou dar feedback ao usuário
@@ -970,7 +968,7 @@ console.log('teste vai:');
     };
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    this.http.post(`${environment.apiUrl}/agendaGerar`, payload, { headers }).subscribe({
+    this.http.post(`${environment.apiUrl}/agenda/agendaGerar`, payload, { headers }).subscribe({
       next: () => {
         this.snackBar.open('Agenda gerada com sucesso!', 'Fechar', { duration: 3000 });
         this.appointments$.next([]);
@@ -994,7 +992,7 @@ console.log('teste vai:');
     };
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    this.http.post(`${environment.apiUrl}/recebimentosGerar`, payload, { headers }).subscribe({
+    this.http.post(`${environment.apiUrl}/financeiro/recebimentosGerar`, payload, { headers }).subscribe({
       next: () => {
         this.snackBar.open('Recebimentos gerados com sucesso!', 'Fechar', { duration: 3000 });
         //this.appointments$.next([]);
@@ -1120,7 +1118,7 @@ console.log('teste vai:');
       data_fim: dayjs(fim).format('YYYY-MM-DD HH:MM')
     };
 console.log('payload:', payload);
-    this.http.post<any[]>(`${environment.apiUrl}/agendaPorPeriodo`, payload, {headers}).subscribe(dados => {
+    this.http.post<any[]>(`${environment.apiUrl}/agenda/agendaPorPeriodo`, payload, {headers}).subscribe(dados => {
       const novos = dados.map(item =>  ({
         agenda_id: item.agenda_id,
         date: dayjs(item.date).toDate(),

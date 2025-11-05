@@ -26,19 +26,19 @@ export class RecebimentosService {
   getAlunosAtivos(personalid: number): Observable<Aluno[]> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    return this.http.get<Aluno[]>(`${environment.apiUrl}/alunoLista`, { headers });
+    return this.http.get<Aluno[]>(`${environment.apiUrl}/aluno/alunoLista`, { headers });
   }
 
   carregaRecebAluno(payload: {alunoid: number, ano: number}): Observable<Recebimento[]> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    return this.http.post<Recebimento[]>(`${environment.apiUrl}/recebimentoAlunoLista`, payload, { headers });
+    return this.http.post<Recebimento[]>(`${environment.apiUrl}/financeiro/recebimentoAlunoLista`, payload, { headers });
   }
 
   listar(payload: {ano: number, mes1a12: number}): Observable<Recebimento[]> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    return this.http.post<Recebimento[]>(`${environment.apiUrl}/recebimentoLista`, payload, { headers });
+    return this.http.post<Recebimento[]>(`${environment.apiUrl}/financeiro/recebimentoLista`, payload, { headers });
   }
 
   salvar(recebimento: Recebimento): Observable<Recebimento> {
@@ -47,15 +47,15 @@ export class RecebimentosService {
     console.log('Recebimento: ', recebimento);
 
     if (recebimento.id) {
-      return this.http.put<Recebimento>(`${environment.apiUrl}/recebimentoSave`, recebimento, { headers });
+      return this.http.put<Recebimento>(`${environment.apiUrl}/financeiro/recebimentoSave`, recebimento, { headers });
     } else {
-      return this.http.post<Recebimento>(`${environment.apiUrl}/recebimentoInsert`, recebimento, { headers });
+      return this.http.post<Recebimento>(`${environment.apiUrl}/financeiro/recebimentoInsert`, recebimento, { headers });
     }
   }
 
   getValorTabela(payload: {alunoid: number, planoid: number, frequenciaid: number}): Observable<PrecoTabela[]> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    return this.http.post<PrecoTabela[]>(`${environment.apiUrl}/precoTabela`, payload, { headers });
+    return this.http.post<PrecoTabela[]>(`${environment.apiUrl}/tabelaPreco/precoTabela`, payload, { headers });
   }
 }

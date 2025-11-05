@@ -11,7 +11,7 @@ import { HttpHeaders } from '@angular/common/http';
 })
 export class AuthService {
   private apiURL = `${environment.apiUrl}/login`; // URL do backend
-  private refreshURL = `${environment.apiUrl}/refresh`; // Endpoint de refresh
+  private refreshURL = `${environment.apiUrl}/auth/refresh`; // Endpoint de refresh
   private tokenKey = 'jwt-token';       // AccessToken
   private refreshKey = 'refresh-token'; // RefreshToken
   private loggedIn = new BehaviorSubject<boolean>(false);
@@ -36,7 +36,7 @@ export class AuthService {
       if (exp - now < 30000) {
         const token = localStorage.getItem('jwt-token');
         const headers = new HttpHeaders({Authorization: `Bearer ${token}` });  
-        this.http.post<{ token: string }>(`${environment.apiUrl}/refresh`, {}, 
+        this.http.post<{ token: string }>(`${environment.apiUrl}/auth/refresh`, {}, 
           { headers }
         ).subscribe({
           next: (res) => {

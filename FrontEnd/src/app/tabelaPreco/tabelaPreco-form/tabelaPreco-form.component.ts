@@ -110,8 +110,8 @@ export class TabelaPrecoFormComponent implements OnInit {
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
 
     forkJoin({
-      locals: this.http.get<any[]>(`${environment.apiUrl}/locals`, { headers }),
-      servicos: this.http.get<any[]>(`${environment.apiUrl}/servicos`, { headers }),
+      locals: this.http.get<any[]>(`${environment.apiUrl}/local/locals`, { headers }),
+      servicos: this.http.get<any[]>(`${environment.apiUrl}/servico/servicos`, { headers }),
     }).subscribe(({ locals, servicos }) => {
       this.locals = locals;
       this.servicos = servicos;

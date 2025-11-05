@@ -1,0 +1,65 @@
+.title {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  color: #ff7f11;
+  font-weight: 700;
+}
+
+.mensagem {
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  color: #f1f1f1;
+}
+
+.icon {
+  margin-bottom: 1rem;
+}
+
+.success-icon {
+  color: #00e676;
+  font-size: 3.5rem;
+}
+
+.error-icon {
+  color: #ff5252;
+  font-size: 3.5rem;
+}
+
+.btn {
+  background-color: #00c853 !important;
+  color: #fff !important;
+  font-weight: 600;
+  border-radius: 30px;
+  padding: 0.6rem 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  background-color: #00e676 !important;
+  transform: scale(1.05);
+}
+
+.btn-nova {
+  width: 70%;
+  padding: 0.7rem;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  background-color: #00c853 !important;
+  color: white !important;
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .verify-card {
+    padding: 1.5rem 2rem;
+  }
+
+  .title {
+    font-size: 1.4rem;
+  }
+
+  .mensagem {
+    font-size: 0.9rem;
+  }
+}

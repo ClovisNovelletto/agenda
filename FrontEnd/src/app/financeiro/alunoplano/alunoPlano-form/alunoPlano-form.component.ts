@@ -121,7 +121,7 @@ export class AlunoPlanoFormComponent implements OnInit {
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
 
     forkJoin({
-      alunos: this.http.get<any[]>(`${environment.apiUrl}/alunos`, { headers }),
+      alunos: this.http.get<any[]>(`${environment.apiUrl}/aluno/alunos`, { headers }),
     }).subscribe(({ alunos  }) => {
       this.alunos = alunos;
 

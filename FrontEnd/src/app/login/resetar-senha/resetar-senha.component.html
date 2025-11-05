@@ -1,1 +1,86 @@
-<p>resetar-senha works!</p>
+<app-auth-layout>
+  <h2>Redefinir senha</h2>
+<div class="mrgtopbootom">
+  <form [formGroup]="resetForm" (ngSubmit)="onSubmit()">
+
+    <mat-form-field appearance="outline" class="campo-form">
+        <mat-label>Digite a senha nova</mat-label>
+        <input
+        matInput
+        [type]="hidePassword ? 'password' : 'text'"
+        formControlName="password"
+        (input)="checkPasswordStrength(resetForm.get('password')?.value)"
+        required
+        />
+        <button
+        mat-icon-button
+        matSuffix
+        type="button"
+        (click)="hidePassword = !hidePassword"
+        [attr.aria-label]="'Mostrar senha'"
+        [attr.aria-pressed]="!hidePassword"
+        >
+        <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="campo-form">
+        <mat-label>Confirme a senha nova</mat-label>
+        <input
+        matInput
+        [type]="hidePassword ? 'password' : 'text'"
+        formControlName="confirmPassword"
+        required
+        />
+        <button
+        mat-icon-button
+        matSuffix
+        type="button"
+        (click)="hidePassword = !hidePassword"
+        [attr.aria-label]="'Mostrar senha'"
+        [attr.aria-pressed]="!hidePassword"
+        >
+        <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+    </mat-form-field>
+  
+    <button type="submit" [disabled]="resetForm.invalid || carregando">
+      {{ carregando ? 'Enviando...' : 'Redefinir senha' }}
+    </button>
+
+    
+    <div class="lado-alado ">
+        <p class="password-strength-text"> <!--*ngIf="formData.get('senha')?.value"-->
+          Força: <strong [style.color]="passwordColor">{{ passwordLabel }} </strong>
+        </p>  
+        <div class="password-strength strength-ba" [ngStyle]="{
+                      width: passwordStrength *.6 + '%',
+                      backgroundColor: passwordColor
+                    }"></div>        
+    </div>                
+    <div class="password-rules">
+        <p>Sua senha deve conter:</p>
+        <ul>
+        <li [class.valid]="passwordRequirements.length">
+            {{ passwordRequirements.length ? '✔️' : '❌' }} Mínimo de 8 caracteres
+        </li>
+        <li [class.valid]="passwordRequirements.uppercase">
+            {{ passwordRequirements.uppercase ? '✔️' : '❌' }} Uma letra maiúscula
+        </li>
+        <li [class.valid]="passwordRequirements.number">
+            {{ passwordRequirements.number ? '✔️' : '❌' }} Um número
+        </li>
+        <li [class.valid]="passwordRequirements.special">
+            {{ passwordRequirements.special ? '✔️' : '❌' }} Um símbolo (&#64;, #, !, etc.)
+        </li>
+        <li [class.valid]="!senhasDiferentes">
+            {{ !senhasDiferentes ? '✔️' : '❌' }} Senha nova igual senha confirmada)
+        </li>
+        </ul>
+    </div>
+    <p class="mensagem" *ngIf="mensagem">{{ mensagem }}</p>
+  </form>
+</div>
+</app-auth-layout>
+
+<!--(!senhasDiferentes && resetForm.get('password')?.value.length>0)-->
