@@ -12,7 +12,8 @@ console.log(">>> auth.js foi carregado!");
 const SECRET_KEY =  process.env.JWT_SECRET;
 const router = express.Router();
 const FRONTEND_URL = process.env.FRONTEND_URL;
-
+console.log("FRONTEND_URL");
+console.log(FRONTEND_URL);
 // 🔹 Login
 // Endpoint para autenticar login
 router.post('/login', async (req, res) => {
