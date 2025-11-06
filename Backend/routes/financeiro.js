@@ -76,7 +76,7 @@ router.put('/alunoPlanoSave', authenticateToken, async (req, res) => {
   }
 console.log(req.body);
   // Agora que os valores estão garantidos, você pode extrair:
-  const {alunoid, dataini, datafim, planoid, frequenciaid, valortabela, valordesconto, valorreceber, diavcto, formapagtoid, statusid } = req.body;
+  const {id, alunoid, dataini, datafim, planoid, frequenciaid, valortabela, valordesconto, valorreceber, diavcto, formapagtoid, statusid } = req.body;
 
   //console.error('req.body:', req.body);
 
@@ -85,6 +85,7 @@ console.log(req.body);
       UPDATE alunosplanos SET apalunoid=${alunoid}, applanoid=${planoid}, apfrequenciaid=${frequenciaid}, /*aptabprecoid,*/
            apdataini=${dataini}, apdatafim=${datafim}, apvalortabela=${valortabela}, apvalordesconto=${valortabela},
            apvalorreceber=${valorreceber}, apdiavcto=${diavcto}, apformapagtoid=${formapagtoid}, apstatus=${statusid}
+      WHERE alunosplano_ID=${id}
       RETURNING *`; 
     res.json({
       id: alunoPlano[0].alunosplano_id
