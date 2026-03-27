@@ -1,6 +1,12 @@
 import express from 'express';
 import { sql } from '../db.js';
 import { authenticateToken } from "../middleware/authMiddleware.js";
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc.js';
+import timezone from 'dayjs/plugin/timezone.js';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 console.log(">>> agenda.js !");
 const router = express.Router();

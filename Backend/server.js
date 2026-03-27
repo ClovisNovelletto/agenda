@@ -6,9 +6,6 @@ import { sql } from "./db.js";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import dotenv from 'dotenv';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc.js';
-import timezone from 'dayjs/plugin/timezone.js';
 
 import authRoutes from "./routes/auth.js";
 import alunoRoutes from "./routes/aluno.js";
@@ -21,9 +18,6 @@ import personalRoutes from "./routes/personal.js";
 import financeiroRoutes from "./routes/financeiro.js";
 import tabelaPrecoRoutes from "./routes/tabelaPreco.js";
 import configuracaoRoutes from "./routes/configuracao.js";
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
 
 process.env.TZ = 'UTC';
 dotenv.config();
