@@ -75,7 +75,7 @@ router.post('/anamnesesLista', authenticateToken, async (req, res) => {
     console.log("carrega anamneses");
     const personalid = req.user.personalid;
     const {alunoid} = req.body;
-    const anamneses = await sql`SELECT * FROM anamneseslista WHERE AlunoID = ${alunoid}`;
+    const anamneses = await sql`SELECT * FROM h2uanamneseslista WHERE AlunoID = ${alunoid}`;
     res.json(anamneses);
   } catch (err) {
     console.error(err);

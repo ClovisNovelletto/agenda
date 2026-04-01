@@ -15,7 +15,7 @@ router.get('/agendas', authenticateToken, async (req, res) => {
   try {
     console.log("carrega agenda");
     const personalid = req.user.personalid;
-    const agendas = await sql`SELECT * FROM agendaslista WHERE PersonalID = ${personalid}`;
+    const agendas = await sql`SELECT * FROM h2uagendaslista WHERE PersonalID = ${personalid}`;
     res.json(agendas);
     //console.log(result.rows); // apenas isso para logar
     // não usar res.json(result.rows);    // envia resposta corretamente uma única vez
@@ -145,7 +145,7 @@ router.post('/agendaAluno', authenticateToken, async (req, res) => {
     //console.log("alunoid: ", alunoid);
     //console.log("ano: ", ano);
     //console.log("mes1a12: ", mes1a12);
-    const agendas = await sql`SELECT * FROM agendaslista WHERE PersonalID = ${personalid} AND AlunoID = ${alunoid} AND EXTRACT(YEAR FROM Date)=${ano} AND EXTRACT(MONTH FROM Date) =${mes1a12} ORDER BY Date`;
+    const agendas = await sql`SELECT * FROM h2uagendaslista WHERE PersonalID = ${personalid} AND AlunoID = ${alunoid} AND EXTRACT(YEAR FROM Date)=${ano} AND EXTRACT(MONTH FROM Date) =${mes1a12} ORDER BY Date`;
     res.json(agendas);
   } catch (err) {
     console.error(err);
@@ -160,7 +160,7 @@ router.post('/agendaPorPeriodo', authenticateToken, async (req, res) => {
     const {data_inicio, data_fim} = req.body;
     //console.log("data_inicio: ", data_inicio);
     //console.log("data_fim: ", data_fim);
-    const agendas = await sql`SELECT * FROM agendaslista WHERE PersonalID = ${personalid} AND Date>=${data_inicio} AND Date <=${data_fim}`;
+    const agendas = await sql`SELECT * FROM h2uagendaslista WHERE PersonalID = ${personalid} AND Date>=${data_inicio} AND Date <=${data_fim}`;
     res.json(agendas);
   } catch (err) {
     console.error(err);
@@ -197,9 +197,9 @@ router.post('/agendas', authenticateToken, async (req, res) => {
     // pega o id recém-inserido
     const insertedId = agenda[0].agenda_id;
 
-    // agora busca na view agendaslista o mesmo registro
+    // agora busca na view h2uagendaslista o mesmo registro
     const agendaCompleta = await sql`
-      SELECT * FROM agendaslista WHERE agenda_id = ${insertedId}`;
+      SELECT * FROM h2uagendaslista WHERE agenda_id = ${insertedId}`;
 
     res.status(201).json(agendaCompleta[0]); // retorna já no formato certo da view
         
