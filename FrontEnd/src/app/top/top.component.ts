@@ -64,7 +64,7 @@ export class TopComponent {
   abrirAjuda() {
     this.dialog.open(AjudaComponent, {
       width: '99%',
-      height: '95%',
+      height: '80%',
       //data: this.getTeste() // caso queira passar dados dinamicamente
     });
   }  
