@@ -12,7 +12,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   standalone: true,
-  selector: 'app-reset-password',
+  selector: 'app-esqueci-senha',
   templateUrl: './esqueci-senha.component.html',
   styleUrls: ['./esqueci-senha.component.css'],
   imports: [CommonModule, FormsModule, RouterModule, ReactiveFormsModule, 

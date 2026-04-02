@@ -63,8 +63,9 @@ export class TopComponent {
 
   abrirAjuda() {
     this.dialog.open(AjudaComponent, {
-      width: '400px',
-      data: this.getTeste() // caso queira passar dados dinamicamente
+      width: '99%',
+      height: '95%',
+      //data: this.getTeste() // caso queira passar dados dinamicamente
     });
   }  
 }

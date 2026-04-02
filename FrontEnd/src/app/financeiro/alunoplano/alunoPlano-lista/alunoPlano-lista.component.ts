@@ -34,6 +34,7 @@ export class AlunoPlanoListaComponent implements OnInit {
   constructor(private dialog: MatDialog, private alunoPlanoService: AlunoPlanoService) {}
 
   ngOnInit(): void {
+    console.log('entrou onInit');
     this.carregarAlunoPlanos();
   }
 
@@ -56,6 +57,7 @@ export class AlunoPlanoListaComponent implements OnInit {
   }
 
   carregarAlunoPlanos() {
+    console.log('entrou carregar alunoplanos');
     this.alunoPlanoService.listar().subscribe(lista => {
       this.alunoPlanos = lista;
       this.aplicarFiltro();

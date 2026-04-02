@@ -1,5 +1,6 @@
 <div class="tela-container">
   <div class="filtros">
+
     <mat-form-field appearance="fill">
       <mat-label>Pesquisar</mat-label>
       <input matInput [(ngModel)]="filtroTexto" (keyup.enter)="aplicarFiltro()" />
@@ -7,6 +8,7 @@
         <mat-icon>search</mat-icon>
       </button>
     </mat-form-field>
+
 
     <mat-form-field appearance="fill">
       <mat-label>Status</mat-label>
@@ -17,19 +19,22 @@
         <mat-option value="Cancelados">Cancelados</mat-option>
       </mat-select>
     </mat-form-field>
+
     <!--
     <mat-menu #menuOrdenar="matMenu">
       <button mat-menu-item (click)="ordenarPor('nome')">Nome</button>
       <button mat-menu-item (click)="ordenarPor('telefone')">Telefone</button>
     </mat-menu>
     -->
-    
+
     <button mat-mini-fab style="display: flex; align-items: center !important; justify-content: center !important; background-color: #28a745;" (click)="novoAlunoPlano()" aria-label="Novo AlunoPlano">
       <mat-icon style="display: flex; align-items: center !important; justify-content: center !important;">add</mat-icon>
     </button>
+
   </div>
 
   <div class="lista-container">
+
     <div class="lista-header">
       <span>Aluno</span>
       <span>Plano</span>
@@ -38,7 +43,7 @@
       <span>Valor</span>
       <span>Status</span>
     </div>
-
+  
     <div class="lista-scroll">
       <div 
         class="aluno-item" 
@@ -56,6 +61,7 @@
             <span *ngSwitchCase="'Finalizado'">⚪ Finalizado</span>
             <span *ngSwitchCase="'Cancelado'">❌ Cancelado</span>
           </ng-container>
+
         </span>
       </div>
     </div>

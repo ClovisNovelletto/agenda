@@ -124,7 +124,7 @@ export class AlunoPlanoFormComponent implements OnInit {
       alunos: this.http.get<any[]>(`${environment.apiUrl}/aluno/alunos`, { headers }),
     }).subscribe(({ alunos  }) => {
       this.alunos = alunos;
-
+console.log("this.alunos", this.alunos)
       // --- Inicializa autocomplete ---
       this.setupAlunoAutocomplete();
 
@@ -164,12 +164,14 @@ console.log("this.data", this.data)
   }
 
   setupAlunoAutocomplete() {
+    console.log("setupAlunoAutocomplete")
     // inicializa o FormControl se ainda não tiver sido criado
+    console.log("this.alunoCtrl",this.alunoCtrl)
     if (!this.alunoCtrl) {
       //this.alunoCtrl = new FormControl('');
       this.alunoCtrl = new FormControl(this.alunoSelecionado?.nome);
     }
-
+console.log("this.alunoCtrl",this.alunoCtrl)
     this.alunoCtrl.valueChanges
       .pipe(
         startWith(''),
@@ -185,6 +187,7 @@ console.log("this.data", this.data)
       .subscribe(result => {
         this.alunosFiltrados = result;
       });
+console.log("this.alunosFiltrados",this.alunosFiltrados)      
   }
 
   salvar() {
@@ -216,6 +219,7 @@ console.log("this.data", this.data)
   }
 
   onAlunoSelecionado(event: MatAutocompleteSelectedEvent) {
+    console.log("onAlunoSelecionado")
     const nomeSelecionado = event.option.value;
     const aluno = this.alunos.find(l => l.nome === nomeSelecionado);
     console.log('Aluno Selecionado pelo clique:', aluno);
@@ -240,6 +244,7 @@ console.log("this.data", this.data)
 
 
   onAlunoBlur() {
+    console.log("onAlunoBlur")
     const nome = this.alunoCtrl.value;
     const aluno = this.alunos.find(l => l.nome === nome);
     console.log('Aluno Selecionado ao sair do campo:', aluno);
@@ -266,6 +271,7 @@ console.log("this.data", this.data)
 
 
   onAlunoSelected(nome: string) {
+    console.log("onAlunoSelected")
     console.log('onAlunoSelected...');
     const aluno = this.alunos.find(a => a.nome === nome);
     if (aluno) {
