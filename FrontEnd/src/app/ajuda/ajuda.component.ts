@@ -5,7 +5,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-ajuda',
-  imports: [MatDialogContent, MatDialogActions],
+  imports: [MatDialogActions],
   templateUrl: './ajuda.component.html',
   styleUrls: ['./ajuda.component.css']
 })

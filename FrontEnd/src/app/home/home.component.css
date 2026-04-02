@@ -7,4 +7,7 @@
   align-items: center;
   height: calc(100% - 64px); /* Ajustar com base na altura do navbar */
   background-color: #f5f5f5; /* Cor do fundo */
+
+  width: 100%;
+  max-width: 400px;
 }
