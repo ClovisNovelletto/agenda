@@ -34,8 +34,10 @@ export class LoginComponent {
       next: (response: any) => {
         this.authService.setaStatusLogin();
         console.log('Token recebido no login:', response.token);
+        console.log('Token refresh no login:', response.tokenRefresh);
 
         localStorage.setItem('jwt-token', response.token);
+        localStorage.setItem('refresh-token', response.tokenRefresh);
         this.router.navigate(['/home']);
       },
       error: (err: HttpErrorResponse) => {

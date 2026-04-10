@@ -36,12 +36,12 @@ export class AuthService {
       if (exp - now < 30000) {
         const token = localStorage.getItem('jwt-token');
         const headers = new HttpHeaders({Authorization: `Bearer ${token}` });  
-        this.http.post<{ token: string }>(`${environment.apiUrl}/auth/refresh`, {}, 
+        this.http.post<{ token: string, tokenRefresh: string  }>(`${environment.apiUrl}/auth/refresh`, {}, 
           { headers }
         ).subscribe({
           next: (res) => {
             console.log('Token renovado com sucesso');
-            this.storeToken(res.token);
+            this.storeToken(res.token, res.tokenRefresh);
           },
           error: (err) => {
             console.error('Falha ao renovar token', err);
@@ -60,6 +60,8 @@ export class AuthService {
         next: (response) => {
           localStorage.setItem(this.tokenKey, response.accessToken);
           localStorage.setItem(this.refreshKey, response.refreshToken);
+          console.log('response.accessToken:', response.accessToken);
+          console.log('response.refreshToken:', response.refreshToken);
           this.setaStatusLogin();
           this.router.navigate(['/home']);
         },
@@ -80,8 +82,9 @@ export class AuthService {
   }
 
   // ---------- TOKENS ----------
-  storeToken(token: string): void {
+  storeToken(token: string, tokenRefresh: string): void {
     localStorage.setItem(this.tokenKey, token);
+    localStorage.setItem(this.refreshKey, tokenRefresh);
   }
 
   getToken(): string | null {
