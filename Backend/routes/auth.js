@@ -10,6 +10,7 @@ import { sendMail } from "../mailer.js";
 console.log(">>> auth.js foi carregado!");
 
 const SECRET_KEY =  process.env.JWT_SECRET;
+const SECRET_KEY_REFRESH =  process.env.JWT_SECRET;
 const router = express.Router();
 const FRONTEND_URL = process.env.FRONTEND_URL;
 console.log("FRONTEND_URL");
@@ -55,7 +56,12 @@ router.post('/login', async (req, res) => {
 
       // Gera o token JWT com informações do usuário
       const token = jwt.sign({ email, tipo, personalid, alunoid, userid }, SECRET_KEY, { expiresIn: '1h' });
-      res.json({ token, mensagem: 'Login bem-sucedido!' });
+
+      const tokenRefresh = jwt.sign(
+      { email: email, tipo: tipo, personalid: personalid, alunoid: alunoid, userid: userid }, SECRET_KEY_REFRESH, { expiresIn: '7d' });
+      console.log(token);
+      console.log(tokenRefresh);
+      res.json({ token, tokenRefresh, mensagem: 'Login bem-sucedido!' });
 
     } else {
       console.log("primeiro else");
@@ -77,7 +83,7 @@ router.post('/refresh', async (req, res) => {
   if (!refreshToken) return res.sendStatus(401).json({ mensagem: 'Token ausente' });
 
   try {
-    const decoded = jwt.verify(refreshToken, SECRET_KEY, { ignoreExpiration: true });
+    const decoded = jwt.verify(refreshToken, SECRET_KEY_REFRESH, { ignoreExpiration: true });
 
     const userid = decoded.userid;
     const email = decoded.email;
@@ -104,7 +110,12 @@ router.post('/refresh', async (req, res) => {
       { expiresIn: '1h' }
     );
 
-    res.json({ token });
+    const tokenRefresh = jwt.sign(
+      { email: email, tipo: tipo, personalid: personalid, alunoid: alunoid, userid: userid },
+      SECRET_KEY_REFRESH,
+      { expiresIn: '7d' }
+    );
+    res.json({ token, tokenRefresh });
   } catch (err) {
     console.log("saiu pelo catch");
     return res.sendStatus(403);
