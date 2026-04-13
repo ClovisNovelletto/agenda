@@ -34,9 +34,9 @@ export class AuthService {
       const now = Date.now();
 
       // Se faltar menos de 2 minutos, renova
-      if (exp - now < 120000 && this.refreshing) {
-        const token = localStorage.getItem('refresh-token');
-        const headers = new HttpHeaders({Authorization: `Bearer ${token}` });  
+      if (exp - now < 120000 && !this.refreshing) {
+        const tokenRefresh = localStorage.getItem('refresh-token');
+        const headers = new HttpHeaders({Authorization: `Bearer ${tokenRefresh}` });  
         this.http.post<{ token: string, tokenRefresh: string  }>(`${environment.apiUrl}/auth/refresh`, {}, 
           { headers }
         ).subscribe({
