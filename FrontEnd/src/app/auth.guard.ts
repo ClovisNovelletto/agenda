@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { AuthService } from './auth.service'; // Serviço de autenticação
 import jwt_decode from 'jwt-decode';
+import {Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +11,42 @@ import jwt_decode from 'jwt-decode';
 export class AuthGuard implements CanActivate {
   constructor(private authService: AuthService, private router: Router) {}
 
-  canActivate(): boolean {
+  canActivate(): Observable<boolean> {
+    const token = localStorage.getItem('jwt-token');
+
+    if (!token) {
+      this.router.navigate(['/login']);
+      return of(false);
+    }
+
+    try {
+      const decodedToken: any = jwt_decode(token);
+      const currentTime = Math.floor(Date.now() / 1000);
+
+      if (decodedToken.exp > currentTime) {
+        return of(true); // Token ainda válido
+      } else {
+        // 🔥 Token expirado → tenta refresh
+        return this.authService.refreshToken().pipe(
+          map((newToken: any) => {
+            localStorage.setItem('jwt-token', newToken.token);
+            return true;
+          }),
+          catchError((err) => {
+            console.log('Refresh falhou', err);
+            this.router.navigate(['/login']);
+            return of(false);
+          })
+        );
+      }
+
+    } catch (error) {
+      this.router.navigate(['/login']);
+      return of(false);
+    }
+  }
+
+  /*canActivate(): boolean {
     const token = localStorage.getItem('jwt-token');
     if (token) {
       try {
@@ -38,6 +75,6 @@ export class AuthGuard implements CanActivate {
       this.router.navigate(['/login']);
       return false; // Sem token
     }
-  }
+  }*/
   
 }

@@ -143,6 +143,7 @@ export class AuthService {
     const token = this.getToken();
     const refreshToken = localStorage.getItem(this.refreshKey);
 
+    console.log('entrou checkTokenOnStartup');
     // Não tem nada salvo → logout direto
     if (!token || !refreshToken) {
       this.logout();
