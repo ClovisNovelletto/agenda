@@ -16,6 +16,7 @@ export class AuthService {
   private refreshKey = 'refresh-token'; // RefreshToken
   private loggedIn = new BehaviorSubject<boolean>(false);
   public isLoggedIn$: Observable<boolean> = this.loggedIn.asObservable();
+  private refreshing = false;
 
   constructor(private http: HttpClient, private router: Router) {
     this.setaStatusLogin();
@@ -32,9 +33,9 @@ export class AuthService {
       const exp = payload.exp * 1000; // em ms
       const now = Date.now();
 
-      // Se faltar menos de 30 segundos, renova
-      if (exp - now < 30000) {
-        const token = localStorage.getItem('jwt-token');
+      // Se faltar menos de 2 minutos, renova
+      if (exp - now < 120000 && this.refreshing) {
+        const token = localStorage.getItem('refresh-token');
         const headers = new HttpHeaders({Authorization: `Bearer ${token}` });  
         this.http.post<{ token: string, tokenRefresh: string  }>(`${environment.apiUrl}/auth/refresh`, {}, 
           { headers }
@@ -42,8 +43,10 @@ export class AuthService {
           next: (res) => {
             console.log('Token renovado com sucesso');
             this.storeToken(res.token, res.tokenRefresh);
+            this.refreshing = false;
           },
           error: (err) => {
+            this.refreshing = false;
             console.error('Falha ao renovar token', err);
             this.logout();
           }
