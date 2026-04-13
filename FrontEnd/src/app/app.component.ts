@@ -29,6 +29,20 @@ export class AppComponent {
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
+    console.log('app onInit Executando', this.isLoggedIn);
+
+    // 🔥 Verifica se token ativo
+    this.authService.checkTokenOnStartup();
+
+    this.authService.isLoggedIn$.subscribe((status) => {
+      this.isLoggedIn = status;
+      console.log('app Estado atualizado:', this.isLoggedIn);
+    });
+
+    Filesystem.requestPermissions();
+  }
+  /*
+  ngOnInit() {
     // Subscribing ao estado de login
     console.log('app onInit Executando', this.isLoggedIn);
     this.authService.isLoggedIn$.subscribe((status) => {
@@ -37,7 +51,7 @@ export class AppComponent {
     });
     Filesystem.requestPermissions();
   }
-
+  */
   logout() {
     this.authService.logout();
     localStorage.removeItem('token'); // Remove o token

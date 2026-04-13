@@ -139,6 +139,36 @@ export class AuthService {
       );
   }
 
+  checkTokenOnStartup(): void {
+    const token = this.getToken();
+    const refreshToken = localStorage.getItem(this.refreshKey);
+
+    // Não tem nada salvo → logout direto
+    if (!token || !refreshToken) {
+      this.logout();
+      return;
+    }
+
+    // Se access expirou → tenta renovar
+    if (this.isTokenExpired(token)) {
+      console.log('Token expirado ao iniciar, tentando refresh...');
+
+      this.refreshToken().subscribe({
+        next: () => {
+          console.log('Token renovado ao iniciar');
+          this.setaStatusLogin();
+        },
+        error: () => {
+          console.log('Refresh inválido, logout');
+          this.logout();
+        }
+      });
+    } else {
+      // Ainda válido
+      this.setaStatusLogin();
+    }
+  }
+  
   // ---------- STATUS ----------
   setaStatusLogin(): void {
     this.loggedIn.next(true);
