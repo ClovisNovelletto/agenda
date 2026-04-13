@@ -80,10 +80,12 @@ router.post('/login', async (req, res) => {
 router.post('/refresh', async (req, res) => {
   console.log("entrou no refresh");
   const refreshToken = req.headers['authorization']?.split(' ')[1];
-  if (!refreshToken) return res.sendStatus(401).json({ mensagem: 'Token ausente' });
+  if (!refreshToken) {
+    return res.status(401).json({ mensagem: 'Token ausente' });
+  }
 
   try {
-    const decoded = jwt.verify(refreshToken, SECRET_KEY_REFRESH, { ignoreExpiration: true });
+    const decoded = jwt.verify(refreshToken, SECRET_KEY_REFRESH);
 
     const userid = decoded.userid;
     const email = decoded.email;
