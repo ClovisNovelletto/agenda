@@ -55,10 +55,10 @@ router.post('/login', async (req, res) => {
       }
 
       // Gera o token JWT com informações do usuário
-      const token = jwt.sign({ email, tipo, personalid, alunoid, userid }, SECRET_KEY, { expiresIn: '1h' });
+      const token = jwt.sign({ email, tipo, personalid, alunoid, userid }, SECRET_KEY, { expiresIn: '30d' });
 
       const tokenRefresh = jwt.sign(
-      { email: email, tipo: tipo, personalid: personalid, alunoid: alunoid, userid: userid }, SECRET_KEY_REFRESH, { expiresIn: '7d' });
+      { email: email, tipo: tipo, personalid: personalid, alunoid: alunoid, userid: userid }, SECRET_KEY_REFRESH, { expiresIn: '30d' });
       console.log(token);
       console.log(tokenRefresh);
       res.json({ token, tokenRefresh, mensagem: 'Login bem-sucedido!' });
@@ -109,13 +109,13 @@ router.post('/refresh', async (req, res) => {
     const token = jwt.sign(
       { email: email, tipo: tipo, personalid: personalid, alunoid: alunoid, userid: userid },
       SECRET_KEY,
-      { expiresIn: '1h' }
+      { expiresIn: '30d' }
     );
 
     const tokenRefresh = jwt.sign(
       { email: email, tipo: tipo, personalid: personalid, alunoid: alunoid, userid: userid },
       SECRET_KEY_REFRESH,
-      { expiresIn: '7d' }
+      { expiresIn: '30d' }
     );
     res.json({ token, tokenRefresh });
   } catch (err) {
