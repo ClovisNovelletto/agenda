@@ -5,6 +5,8 @@ import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../environments/environment';
 import { HttpHeaders } from '@angular/common/http';
+//import * as jwt_decode from 'jwt-decode';
+import jwt_decode from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root',
@@ -25,6 +27,52 @@ export class AuthService {
 
   /*renovação automática do token*/ 
   startTokenWatcher(): void {
+    setInterval(() => {
+      const token = this.getToken();
+      if (!token) return;
+
+      let payload: any;
+
+      try {
+        payload = jwt_decode(token);
+      } catch (e) {
+        console.error('Erro ao decodificar token', e);
+        this.logout();
+        return;
+      }
+
+      const exp = payload.exp * 1000;
+      const now = Date.now();
+
+      if (exp - now < 120000 && !this.refreshing) {
+        this.refreshing = true;
+
+        const tokenRefresh = localStorage.getItem('refresh-token');
+        const headers = new HttpHeaders({
+          Authorization: `Bearer ${tokenRefresh}`
+        });
+
+        this.http.post<{ token: string, tokenRefresh: string }>(
+          `${environment.apiUrl}/auth/refresh`,
+          {},
+          { headers }
+        ).subscribe({
+          next: (res) => {
+            console.log('Token renovado com sucesso');
+            this.storeToken(res.token, res.tokenRefresh);
+            this.refreshing = false;
+          },
+          error: (err) => {
+            this.refreshing = false;
+            console.error('Falha ao renovar token', err);
+            this.logout();
+          }
+        });
+      }
+    }, 10000);
+  }
+
+  startTokenWatcher_OLD_13_04_2026(): void {
     setInterval(() => {
       const token = this.getToken();
       if (!token) return;
@@ -79,7 +127,8 @@ export class AuthService {
   logout(): void {
     console.log('AS logout');
     localStorage.removeItem(this.tokenKey);
-    localStorage.removeItem(this.refreshKey);
+    //localStorage.removeItem(this.refreshKey);
+    console.log('logout está passando aqui');
     this.setaStatusLogout();
     this.router.navigate(['/login']);
   }
@@ -112,8 +161,46 @@ export class AuthService {
   }
 
   // ---------- REFRESH ----------
-  refreshToken(): Observable<string> {
+  refreshToken(): Observable<any> {
     const refreshToken = localStorage.getItem(this.refreshKey);
+
+    if (!refreshToken) {
+      this.logout();
+      return throwError(() => new Error('Refresh token ausente'));
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${refreshToken}`
+    });
+
+    return this.http.post<any>(this.refreshURL, {}, { headers }).pipe(
+      tap((response) => {
+        if (response?.token) {
+          localStorage.setItem(this.tokenKey, response.token);
+
+          // 🔥 importante: atualizar refresh também
+          if (response.tokenRefresh) {
+            localStorage.setItem(this.refreshKey, response.tokenRefresh);
+          }
+
+          this.setaStatusLogin();
+        }
+      }),
+      map((response) => response.token),
+      catchError((err) => {
+        console.error('Erro no refresh:', err);
+
+        if (err.status === 401 || err.status === 403) {
+          this.logout();
+        }
+
+        return throwError(() => err);
+      })
+    );
+  }
+  refreshToken_OLD_13_04_2026(): Observable<string> {
+    const refreshToken = localStorage.getItem(this.refreshKey);
+    console.log('refreshToken:', refreshToken);
     if (!refreshToken) {
       this.logout();
       return throwError(() => new Error('Refresh token ausente'));
