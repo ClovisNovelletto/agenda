@@ -146,9 +146,6 @@ private carregarTreinos() {
     if (!treino || this.treinoSelecionado?.id === treino.id) return;
     this.treinoSelecionado = treino;
     this.aplicarFiltro();
-    console.log("carregar itens");
-    this.carregarTreinosItems();
-
 
     this.displayedColumns = ['exercicio', 'serie', 'tempo', 'peso', 'ordem'];
     this.displayedHeaderColumns = ['exercicio', 'serie', 'tempo', 'peso', 'ordem'];
@@ -294,5 +291,7 @@ console.log( correspondeStatus);
     if (!this.treinosFiltrados.find(t => t.id === this.treinoSelecionado?.id)) {
       this.treinoSelecionado = this.treinosFiltrados[0] || null;
     }    
+    console.log("carregar itens");
+    this.carregarTreinosItems();
   }
 }

@@ -26,70 +26,53 @@
       </mat-select>
     </mat-form-field>
 
-
-
-<div class="agenda-layout" >
-    <!-- Sidebar Treinos -->
-    <aside class="sidebar">
-<div class="acoes">
-<button mat-mini-fab class="btn-pequenoAdd"
-  (click)="treinoNovo()" aria-label="Novo Treino">
-  <mat-icon>add</mat-icon>
-</button>
-
-<button mat-mini-fab class="btn-pequenoEdit"
-  (click)="treinoEditar(treinoSelecionado)" aria-label="Treino Editar">
-  <mat-icon>edit</mat-icon>
-</button>
-<!--
-<button mat-mini-fab class="btn-pequenoDel"
-  (click)="novoTreinosItem()" aria-label="Novo Treino">
-  <mat-icon>delete</mat-icon>
-</button>
--->
-</div>
-      <div class="sidebar-header">Treinos</div>
-      <div class="aluno-lista">
-
-      <div *ngFor="let treino of treinosFiltrados; trackBy: trackByTreinoId"
-          (click)="selecionarTreino(treino)"
-          [class.selecionado]="treinoSelecionado?.id === treino.id"
-          class="item-treino">
-
-        <mat-checkbox
-          [checked]="treinoSelecionado?.id === treino.id">
-          {{ treino.descricao }}
-        </mat-checkbox>
-
-      </div>        
-      <!--  
-        <mat-checkbox 
-            *ngFor="let treino of treinosFiltrados; trackBy: trackByTreinoId"
-            [checked]="treinoSelecionado!.id === treino.id"
-            [class.selecionado="treinoSelecionado?.id === treino.id"
-            (change)="selecionarTreino(treino)">
-            {{ treino.descricao }} 
-        </mat-checkbox>
-      -->
-        <div class="empty" *ngIf="!carregandoTreinos && treinos.length === 0">
-            Nenhum Treino.
-        </div>
-      </div>
-    
-    </aside>
-    
-    <main class="content">
-
-      <div class="tabela-container">
-
-        <div class="acoesItem">
-          <button mat-mini-fab class="btn-pequenoAdd";
-            (click)="treinoItemNovo()" aria-label="Novo Treino">
+    <div class="agenda-layout" >
+          <!-- Sidebar Treinos -->
+      <aside class="sidebar">
+        <div class="acoes">
+          <button mat-icon-button class="btn-pequeno" style="background-color: #0ca22f;"
+            (click)="treinoNovo()" aria-label="Novo Treino">
             <mat-icon>add</mat-icon>
           </button>
-        </div>
 
-        <table mat-table [dataSource]="[]" class="tabela-header">
+          <button mat-icon-button class="btn-pequeno" style="background-color: #f37d34;"
+            (click)="treinoEditar(treinoSelecionado)" aria-label="Treino Editar">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </div>
+        <div class="sidebar-header">Treinos</div>
+        <div class="aluno-lista">
+
+          <div *ngFor="let treino of treinosFiltrados; trackBy: trackByTreinoId"
+            (click)="selecionarTreino(treino)"
+            [class.selecionado]="treinoSelecionado?.id === treino.id"
+            class="item-treino">
+
+            <mat-checkbox
+              [checked]="treinoSelecionado?.id === treino.id">
+              {{ treino.descricao }}
+            </mat-checkbox>
+
+          </div>        
+          <div class="empty" *ngIf="!carregandoTreinos && treinos.length === 0">
+              Nenhum Treino.
+          </div>
+        </div>
+    
+      </aside>
+    
+      <main class="content">
+
+        <div class="tabela-container">
+
+          <div class="acoes">
+            <button mat-icon-button class="btn-pequeno" style="background-color: #0ca22f;"
+              (click)="treinoItemNovo()" aria-label="Novo Treino">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+
+          <table mat-table [dataSource]="[]" class="tabela-header">
             <ng-container matColumnDef="exercicio">
                 <th mat-header-cell *matHeaderCellDef>Exercício</th>
             </ng-container>
@@ -112,59 +95,61 @@
 
 
             <tr mat-header-row *matHeaderRowDef="['exercicio','serie', 'tempo', 'peso', 'ordem']" style="height: 32px !important;"></tr>
-        </table>
-      
-      <div class="tabela-wrap" *ngIf="treinoSelecionado">
-        <div class="loading" *ngIf="carregandoTreinosItems">
-          <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
+          </table>
+
+          <div class="tabela-wrap" *ngIf="treinoSelecionado">
+            <div class="loading" *ngIf="carregandoTreinosItems">
+              <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
+            </div>
+
+            <table mat-table [dataSource]="dataSource" *ngIf="!carregandoTreinosItems">
+
+                <ng-container matColumnDef="exercicio">
+                    <td mat-cell *matCellDef="let row" class="corFonte">
+                    {{ row?.exercicio || '—' }} 
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="serie">
+                    <td mat-cell *matCellDef="let row" class="corFonte">
+                      {{ row?.serie + 'x' + row.repeticao}} 
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="tempo">
+                    <td mat-cell *matCellDef="let row" class="corFonte">
+                    {{ row.tempo || '—' }}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="peso">
+                    <td mat-cell *matCellDef="let row" class="corFonte">
+                    {{ row.peso || '—' }}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="ordem">
+                    <td mat-cell *matCellDef="let row" class="corFonte">
+                    {{ row.ordem || '—' }}
+                    </td>
+                </ng-container>
+
+                <tr style="min-height: 30px!important; height: 30px!important;"
+                    mat-row
+                    *matRowDef="let row; columns: displayedColumns;"
+                    (click)="treinoItemEditar(row)">
+                </tr>
+              
+            </table>
+            
+            <div class="empty" *ngIf="!carregandoTreinos && dataSource.data.length === 0" >
+              Treino sem itens.
+            </div>
+          </div>
         </div>
-
-        <table mat-table [dataSource]="dataSource" *ngIf="!carregandoTreinosItems">
-
-            <ng-container matColumnDef="exercicio">
-                <td mat-cell *matCellDef="let row" class="corFonte">
-                {{ row?.exercicio || '—' }} 
-                </td>
-            </ng-container>
-
-            <ng-container matColumnDef="serie">
-                <td mat-cell *matCellDef="let row" class="corFonte">
-                  {{ row?.serie + 'x' + row.repeticao}} 
-                </td>
-            </ng-container>
-
-            <ng-container matColumnDef="tempo">
-                <td mat-cell *matCellDef="let row" class="corFonte">
-                {{ row.tempo || '—' }}
-                </td>
-            </ng-container>
-
-            <ng-container matColumnDef="peso">
-                <td mat-cell *matCellDef="let row" class="corFonte">
-                {{ row.peso || '—' }}
-                </td>
-            </ng-container>
-
-            <ng-container matColumnDef="ordem">
-                <td mat-cell *matCellDef="let row" class="corFonte">
-                {{ row.ordem || '—' }}
-                </td>
-            </ng-container>
-
-            <tr style="min-height: 30px!important; height: 30px!important;"
-                mat-row
-                *matRowDef="let row; columns: displayedColumns;"
-                (click)="treinoItemEditar(row)">
-            </tr>
-          
-        </table>
-        
-        <div class="empty" *ngIf="!carregandoTreinos && dataSource.data.length === 0" >
-          Treino sem itens.
-        </div>
-
-      </div>
+      </main>
     </div>
-    </main>
   </div>
 </div>
+
+
