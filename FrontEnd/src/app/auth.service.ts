@@ -6,7 +6,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../environments/environment';
 import { HttpHeaders } from '@angular/common/http';
 //import * as jwt_decode from 'jwt-decode';
-import jwt_decode from 'jwt-decode';
+import jwtDecode from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root',
@@ -25,6 +25,20 @@ export class AuthService {
     this.startTokenWatcher(); // ativa a renovação automática
   }
 
+
+  private safeDecodeToken(token: string | null): any {
+    if (!token || typeof token !== 'string' || token.split('.').length !== 3) {
+      return null;
+    }
+
+    try {
+      return jwtDecode(token);
+    } catch (e) {
+      console.error('Erro ao decodificar token', e);
+      return null;
+    }
+  }
+
   /*renovação automática do token*/ 
   startTokenWatcher(): void {
     setInterval(() => {
@@ -34,9 +48,9 @@ export class AuthService {
       let payload: any;
 
       try {
-        payload = jwt_decode(token);
+        payload = jwtDecode(token);
       } catch (e) {
-        console.error('Erro ao decodificar token', e);
+   
         this.logout();
         return;
       }
@@ -149,6 +163,15 @@ export class AuthService {
 
   // Verifica expiração do JWT
   isTokenExpired(token: string): boolean {
+    const payload = this.safeDecodeToken(token);
+
+    if (!payload?.exp) return true;
+
+    const now = Math.floor(Date.now() / 1000);
+    return payload.exp < now;
+  }
+
+  isTokenExpired_14_04_26(token: string): boolean {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const exp = payload.exp;
@@ -274,6 +297,10 @@ export class AuthService {
 
   // ---------- PAYLOAD HELPERS ----------
   private decodeToken(): any {
+    return this.safeDecodeToken(this.getToken());
+  }
+  
+  private decodeToken_14_04_26(): any {
     const token = this.getToken();
     if (!token) return null;
     try {

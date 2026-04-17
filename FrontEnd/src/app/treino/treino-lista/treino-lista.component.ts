@@ -41,6 +41,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatDialogModule } from '@angular/material/dialog';
 import { TreinoService } from '../../services/treino.service';
 import type { Treino } from '../../models/treino.model';
+import { TreinoItemFormComponent } from '../treinoItem-form/treinoItem-form.component';
 import { TreinoFormComponent } from '../treino-form/treino-form.component';
 import { TreinoItem } from '../../models/treinoItem.model';
 import { MatTooltipModule } from '@angular/material/tooltip'; // <-- Importe aqui
@@ -58,31 +59,28 @@ dayjs.extend(timezone);
             MatSelectModule, MatTooltipModule],
   })
  
-export class treinoListaComponent implements OnInit {
+export class TreinoListaComponent implements OnInit {
 
-  treino: Treino[] = [];
-  treinoSelecionado?: Treino;
-  displayedColumns = ['data', 'titulo', 'descricao'];
-  displayedHeaderColumns = ['data', 'titulo', 'descricao'];
+  filtroStatus: string = "Todos";
+  filtroTexto: string = "";
+  treinos: Treino[] = [];
+  treinosFiltrados: Treino[] = [];
+  treinoSelecionado: any;
+  displayedColumns = ['exercicio', 'serie', 'tempo', 'peso', 'ordem'];
+  displayedHeaderColumns = ['exercicio', 'serie', 'tempo', 'peso', 'ordem'];
   dataSource = new MatTableDataSource<TreinoService>([]);
   carregandoTreinos = false;
   carregandoTreinosItems = false;
   personalid : number | null = null;
 
   treinosItem: TreinoItem[] = [];
-  treinosItemsFiltrados: TreinoItem[] = [];
-  carregandoItens = false;
+  
   ordemCrescente = true;
 
   isMobile: boolean = false;
   //currentDate: Date = dayjs.utc().tz('America/Sao_Paulo').toDate();
 
-  anoSelecionado = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-  anoSelecionadoLabel: any;
-  anoFormatado: String = '';
-  anos: { label: string, dataInicio: Date, dataFim: Date }[] = [];
-
-  @ViewChild('monthPicker') monthPicker!: MatDatepicker<Date>;
+    @ViewChild('monthPicker') monthPicker!: MatDatepicker<Date>;
 
   constructor(private treinoService: TreinoService, private authService: AuthService,
               private cd: ChangeDetectorRef, private bottomSheet: MatBottomSheet, 
@@ -96,36 +94,64 @@ export class treinoListaComponent implements OnInit {
         this.isMobile = window.innerWidth <= 768;
     });
 
-    this.carregarTreinosItems();
+    this.carregarTreinos();
    
   }
 
+private carregarTreinos() {
+  this.carregandoTreinos = true;
+  console.log("carregar treinos:");
 
-  private carregarTreinos() {
+  this.treinoService.carregaTreinos()
+      .pipe(finalize(() => this.carregandoTreinos = false))
+    .subscribe({
+      next: (resp: any) => {
+        const selecionadoId = this.treinoSelecionado?.id;
+        this.treinos = [...resp]; // 👈 força nova referência
+
+        this.treinoSelecionado = this.treinos.find(t => t.id === selecionadoId)
+          || this.treinos[0];
+        if (this.treinos.length && !this.treinoSelecionado) {
+          this.selecionarTreino(this.treinos[0]);
+        }
+        this.aplicarFiltro(); // 👈 agora sim no lugar certo
+        console.log("this.treinos:", this.treinos);
+        console.log("this.treinoSelecionado:", this.treinoSelecionado);
+      },
+      error: (e: any) => console.error('Erro ao carregar treinos', e)
+    });
+}
+
+  private carregarTreinos_OLD() {
     //const personalid = this.authService.getPersonalid();
     this.carregandoTreinos = true;
     console.log("carregar treinositems:");
     this.treinoService.carregaTreinos()
-      .pipe(finalize(() => this.carregandoTreinosItems = false))
+      .pipe(finalize(() => this.carregandoTreinos = false))
       .subscribe({
         next: (resp: any) => {
-          this.treino = resp;
-          if (this.treino.length && !this.treinoSelecionado) {
-            this.selecionarTreino(this.treino[0]);
+          this.treinos = resp;
+          if (this.treinos.length && !this.treinoSelecionado) {
+            this.selecionarTreino(this.treinos[0]);
           }
         },
-        error: (e: any) => console.error('Erro ao carregar alunos', e)
+        error: (e: any) => console.error('Erro ao carregar treinos', e)
       });
-      console.log("this.alunos:",this.treino);
+      this.aplicarFiltro()
+      console.log("this.treinos:",this.treinos);
   }
 
   selecionarTreino(treino: Treino) {
+    console.log("selecionarTreino", treino);
     if (!treino || this.treinoSelecionado?.id === treino.id) return;
     this.treinoSelecionado = treino;
+    this.aplicarFiltro();
+    console.log("carregar itens");
     this.carregarTreinosItems();
 
-    this.displayedColumns = ['vencto', 'recebto', 'valor', 'formapagto', 'status'];
-    this.displayedHeaderColumns = ['vencto', 'recebto', 'valor', 'forma receb', 'status'];
+
+    this.displayedColumns = ['exercicio', 'serie', 'tempo', 'peso', 'ordem'];
+    this.displayedHeaderColumns = ['exercicio', 'serie', 'tempo', 'peso', 'ordem'];
     console.log("treinoselecionado", this.treinoSelecionado);
     console.log("dataSource", this.dataSource.data);
   }
@@ -139,8 +165,8 @@ export class treinoListaComponent implements OnInit {
     window.history.back();
   }
 
-  trackByAlunoId(index: number, aluno: any): number {
-    return aluno.id;
+  trackByTreinoId(index: number, treino: any): number {
+    return treino.id;
   }
 
   formatMonthYear = (date: Date | null): string => {
@@ -150,8 +176,8 @@ export class treinoListaComponent implements OnInit {
 
   treinoItemEditar(treinoItems: TreinoItem) { 
     const isMobile = window.innerWidth < 600;
-    console.log('treinoItemss: ', treinoItems);
-    const dialogRef = this.dialog.open(TreinoFormComponent, {
+    console.log('treinoItems: ', treinoItems);
+    const dialogRef = this.dialog.open(TreinoItemFormComponent, {
       data: {treinoItems},
       width: isMobile ? '90vw' : '500px',
       height: isMobile ? '90vh' : 'auto',
@@ -161,12 +187,13 @@ export class treinoListaComponent implements OnInit {
     dialogRef.afterClosed().subscribe(resultado => {
       if (resultado) {
         console.log("resultado", resultado);
-        this.treinoService.salvar(resultado).subscribe(() => this.carregarTreinosItems());
+        this.treinoService.salvarItem(resultado).subscribe(() => this.carregarTreinosItems());
       }
     });
   }
 
   carregarTreinosItems() {
+    console.log("entrou treinos items");
     if (!this.treinoSelecionado) {
       this.dataSource.data = [];
       return;
@@ -175,29 +202,46 @@ export class treinoListaComponent implements OnInit {
 
     this.carregandoTreinosItems = true;
         
-    const payload = {
-      treinoid,
-    }     
+    const payload = {treinoid}     
 
+    console.log("treinoid", treinoid);
     this.carregandoTreinosItems = true;
     this.treinoService.carregaTreinosItens(payload)
       .pipe(finalize(() => this.carregandoTreinosItems = false))
       .subscribe({
         next: (treinosItems: any) => {
-          date: dayjs(treinosItems.data).toDate();
-          // ordena por data
-          const ord = [...treinosItems].sort((a, b) => +new Date(a.data) - +new Date(b.data));
+          // ordena por ordem
+          const ord = [...treinosItems].sort(
+            (a, b) => (Number(a.ordem) || 0) - (Number(b.ordem) || 0)
+          );
           this.dataSource.data = ord;
         },
         error: (e: any) => {
-          console.error('Erro ao carregar recebimentos', e);
+          console.error('Erro ao carregar treinos itens', e);
           this.dataSource.data = [];
         }
       });
-
+      console.log("treinosItem", this.treinosItem);
   }
 
-  novoTreinosItem() {
+  treinoItemNovo() {
+    const treinoid =this.treinoSelecionado?.id;
+    const isMobile = window.innerWidth < 600; 
+    const dialogRef = this.dialog.open(TreinoItemFormComponent, {
+      data: {treinoid},
+      width: isMobile ? '90vw' : '500px',
+      height: isMobile ? '90vh' : 'auto',
+      panelClass: isMobile ? 'full-screen-dialog' : ''
+    });
+
+    dialogRef.afterClosed().subscribe(resultado => {
+      if (resultado) {
+        this.treinoService.salvarItem(resultado).subscribe(() => this.carregarTreinosItems());
+      }
+    });
+  }
+
+  treinoNovo() {
     const isMobile = window.innerWidth < 600; 
     const dialogRef = this.dialog.open(TreinoFormComponent, {
       width: isMobile ? '90vw' : '500px',
@@ -207,22 +251,48 @@ export class treinoListaComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(resultado => {
       if (resultado) {
-        this.treinoService.salvar(resultado).subscribe(() => this.carregarTreinosItems());
+        this.treinoService.salvarTreino(resultado).subscribe(() => this.carregarTreinos());
       }
     });
   }
 
-  isVencido(receb: any): boolean {
-    const hoje = new Date();
-    const vencimento = new Date(receb.datavcto);
-    return vencimento < hoje && receb.statusid == 1;
-  }    
+  treinoEditar(treino: Treino) { 
+    const isMobile = window.innerWidth < 600;
+    console.log('treinos: ', treino);
+    const dialogRef = this.dialog.open(TreinoFormComponent, {
+      data: {treino},
+      width: isMobile ? '90vw' : '500px',
+      height: isMobile ? '90vh' : 'auto',
+      panelClass: isMobile ? 'full-screen-dialog' : ''
+    });
 
-  getTooltip(receb: any): string {
-    if (receb.statusid == 2) return 'Recebido';
-    if (receb.statusid == 4) return 'Cancelado';
-    if (receb.statusid == 3) return 'Renegociado';
-    if (this.isVencido(receb)) return 'Não Recebido (Vencido)';
-    return 'Não Recebido (Aguardando)';
-  }  
+    dialogRef.afterClosed().subscribe(resultado => {
+      if (resultado) {
+        console.log("resultado", resultado);
+        this.treinoService.salvarTreino(resultado).subscribe(() => this.carregarTreinos());
+      }
+    });
+  }
+
+aplicarFiltro(): void {
+    console.log('Entro no filtro');
+  this.treinosFiltrados = this.treinos
+    .filter(treino => {
+      const correspondeTexto = this.filtroTexto
+        ? treino.descricao.toLowerCase().includes(this.filtroTexto.toLowerCase())
+        : true;
+
+      const correspondeStatus = this.filtroStatus === 'Todos'
+        || (this.filtroStatus === 'Ativos' && treino.ativo)
+        || (this.filtroStatus === 'Inativos' && !treino.ativo);
+console.log( correspondeTexto);
+console.log( correspondeStatus);
+      return correspondeTexto && correspondeStatus;
+    })
+    .sort((a, b) => a.descricao.localeCompare(b.descricao)); // <-- ordenação fixa por nome
+    // 🔥 valida seleção
+    if (!this.treinosFiltrados.find(t => t.id === this.treinoSelecionado?.id)) {
+      this.treinoSelecionado = this.treinosFiltrados[0] || null;
+    }    
+  }
 }

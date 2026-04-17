@@ -1,7 +1,7 @@
 html, body {
   height: 100%;
   margin: 0px;
-  padding: 0px;
+
   overflow: hidden!important; }
 
 .page {
@@ -132,7 +132,9 @@ html, body {
   font-weight: 600;
   padding: 8px 8px;
   border-bottom: 1px solid #eee;
-  color: #ccc;
+  /*color: #ccc;*/
+  color: #eee;
+  font-size: 16px; 
 }
 
 .sidebar {
@@ -141,7 +143,7 @@ html, body {
   max-width: 520px;
   float: left; 
   overflow-y: auto;
-  background-color: hwb(0 37% 7%);
+  background-color: hwb(114 30% 20%);
   border-right: 1px solid #ddd;
   border-radius: 6px;
   padding: 0px;
@@ -168,35 +170,35 @@ html, body {
 }
 
 
-.mat-column-vencto {
+.mat-column-exercicio {
   width: 60px;
   padding-left: 3px;
   padding-right: 3px;
   font-size: 13px;
 }
 
-.mat-column-recebto {
-  width: 60px;
+.mat-column-serie {
+  width: 30px;
   padding-left: 2px;
   padding-right: 2px;
 }
 
-.mat-column-valor {
-  width: 60px;
+.mat-column-tempo {
+  width: 25px;
   padding-left: 3px;
   padding-right: 3px;
   white-space: pre-line;
 }
 
-.mat-column-formapagto {
-  width: 80px;
-  padding-left: 3px;
-  padding-right: 3px;
-  white-space: pre-line;
-}
-
-.mat-column-status {
+.mat-column-peso {
   width: 20px;
+  padding-left: 3px;
+  padding-right: 3px;
+  white-space: pre-line;
+}
+
+.mat-column-ordem {
+  width: 25px;
   padding-left: 3px;
   padding-right: 3px;
   white-space: pre-line;
@@ -216,7 +218,8 @@ html, body {
   border-radius: 8px;
   border: 1px solid #ccc;
   /*height: 20px!important;*/
-  background-color: hwb(0 37% 7%);
+  background-color: hwb(114 30% 20%);
+  /*color: black;*/
   border-bottom: 1px solid #eee;
   /*height: 20px !important;*/ /* diminui a altura do header */
   /*min-height: 20px !important;*/
@@ -226,6 +229,7 @@ html, body {
   padding: 0 5px; 
   line-height: 20px;
   font-size: 14px; 
+  
 }
 
 
@@ -266,15 +270,57 @@ html, body {
   display: none !important;
 }
 
+  .btn-pequenoAdd {
+    width: 28px;
+    height: 28px;
+    background-color: #0ca22f;
+    color: white;
+    border-radius: 50%;
+    padding-left: 0px;
+  }
 
+  .btn-pequenoEdit {
+    width: 28px;
+    height: 28px;
+    background-color: #f37d34;
+    color: white;
+    border-radius: 50%;
+    padding-left: 0px;
+  }
+
+
+  .acoes {
+    display: flex;
+    gap: 4px;
+    margin-left: 8px; /* espaço antes do primeiro botão */
+  }
+
+  .acoesItem {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 8px; /* espaço antes do primeiro botão */
+    justify-content: space-between;
+  }
+
+  .item-treino {
+   display: flex;
+   align-items: center;
+   gap: 6px;
+  }
+
+  .selecionado {
+    background: linear-gradient(90deg, rgba(255,255,255,0.2), transparent);
+  }
 
 @media (max-width: 768px) {
   .sidebar-header {
     font-weight: 600;
     padding: 8px 8px;
     border-bottom: 1px solid #eee;
-    color: #ccc;
-    font-size: 14px;
+    /*color: black;*/
+    color: #eee;
+    font-size: 16px;
   }
   .sidebar {
     flex: 1;

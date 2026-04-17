@@ -14,20 +14,13 @@ export class TreinoService {
 
   constructor(private http: HttpClient) {}
 
-
-  carregaTreinosItens(payload: {treinoid: number}): Observable<TreinoItem[]> {
-    const token = localStorage.getItem('jwt-token');
-    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    return this.http.post<TreinoItem[]>(`${environment.apiUrl}/treino/treinoItemLista`, payload, { headers });
-  }
-
   carregaTreinos(): Observable<Treino[]> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    return this.http.post<Treino[]>(`${environment.apiUrl}/treino/treinoLista`, { headers });
+    return this.http.post<Treino[]>(`${environment.apiUrl}/treino/treinoLista`, {}, { headers });
   }
 
-  salvar(treino: Treino): Observable<Treino> {
+  salvarTreino(treino: Treino): Observable<Treino> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
     console.log('Treino: ', treino);
@@ -36,6 +29,26 @@ export class TreinoService {
       return this.http.put<Treino>(`${environment.apiUrl}/treino/treinoSave`, treino, { headers });
     } else {
       return this.http.post<Treino>(`${environment.apiUrl}/treino/treinoInsert`, treino, { headers });
+    }
+  }
+
+
+  carregaTreinosItens(payload: {treinoid: number}): Observable<TreinoItem[]> {
+    const token = localStorage.getItem('jwt-token');
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    console.log("payload", payload);
+    return this.http.post<TreinoItem[]>(`${environment.apiUrl}/treino/treinoItemLista`, payload, { headers });
+  }
+
+  salvarItem(treinoItem: TreinoItem): Observable<TreinoItem> {
+    const token = localStorage.getItem('jwt-token');
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    console.log('TreinoItem: ', treinoItem);
+
+    if (treinoItem.id) {
+      return this.http.put<TreinoItem>(`${environment.apiUrl}/treino/treinoItemSave`, treinoItem, { headers });
+    } else {
+      return this.http.post<TreinoItem>(`${environment.apiUrl}/treino/treinoItemInsert`, treinoItem, { headers });
     }
   }
 
