@@ -5,6 +5,23 @@ import { authenticateToken } from "../middleware/authMiddleware.js";
 console.log(">>> treino.js !");
 const router = express.Router();
 
+router.get('/treinoLista', authenticateToken, async (req, res) => {
+  try {
+    console.log("carrega TreinoLista");
+    const personalid = req.user.personalid;
+
+    const treino = await sql`SELECT *
+      FROM h2utreinoslista
+      WHERE personalid = ${personalid} 
+      ORDER BY descricao`;
+    res.json(treino);
+    
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao buscar treinos');
+  }
+});
+
 router.post('/treinoLista', authenticateToken, async (req, res) => {
   try {
     console.log("carrega TreinoLista");
@@ -22,10 +39,8 @@ router.post('/treinoLista', authenticateToken, async (req, res) => {
   }
 });
 
-
 router.post('/treinoItemLista', authenticateToken, async (req, res) => {
-  try {
-    console.log("carrega TreinoLista");
+  try { console.log("carrega TreinoItemLista");
     const personalid = req.user.personalid;
     // tratamento treino indefinido
     if (typeof req.body[`treinoid`] === 'undefined') {
@@ -33,11 +48,15 @@ router.post('/treinoItemLista', authenticateToken, async (req, res) => {
     }
     const {treinoid} = req.body;
 
+    console.log("treinoid: " + treinoid)
+
     const treinoItem = await sql`SELECT *
       FROM h2utreinositemslista
-      WHERE personalid = ${personalid} 
-        AND treinoid =${treinoid}
-      ORDER BY descricao`;
+      WHERE treinoid =${treinoid}
+      ORDER BY ordem`;
+
+console.log("treinoItem: " + treinoItem)
+
     res.json(treinoItem);
     
   } catch (err) {
@@ -46,68 +65,161 @@ router.post('/treinoItemLista', authenticateToken, async (req, res) => {
   }
 });
 
-router.post('/recebimentoInsert', authenticateToken, async (req, res) => {
+
+router.post('/treinoItemInsert', authenticateToken, async (req, res) => {
   
   const personalid = req.user.personalid;
 
-  // tratamento local indefinido
-  if (typeof req.body[`formapagtoid`] === 'undefined') {
-    req.body[`formapagtoid`] = null;
+    // tratamento exercicio indefinido
+  if (typeof req.body[`exercicio`] === 'undefined') {
+    req.body[`exercicio`] = null;
   }
-  // tratamento serviço indefinido
-  if (typeof req.body[`statusid`] === 'undefined') {
-    req.body[`statusid`] = null;
+  // tratamento serie indefinido
+  if (typeof req.body[`serie`] === 'undefined') {
+    req.body[`serie`] = null;
   }
-
+  // tratamento repeticao indefinido
+  if (typeof req.body[`repeticao`] === 'undefined') {
+    req.body[`repeticao`] = null;
+  }
+  // tratamento tempo indefinido
+  if (typeof req.body[`tempo`] === 'undefined') {
+    req.body[`tempo`] = null;
+  }
+  // tratamento peso indefinido
+  if (typeof req.body[`peso`] === 'undefined') {
+    req.body[`peso`] = null;
+  }
+  // tratamento ordem indefinido
+  if (typeof req.body[`ordem`] === 'undefined') {
+    req.body[`ordem`] = null;
+  }
   // Agora que os valores estão garantidos, você pode extrair:
-  const {alunoid, datavcto, datarcto, valor, formapagtoid, statusid } = req.body;
-
-  //console.error('req.body:', req.body);
-
+  const {id, treinoid, exercicio, serie, repeticao, tempo, peso, ordem } = req.body;
+  
   try {
-    const recebimento = await sql`
-      INSERT INTO recebimentos (recpersonalid, recalunoid, recvalor, recdatavcto, recdatareceb, recformapagtoid, recstatus)
-      VALUES (${personalid}, ${alunoid}, ${valor}, ${datavcto}, ${datarcto}, ${formapagtoid}, ${statusid} )
+    const treinoItem = await sql`
+      INSERT INTO TreinosItems(trittreinoid, tritexercicio, tritserie, tritrepeticao, tritpeso, trittempo, tritordem)
+      VALUES (${treinoid}, ${exercicio}, ${serie}, ${repeticao}, ${peso}, ${tempo}, ${ordem} )
       RETURNING *`; 
     res.json({
-      id: recebimento[0].recebimento_id
+      id: treinoItem[0].treinoItem_id
     });
-    console.log('Retornando novo recebimento:', {
-      id: recebimento[0].recebimento_id
+    console.log('Retornando novo item do treino:', {
+      id: treinoItem[0].treinoItem_id
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ erro: 'Erro ao cadastrar recebimento' });
+    res.status(500).json({ erro: 'Erro ao cadastrar item do treino' });
   }
 });
 
-router.put('/recebimentoSave', authenticateToken, async (req, res) => {
-
-
-  // tratamento local indefinido
-  if (typeof req.body[`formapagtoid`] === 'undefined') {
-    req.body[`formapagtoid`] = null;
+router.put('/treinoItemSave', authenticateToken, async (req, res) => {
+  // tratamento exercicio indefinido
+  if (typeof req.body[`exercicio`] === 'undefined') {
+    req.body[`exercicio`] = null;
   }
-  // tratamento serviço indefinido
-  if (typeof req.body[`statusid`] === 'undefined') {
-    req.body[`statusid`] = null;
+  // tratamento serie indefinido
+  if (typeof req.body[`serie`] === 'undefined') {
+    req.body[`serie`] = null;
   }
-
+  // tratamento repeticao indefinido
+  if (typeof req.body[`repeticao`] === 'undefined') {
+    req.body[`repeticao`] = null;
+  }
+  // tratamento tempo indefinido
+  if (typeof req.body[`tempo`] === 'undefined') {
+    req.body[`tempo`] = null;
+  }
+  // tratamento peso indefinido
+  if (typeof req.body[`peso`] === 'undefined') {
+    req.body[`peso`] = null;
+  }
+  // tratamento ordem indefinido
+  if (typeof req.body[`ordem`] === 'undefined') {
+    req.body[`ordem`] = null;
+  }
   // Agora que os valores estão garantidos, você pode extrair:
-  const {id, alunoid, datavcto, datarcto, valor, formapagtoid, statusid } = req.body;
+  const {id, treinoid, exercicio, serie, repeticao, tempo, peso, ordem } = req.body;
   
   // UPDATE
   try {
-    const recebimento = await sql`
-      UPDATE recebimentos SET recalunoid=${alunoid}, recvalor=${valor}, recdatavcto=${datavcto}, 
-                              recdatareceb=${datarcto}, recformapagtoid=${formapagtoid}, recstatus=${statusid}
-       WHERE recebimento_ID = ${id}
+    const treinoItem = await sql`
+      UPDATE TreinosItems SET tritexercicio=${exercicio}, tritserie=${serie}, tritrepeticao=${repeticao},
+                              tritpeso=${peso}, trittempo=${tempo}, tritordem=${ordem}
+       WHERE treinosItem_ID = ${id}
       RETURNING *
     `;    
-    res.status(201).json(recebimento);
+    res.status(201).json(treinoItem);
     } catch (err) {
-      console.error('Erro ao atualizar recebimento:', err);
-      res.status(500).json({ error: 'Erro ao atualizar recebimento' });
+      console.error('Erro ao atualizar item do treino:', err);
+      res.status(500).json({ error: 'Erro ao atualizar item do treino' });
+    }
+});
+
+
+router.post('/treinoInsert', authenticateToken, async (req, res) => {
+
+  const personalid = req.user.personalid;
+
+  // tratamento descricao indefinido
+  if (typeof req.body[`descricao`] === 'undefined') {
+    req.body[`descricao`] = null;
+  }
+  // tratamento servicoid indefinido
+  if (typeof req.body[`servicoid`] === 'undefined') {
+    req.body[`servicoid`] = null;
+  }
+  // tratamento ativo indefinido
+  if (typeof req.body[`ativo`] === 'undefined') {
+    req.body[`ativo`] = null;
+  }
+
+  // Agora que os valores estão garantidos, você pode extrair:
+  const {id, servicoid, descricao, ativo } = req.body;
+  
+  // INSERT
+  try {
+    const treino = await sql`
+      INSERT INTO Treinos(treino, treativo, treservicoid, trepersonalid)
+      VALUES(${descricao}, ${ativo}, ${servicoid}, ${personalid})
+      RETURNING *
+    `;    
+    res.status(201).json(treino);
+    } catch (err) {
+      console.error('Erro ao inserir treino:', err);
+      res.status(500).json({ error: 'Erro ao inserir treino' });
+    }
+});
+
+router.put('/treinoSave', authenticateToken, async (req, res) => {
+  // tratamento descricao indefinido
+  if (typeof req.body[`descricao`] === 'undefined') {
+    req.body[`descricao`] = null;
+  }
+  // tratamento servicoid indefinido
+  if (typeof req.body[`servicoid`] === 'undefined') {
+    req.body[`servicoid`] = null;
+  }
+  // tratamento ativo indefinido
+  if (typeof req.body[`ativo`] === 'undefined') {
+    req.body[`ativo`] = null;
+  }
+
+  // Agora que os valores estão garantidos, você pode extrair:
+  const {id, servicoid, descricao, ativo } = req.body;
+  
+  // UPDATE
+  try {
+    const treino = await sql`
+      UPDATE Treinos SET treino=${descricao}, treativo=${ativo}, treservicoid=${servicoid}
+       WHERE treino_ID = ${id}
+      RETURNING *
+    `;    
+    res.status(201).json(treino);
+    } catch (err) {
+      console.error('Erro ao atualizar treino:', err);
+      res.status(500).json({ error: 'Erro ao atualizar treino' });
     }
 });
 
