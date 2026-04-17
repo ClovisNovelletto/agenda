@@ -237,6 +237,16 @@ html, body {
   line-height: normal !important; /* 🔥 importante */
 }
 
+mat-icon[cdkDragHandle] {
+  opacity: 0.6;
+  cursor: grab;
+}
+
+mat-icon[cdkDragHandle]:active {
+  cursor: grabbing;
+  opacity: 1;
+}
+
 /* 🔥 ajuste do ícone */
 .btn-pequeno mat-icon {
   font-size: 18px;

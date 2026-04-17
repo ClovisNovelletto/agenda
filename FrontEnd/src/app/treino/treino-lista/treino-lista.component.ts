@@ -45,7 +45,8 @@ import { TreinoItemFormComponent } from '../treinoItem-form/treinoItem-form.comp
 import { TreinoFormComponent } from '../treino-form/treino-form.component';
 import { TreinoItem } from '../../models/treinoItem.model';
 import { MatTooltipModule } from '@angular/material/tooltip'; // <-- Importe aqui
-
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -56,7 +57,7 @@ dayjs.extend(timezone);
   styleUrls: ['./treino-lista.component.css'],
   imports: [MatToolbarModule, MatIconModule, MatButtonModule, MatListModule, MatTableModule, MatProgressSpinnerModule, MatFormFieldModule, 
             MatInputModule, MatDatepickerModule, MatNativeDateModule, CommonModule, MatCheckboxModule, FormsModule,
-            MatSelectModule, MatTooltipModule],
+            MatSelectModule, MatTooltipModule, DragDropModule],
   })
  
 export class TreinoListaComponent implements OnInit {
@@ -66,9 +67,9 @@ export class TreinoListaComponent implements OnInit {
   treinos: Treino[] = [];
   treinosFiltrados: Treino[] = [];
   treinoSelecionado: any;
-  displayedColumns = ['exercicio', 'serie', 'tempo', 'peso', 'ordem'];
-  displayedHeaderColumns = ['exercicio', 'serie', 'tempo', 'peso', 'ordem'];
-  dataSource = new MatTableDataSource<TreinoService>([]);
+  displayedColumns = ['exercicio', 'serie', 'tempo', 'peso'];
+  displayedHeaderColumns = ['exercicio', 'serie', 'tempo', 'peso'];
+  dataSource = new MatTableDataSource<TreinoItem>([]);
   carregandoTreinos = false;
   carregandoTreinosItems = false;
   personalid : number | null = null;
@@ -147,8 +148,8 @@ private carregarTreinos() {
     this.treinoSelecionado = treino;
     this.aplicarFiltro();
 
-    this.displayedColumns = ['exercicio', 'serie', 'tempo', 'peso', 'ordem'];
-    this.displayedHeaderColumns = ['exercicio', 'serie', 'tempo', 'peso', 'ordem'];
+    this.displayedColumns = ['exercicio', 'serie', 'tempo', 'peso'];
+    this.displayedHeaderColumns = ['exercicio', 'serie', 'tempo', 'peso'];
     console.log("treinoselecionado", this.treinoSelecionado);
     console.log("dataSource", this.dataSource.data);
   }
@@ -294,4 +295,40 @@ console.log( correspondeStatus);
     console.log("carregar itens");
     this.carregarTreinosItems();
   }
+
+  salvarOrdemExercicios(lista: any[]) {
+    console.log("lista: " + lista);
+    this.treinoService.atualizarOrdemTreinoItem(lista).subscribe({
+      next: () => console.log('Ordem salva'),
+      error: err => console.error(err)
+    });
+    //return this.http.put('/api/treino-itens/ordem', lista);
+  }
+
+  drop(event: CdkDragDrop<TreinoItem[]>) {
+    console.log("TreinoItem: " + event);
+
+    //dataSource = new MatTableDataSource<TreinoItem>();
+    const data = this.dataSource.data as TreinoItem[];
+    //const data = this.dataSource.data;
+
+    console.log("Data: " + data);
+
+    moveItemInArray(data, event.previousIndex, event.currentIndex);
+
+    console.log("Data2: " + data);
+    // 🔥 atualiza ordem antes de salvar
+    data.forEach((item, index) => {
+      console.log("item.ordem: " + item.ordem);
+      item.ordem = (index + 1) * 10;
+      console.log("item.ordem Nova: " + item.ordem);
+    });
+
+    console.log("Data3: " + data);
+    this.dataSource.data = [...data];
+
+    this.salvarOrdemExercicios(data);
+  }  
+  
+
 }

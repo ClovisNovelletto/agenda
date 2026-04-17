@@ -52,4 +52,16 @@ export class TreinoService {
     }
   }
 
+  atualizarOrdemTreinoItem(treinoItem: TreinoItem[]): Observable<void> {
+    const token = localStorage.getItem('jwt-token');
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+
+    return this.http.put<void>(
+      `${environment.apiUrl}/treino/treinoItemAtualizaOrdem`,
+      treinoItem,
+      { headers }
+    );
+  }
+
+
 }
