@@ -223,4 +223,27 @@ router.put('/treinoSave', authenticateToken, async (req, res) => {
     }
 });
 
+router.put('/treinoItemAtualizaOrdem', authenticateToken, async (req, res) => {
+  const lista = req.body; // 👈 aqui!
+
+  console.log('Lista recebida:', lista);
+
+  try {
+    await sql.begin(async (tx) => {
+      for (const item of lista) {
+        await tx`
+          UPDATE TreinosItems
+          SET TRITordem = ${item.ordem}
+          WHERE TreinosItem_ID = ${item.id}
+        `;
+      }
+    });
+
+    res.status(200).json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao atualizar ordem');
+  }
+});
+
 export default router;
