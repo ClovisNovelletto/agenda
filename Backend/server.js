@@ -17,6 +17,7 @@ import servicoRoutes from "./routes/servico.js";
 import anamneseRoutes from "./routes/anamnese.js";
 import personalRoutes from "./routes/personal.js";
 import financeiroRoutes from "./routes/financeiro.js";
+import alunoTreinoRoutes from "./routes/alunotreino.js";
 import tabelaPrecoRoutes from "./routes/tabelaPreco.js";
 import configuracaoRoutes from "./routes/configuracao.js";
 
@@ -42,6 +43,7 @@ app.use("/api/servico", servicoRoutes);
 app.use("/api/anamnese", anamneseRoutes);
 app.use("/api/personal", personalRoutes);
 app.use("/api/financeiro", financeiroRoutes);
+app.use("/api/alunoTreino", alunoTreinoRoutes);
 app.use("/api/tabelaPreco", tabelaPrecoRoutes);
 app.use("/api/configuracao", configuracaoRoutes);
 

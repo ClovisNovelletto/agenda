@@ -13,7 +13,7 @@ router.get('/treinoLista', authenticateToken, async (req, res) => {
     const treino = await sql`SELECT *
       FROM h2utreinoslista
       WHERE personalid = ${personalid} 
-      ORDER BY descricao`;
+      ORDER BY treino`;
     res.json(treino);
     
   } catch (err) {
@@ -30,7 +30,7 @@ router.post('/treinoLista', authenticateToken, async (req, res) => {
     const treino = await sql`SELECT *
       FROM h2utreinoslista
       WHERE personalid = ${personalid} 
-      ORDER BY descricao`;
+      ORDER BY treino`;
     res.json(treino);
     
   } catch (err) {
@@ -162,9 +162,9 @@ router.post('/treinoInsert', authenticateToken, async (req, res) => {
 
   const personalid = req.user.personalid;
 
-  // tratamento descricao indefinido
-  if (typeof req.body[`descricao`] === 'undefined') {
-    req.body[`descricao`] = null;
+  // tratamento treino indefinido
+  if (typeof req.body[`treino`] === 'undefined') {
+    req.body[`treino`] = null;
   }
   // tratamento servicoid indefinido
   if (typeof req.body[`servicoid`] === 'undefined') {
@@ -176,13 +176,13 @@ router.post('/treinoInsert', authenticateToken, async (req, res) => {
   }
 
   // Agora que os valores estão garantidos, você pode extrair:
-  const {id, servicoid, descricao, ativo } = req.body;
+  const {id, servicoid, treino, ativo } = req.body;
   
   // INSERT
   try {
     const treino = await sql`
       INSERT INTO Treinos(treino, treativo, treservicoid, trepersonalid)
-      VALUES(${descricao}, ${ativo}, ${servicoid}, ${personalid})
+      VALUES(${treino}, ${ativo}, ${servicoid}, ${personalid})
       RETURNING *
     `;    
     res.status(201).json(treino);
@@ -193,9 +193,9 @@ router.post('/treinoInsert', authenticateToken, async (req, res) => {
 });
 
 router.put('/treinoSave', authenticateToken, async (req, res) => {
-  // tratamento descricao indefinido
-  if (typeof req.body[`descricao`] === 'undefined') {
-    req.body[`descricao`] = null;
+  // tratamento treino indefinido
+  if (typeof req.body[`treino`] === 'undefined') {
+    req.body[`treino`] = null;
   }
   // tratamento servicoid indefinido
   if (typeof req.body[`servicoid`] === 'undefined') {
@@ -207,12 +207,12 @@ router.put('/treinoSave', authenticateToken, async (req, res) => {
   }
 
   // Agora que os valores estão garantidos, você pode extrair:
-  const {id, servicoid, descricao, ativo } = req.body;
+  const {id, servicoid, treino, ativo } = req.body;
   
   // UPDATE
   try {
     const treino = await sql`
-      UPDATE Treinos SET treino=${descricao}, treativo=${ativo}, treservicoid=${servicoid}
+      UPDATE Treinos SET treino=${treino}, treativo=${ativo}, treservicoid=${servicoid}
        WHERE treino_ID = ${id}
       RETURNING *
     `;    
