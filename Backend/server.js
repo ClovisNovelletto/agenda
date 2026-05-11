@@ -19,6 +19,7 @@ import personalRoutes from "./routes/personal.js";
 import financeiroRoutes from "./routes/financeiro.js";
 import alunoTreinoRoutes from "./routes/alunotreino.js";
 import tabelaPrecoRoutes from "./routes/tabelaPreco.js";
+import agendaTreinoRoutes from "./routes/agendaTreino.js";
 import configuracaoRoutes from "./routes/configuracao.js";
 
 process.env.TZ = 'UTC';
@@ -45,6 +46,7 @@ app.use("/api/personal", personalRoutes);
 app.use("/api/financeiro", financeiroRoutes);
 app.use("/api/alunoTreino", alunoTreinoRoutes);
 app.use("/api/tabelaPreco", tabelaPrecoRoutes);
+app.use("/api/agendaTreino", agendaTreinoRoutes);
 app.use("/api/configuracao", configuracaoRoutes);
 
 //const isProd = process.env.NODE_ENV === 'production'
