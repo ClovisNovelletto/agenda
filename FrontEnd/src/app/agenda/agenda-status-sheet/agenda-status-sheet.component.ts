@@ -26,6 +26,7 @@ import { MatListModule } from '@angular/material/list'; // Se for usar <mat-list
       <mat-divider></mat-divider>
       <button mat-button (click)="editar()">✏️ Editar</button>
       <button mat-button (click)="descricao()">✏️ Descrição</button>
+      <button mat-button (click)="treino()">✏️ Treino</button>
     </div>
   `,
   styles: [`
@@ -56,5 +57,9 @@ export class AgendaStatusSheetComponent {
 
   descricao() {
     this.bottomSheetRef.dismiss({ action: 'descricao' });
+  }
+
+  treino() {
+    this.bottomSheetRef.dismiss({ action: 'treino' });
   }
 }

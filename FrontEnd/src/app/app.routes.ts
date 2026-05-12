@@ -14,6 +14,7 @@ import { AlunoPlanoListaComponent } from './financeiro/alunoplano/alunoPlano-lis
 import { AlunoListaComponent } from './aluno/aluno-lista/aluno-lista.component';
 import { LocalListaComponent } from './local/local-lista/local-lista.component';
 import { TreinoListaComponent } from './treino/treino-lista/treino-lista.component';
+import { AlunoTreinoListaComponent } from './treino/alunoTreino/alunoTreino-lista/alunoTreino-lista.component';
 import { EquiptoListaComponent } from './equipto/equipto-lista/equipto-lista.component';
 import { ConfiguracoesServicosComponent } from './configuracoes-servicos/configuracoes-servicos.component';
 import { AnamneseListaComponent} from './anamnese/anamnese-lista/anamnese-lista.component'
@@ -38,6 +39,7 @@ export const routes: Routes = [
   { path: 'alunoLista',  canActivate: [AuthGuard], loadComponent: () => import('./aluno/aluno-lista/aluno-lista.component').then(m => m.AlunoListaComponent)},
   { path: 'localLista',  canActivate: [AuthGuard], loadComponent: () => import('./local/local-lista/local-lista.component').then(m => m.LocalListaComponent)},
   { path: 'treinoLista',  canActivate: [AuthGuard], loadComponent: () => import('./treino/treino-lista/treino-lista.component').then(m => m.TreinoListaComponent)},
+  { path: 'treinoAlunoLista',  canActivate: [AuthGuard], loadComponent: () => import('./treino/alunoTreino/alunoTreino-lista/alunoTreino-lista.component').then(m => m.AlunoTreinoListaComponent)},
   { path: 'anamneseLista',  canActivate: [AuthGuard], loadComponent: () => import('./anamnese/anamnese-lista/anamnese-lista.component').then(m => m.AnamneseListaComponent)},
   { path: 'pdfsLista',  canActivate: [AuthGuard], loadComponent: () => import('./pdfs/pdf-lista.component').then(m => m.PdfListaComponent)},
   { path: 'configuracoesServicos',  canActivate: [AuthGuard], loadComponent: () => import('./configuracoes-servicos/configuracoes-servicos.component').then(m => m.ConfiguracoesServicosComponent)},

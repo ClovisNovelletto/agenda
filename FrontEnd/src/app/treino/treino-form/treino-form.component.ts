@@ -64,7 +64,7 @@ export class TreinoFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      descricao: [null, Validators.required],
+      treino: [null, Validators.required],
       servicoid: [Validators.required],
       ativo: [true],
     });
@@ -89,7 +89,7 @@ export class TreinoFormComponent implements OnInit {
 
         // Preenche IDs no form principal
         this.form.patchValue({
-          descricao: this.data.treino.descricao,
+          treino: this.data.treino.treino,
           servicoid: servicoSelecionado?.id,
           ativo: this.data.treino.ativo,
         });
@@ -115,7 +115,7 @@ export class TreinoFormComponent implements OnInit {
       const updated: any = {
         id: this.data?.treino?.id ?? null,
         servicoid: this.servicoSelecionado?.id,
-        descricao: formValue.descricao,
+        treino: formValue.treino,
         ativo: formValue.ativo,
       };
 

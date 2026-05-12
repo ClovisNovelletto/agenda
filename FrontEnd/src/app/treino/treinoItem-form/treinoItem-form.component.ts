@@ -86,7 +86,7 @@ console.log("this.treinos", this.treinos)
           treinoid: this.data.treinoid
         });   
         // Preenche nomes nos autocompletes
-        this.treinoCtrl.setValue(treinoSelecionado?.descricao || '');
+        this.treinoCtrl.setValue(treinoSelecionado?.treino || '');
       }
 console.log("this.data", this.data)
       if (this.data?.treinoItems) {
@@ -107,7 +107,7 @@ console.log("this.data", this.data)
         });
 
         // Preenche nomes nos autocompletes
-        this.treinoCtrl.setValue(treinoSelecionado?.descricao || '');
+        this.treinoCtrl.setValue(treinoSelecionado?.treino || '');
 
       }
 
@@ -124,16 +124,16 @@ console.log("this.data", this.data)
     // inicializa o FormControl se ainda não tiver sido criado
     if (!this.treinoCtrl) {
       //this.treinoCtrl = new FormControl('');
-      this.treinoCtrl = new FormControl(this.treinoSelecionado?.descricao);
+      this.treinoCtrl = new FormControl(this.treinoSelecionado?.treino);
     }
 
     this.treinoCtrl.valueChanges
       .pipe(
         startWith(''),
         map(value => value?.toLowerCase()),
-        map(descricao => {
+        map(treino => {
           const filtrado = this.treinos.filter(l =>
-            l.descricao.toLowerCase().includes(descricao)
+            l.treino.toLowerCase().includes(treino)
           );
           this.treinoEncontrado = filtrado.length > 0;
           return filtrado;
@@ -194,10 +194,10 @@ console.log("this.data", this.data)
 
   onTreinoBlur() {
     const nome = this.treinoCtrl.value;
-    const treino = this.treinos.find(l => l.descricao === nome);
+    const treino = this.treinos.find(l => l.treino === nome);
     console.log('Treino Selecionado ao sair do campo:', treino);
     if (treino && treino.id) {
-      this.treinoCtrl.setValue(treino.descricao);
+      this.treinoCtrl.setValue(treino.treino);
       this.form.get('alunoid')?.setValue(treino.id);
       this.treinoSelecionado = treino;
 
@@ -219,7 +219,7 @@ console.log("this.data", this.data)
 
   onAlunoSelected(nome: string) {
     console.log('onAlunoSelected...');
-    const treino = this.treinos.find(a => a.descricao === nome);
+    const treino = this.treinos.find(a => a.treino === nome);
     if (treino) {
       console.log('treinoid: ', treino.id);
       this.form.patchValue({treinoid: treino.id });

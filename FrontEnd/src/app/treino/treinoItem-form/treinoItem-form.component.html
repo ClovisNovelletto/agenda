@@ -22,8 +22,8 @@
       <mat-autocomplete
         #autoTreino="matAutocomplete"
         (optionSelected)="onTreinoSelecionado($event)">
-        <mat-option *ngFor="let treino of treinosFiltrados" [value]="treino.descricao">
-          {{ treino.descricao }} 
+        <mat-option *ngFor="let treino of treinosFiltrados" [value]="treino.treino">
+          {{ treino.treino }} 
         </mat-option>
       </mat-autocomplete>
     </mat-form-field>

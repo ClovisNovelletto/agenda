@@ -1,0 +1,47 @@
+
+<div class="dialog-content" *ngIf="agendaTreino as treino">
+
+  <mat-toolbar color="primary" style="margin-bottom: 10px; margin-top: 5px;">
+  <label>
+  <button mat-icon-button style="display: column; width: 20px !important; height: 20px !important; align-items: center !important; justify-content: center !important; background-color: black; padding: 7px; margin-right: 10px;" (click)="fechar()">
+    <mat-icon style="display: column; align-items: center !important; justify-content: center !important;">arrow_back</mat-icon>
+  </button>
+
+  <span style="font-size: 16px !important; padding: 2px;">Aluno: {{ aluno }} </span>
+  </label>  
+  </mat-toolbar>
+<!--
+    <button mat-icon-button class="btn-voltar" (click)="fechar()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+  !>
+  <!--  <button mat-icon-button style="width: 20px !important; height: 20px !important; align-items: center !important; justify-content: center !important; background-color: black; padding: 7px; margin-right: 10px;" (click)="fechar()">
+      <mat-icon style="align-items: center !important; justify-content: center !important;">arrow_back</mat-icon>
+    </button>-->
+<!--    <span style="font-size: 18px !important; padding: 0; margin-bottom: 15px; ">Treinos</span> -->
+
+  <h2>Treino: {{ treino.treino }}</h2>
+
+<div class="progress-bar">
+  <div class="progress" [style.width.%]="(concluidos / treino.items.length) * 100"></div>
+</div>
+  <div>
+    Progresso: {{ concluidos }}/{{ treino.items.length }}
+  </div>
+
+  <ul>
+    <li *ngFor="let item of treino.items" class="treino-item" [class.concluido]="item.concluido">
+      <label>
+      <input type="checkbox"
+            [checked]="item.concluido"
+             (change)="marcar(item, $event)">
+      
+      {{ item.exercicio }}
+      ({{ item.serie }}x{{ item.repeticao }})
+      </label>
+    </li>
+  </ul>
+
+  <button (click)="marcarTodos()" class="bntmarcar">Marcar todos</button>
+  <button (click)="desmarcarTodos()" class="bntdesmarcar">Desmarcar todos</button>
+</div>

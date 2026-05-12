@@ -67,8 +67,8 @@ export class TreinoListaComponent implements OnInit {
   treinos: Treino[] = [];
   treinosFiltrados: Treino[] = [];
   treinoSelecionado: any;
-  displayedColumns = ['exercicio', 'serie', 'tempo', 'peso'];
-  displayedHeaderColumns = ['exercicio', 'serie', 'tempo', 'peso'];
+  displayedColumns = ['exe', 'ser', 'tem', 'pes'];
+  displayedHeaderColumns = ['exe', 'ser', 'tem', 'pes'];
   dataSource = new MatTableDataSource<TreinoItem>([]);
   carregandoTreinos = false;
   carregandoTreinosItems = false;
@@ -148,8 +148,8 @@ private carregarTreinos() {
     this.treinoSelecionado = treino;
     this.aplicarFiltro();
 
-    this.displayedColumns = ['exercicio', 'serie', 'tempo', 'peso'];
-    this.displayedHeaderColumns = ['exercicio', 'serie', 'tempo', 'peso'];
+    this.displayedColumns = ['exe', 'ser', 'tem', 'pes'];
+    this.displayedHeaderColumns = ['exe', 'ser', 'tem', 'pes'];
     console.log("treinoselecionado", this.treinoSelecionado);
     console.log("dataSource", this.dataSource.data);
   }
@@ -277,7 +277,7 @@ aplicarFiltro(): void {
   this.treinosFiltrados = this.treinos
     .filter(treino => {
       const correspondeTexto = this.filtroTexto
-        ? treino.descricao.toLowerCase().includes(this.filtroTexto.toLowerCase())
+        ? treino.treino.toLowerCase().includes(this.filtroTexto.toLowerCase())
         : true;
 
       const correspondeStatus = this.filtroStatus === 'Todos'
@@ -287,7 +287,7 @@ console.log( correspondeTexto);
 console.log( correspondeStatus);
       return correspondeTexto && correspondeStatus;
     })
-    .sort((a, b) => a.descricao.localeCompare(b.descricao)); // <-- ordenação fixa por nome
+    .sort((a, b) => a.treino.localeCompare(b.treino)); // <-- ordenação fixa por nome
     // 🔥 valida seleção
     if (!this.treinosFiltrados.find(t => t.id === this.treinoSelecionado?.id)) {
       this.treinoSelecionado = this.treinosFiltrados[0] || null;

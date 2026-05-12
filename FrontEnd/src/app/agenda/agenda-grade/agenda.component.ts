@@ -53,6 +53,10 @@ import { tap } from 'rxjs/operators';
 import { AuthService } from '../../auth.service';
 
 import { MatMenuModule } from '@angular/material/menu';
+import { AgendaTreinoComponent } from '../agenda-treino/agenda-treino.component'
+import { AgendaTreinoService } from '../../services/agendaTreino.service';
+import { AgendaTreino } from '../../models/agendaTreino.model';
+
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -183,10 +187,13 @@ export class AgendaComponent implements OnInit, AfterViewInit {
   week: Date[] = [];
   isMobile: boolean = false;
   dropListIds: string[] = [];
+  agendaTreino!: AgendaTreino;
+  mensagem: string="";
 
   constructor(private dialog: MatDialog, private http: HttpClient, private personalService: PersonalService,
               private agendaStatusService: AgendaStatusService, private bottomSheet: MatBottomSheet,
-              private snackBar: MatSnackBar, private cd: ChangeDetectorRef, private authService: AuthService) {}
+              private snackBar: MatSnackBar, private cd: ChangeDetectorRef, private authService: AuthService,
+              private agendaTreinoService: AgendaTreinoService) {}
 
   ngOnInit(): void {
     
@@ -914,6 +921,8 @@ console.log('teste vai:');
         this.editarCompromisso(appt);
       } else if (result.action === 'descricao') {
         this.editarDescricao(appt);
+      } else if (result.action === 'treino') {
+        this.abrirTreino(appt.agenda_id, appt.aluno);
       } else if (result.action === 'status' && appt.statusid != result.statusid) {
         const statusid = result.statusid ?? 1;
         console.log('appt:', appt);
@@ -951,6 +960,44 @@ console.log('teste vai:');
           }
         });
       }
+    });
+  }
+
+  
+  abrirTreino(agendaId: number, aluno: string) {
+    //
+    this.agendaTreinoService.getTreino(agendaId)
+      .subscribe((res: any) => {
+
+        if (!res || res.length === 0) {
+
+          this.mensagem = 'Nenhum treino encontrado para esta agenda.';
+
+          this.snackBar.open(this.mensagem, 'Fechar', {
+            duration: 5000,
+            panelClass: ['snackbar-success'],
+            horizontalPosition: 'center',
+            verticalPosition: 'top'
+          });
+
+          return;
+        }
+
+        console.log("res", res);
+
+        this.agendaTreino = res;
+
+        console.log("agendaTreino", this.agendaTreino);
+
+        this.dialog.open(AgendaTreinoComponent, {
+          width: '600px',
+          panelClass: 'agendaTreino',
+          data: {
+            agendaTreino: this.agendaTreino,
+            aluno
+          }
+        });
+
     });
   }
 

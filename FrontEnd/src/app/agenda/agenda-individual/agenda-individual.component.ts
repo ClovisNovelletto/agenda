@@ -53,7 +53,10 @@ import { Local } from '../../models/local.model';
 import { Equipto } from '../../models/equipto.model';
 import { Servico } from '../../models/servico.model';
 import { Appointment } from '../../models/appointment'; // ajuste o caminho conforme sua estrutura
-
+import { AgendaTreinoComponent } from '../agenda-treino/agenda-treino.component'
+import { AgendaTreinoService } from '../../services/agendaTreino.service';
+import { AgendaTreino } from '../../models/agendaTreino.model';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -108,12 +111,14 @@ export class AgendaIndividualComponent implements OnInit {
   isMobile: boolean = false;
   mostrarEquipto: boolean = false;
   currentDate: Date = dayjs.utc().tz('America/Sao_Paulo').toDate();
+  agendaTreino!: AgendaTreino;
+  mensagem: string="";
 
   @ViewChild('monthPicker') monthPicker!: MatDatepicker<Date>;
 
   constructor(private agendaService: AgendaService, private authService: AuthService,  private agendaStatusService: AgendaStatusService,
               private cd: ChangeDetectorRef, private personalService: PersonalService, private bottomSheet: MatBottomSheet, 
-              private http: HttpClient, private dialog: MatDialog
+              private http: HttpClient, private dialog: MatDialog, private agendaTreinoService: AgendaTreinoService, private snackBar: MatSnackBar
   ) {}
 
   
@@ -353,6 +358,8 @@ export class AgendaIndividualComponent implements OnInit {
         this.editarCompromisso(appt);
       } else if (result.action === 'descricao') {
         this.editarDescricao(appt);
+      } else if (result.action === 'treino') {
+        this.abrirTreino(appt.agenda_id, appt.aluno);
       } else if (result.action === 'status' && appt.statusid != result.statusid) {
         const statusid = result.statusid ?? 1;
         console.log('appt:', appt);
@@ -379,6 +386,42 @@ export class AgendaIndividualComponent implements OnInit {
     });
   }
 
+  abrirTreino(agendaId: number, aluno: string) {
+    //
+    this.agendaTreinoService.getTreino(agendaId)
+      .subscribe((res: any) => {
+
+        if (!res || res.length === 0) {
+
+          this.mensagem = 'Nenhum treino encontrado para esta agenda.';
+
+          this.snackBar.open(this.mensagem, 'Fechar', {
+            duration: 5000,
+            panelClass: ['snackbar-success'],
+            horizontalPosition: 'center',
+            verticalPosition: 'top'
+          });
+
+          return;
+        }
+
+        console.log("res", res);
+
+        this.agendaTreino = res;
+
+        console.log("agendaTreino", this.agendaTreino);
+
+        this.dialog.open(AgendaTreinoComponent, {
+          width: '600px',
+          panelClass: 'agendaTreino',
+          data: {
+            agendaTreino: this.agendaTreino,
+            aluno
+          }
+        });
+
+    });
+  }
 
   editarDescricao(appt: any): void {
     agenda_id: appt.agenda_id,
