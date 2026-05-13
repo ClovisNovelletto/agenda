@@ -174,18 +174,19 @@ router.post('/treinoInsert', authenticateToken, async (req, res) => {
   if (typeof req.body[`ativo`] === 'undefined') {
     req.body[`ativo`] = null;
   }
+console.log("req.body", req.body);
 
   // Agora que os valores estão garantidos, você pode extrair:
   const {id, servicoid, treino, ativo } = req.body;
-  
+console.log(servicoid, treino, ativo);  
   // INSERT
   try {
-    const treino = await sql`
+    const treinoIns = await sql`
       INSERT INTO Treinos(treino, treativo, treservicoid, trepersonalid)
       VALUES(${treino}, ${ativo}, ${servicoid}, ${personalid})
       RETURNING *
     `;    
-    res.status(201).json(treino);
+    res.status(201).json(treinoIns);
     } catch (err) {
       console.error('Erro ao inserir treino:', err);
       res.status(500).json({ error: 'Erro ao inserir treino' });
