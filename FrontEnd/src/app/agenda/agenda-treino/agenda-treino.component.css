@@ -28,36 +28,6 @@ body {
   background: black;
 }
 
-.bntmarcar {
-  background: #4CAF50;
-  color: white;
-  border: none;
-  margin: 5px;
-  padding: 10px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.bntmarcar:hover {
-  background: #4CAF50;
-  color: white;
-}
-
-.bntdesmarcar {
-  background: #970b0b;
-  color: white;
-  border: none;
-  margin: 5px;
-  padding: 10px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.bntdesmarcar:hover {
-  background: #970b0b;
-  color: white;
-}
-
 .btn-voltar {
   border-radius: 50%;
   background-color: black;
@@ -100,4 +70,63 @@ minha-toobar {
 .treino-item.concluido {
   opacity: 0.6;
   text-decoration: line-through;
+}
+
+
+.acoes-links{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:12px;
+  margin-top:20px;
+  font-size:14px;
+}
+
+.acao{
+  font-weight:600;
+  cursor:pointer;
+}
+
+.verde{
+  color:#4caf50 !important;;
+}
+
+.vermelho{
+  color:#f44336 !important;;
+}
+
+.divisor{
+  color:#777 !important;;
+}
+
+
+
+.bntmarcarxxx {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  margin: 5px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.bntmarcarxxx:hover {
+  background: #4CAF50;
+  color: white;
+}
+
+.bntdesmarcarxxx {
+  background: #970b0b;
+  color: white;
+  border: none;
+  margin: 5px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.bntdesmarcarxxx:hover {
+  background: #970b0b;
+  color: white;
 }

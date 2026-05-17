@@ -42,6 +42,17 @@
     </li>
   </ul>
 
-  <button (click)="marcarTodos()" class="bntmarcar">Marcar todos</button>
-  <button (click)="desmarcarTodos()" class="bntdesmarcar">Desmarcar todos</button>
+  <div class="acoes-links">
+
+    <span class="acao verde" (click)="marcarTodos()">
+      ✓ Todos
+    </span>
+
+    <span class="divisor">|</span>
+
+    <span class="acao vermelho" (click)="desmarcarTodos()">
+      ✕ Limpar
+    </span>
+
+  </div>
 </div>

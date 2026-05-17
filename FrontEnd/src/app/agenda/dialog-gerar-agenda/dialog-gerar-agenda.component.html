@@ -1,7 +1,10 @@
+
+<form [formGroup]="form">
 <h2 mat-dialog-title>{{titulo}}</h2>
 <small style="margin-left: 20px; margin-right: 20px; display: block; color: #ffabf3;">{{mensagem}}</small>
 
 <mat-dialog-content>
+  
   <mat-form-field appearance="fill" style="width: 100%;">
     <mat-label>Escolha o mês</mat-label>
     <mat-select [(value)]="mesSelecionado">
@@ -10,9 +13,23 @@
       </mat-option>
     </mat-select>
   </mat-form-field>
-</mat-dialog-content>
 
+  <mat-form-field appearance="fill" style="width: 100%;">
+    <mat-label>Aluno</mat-label>
+    <input type="text" matInput [formControl]="alunoCtrl" [matAutocomplete]="autoAluno">
+    <mat-autocomplete #autoAluno="matAutocomplete" (optionSelected)="onAlunoSelected($event.option.value)">
+      <mat-option *ngFor="let aluno of alunosFiltrados" [value]="aluno.nome">
+        {{ aluno.nome }}
+      </mat-option>
+    </mat-autocomplete>
+      <mat-hint>
+        Opcional, para gerar apenas de um Aluno
+      </mat-hint>
+  </mat-form-field>
+
+</mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-button class="btn-salvar" (click)="dialogRef.close()">Cancelar</button>
   <button mat-button class="btn-salvar" (click)="confirmar()">Confirmar</button>
 </mat-dialog-actions>
+</form>

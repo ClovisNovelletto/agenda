@@ -19,6 +19,14 @@ export class AlunoService {
     //return this.http.get<Aluno[]>(this.baseUrl);
   }
 
+  alunosAtivos(): Observable<Aluno[]> {
+    const token = localStorage.getItem('jwt-token');
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    return this.http.get<Aluno[]>(`${environment.apiUrl}/aluno/alunos`, { headers });
+    //return this.http.get<Aluno[]>(this.baseUrl);
+  }
+
+
   salvar(aluno: Aluno): Observable<Aluno> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });

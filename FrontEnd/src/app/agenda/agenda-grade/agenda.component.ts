@@ -1005,13 +1005,32 @@ console.log('teste vai:');
     this.mostrarSeletorMes = true;
   }
 
+  gerarTreino(payload: any) {
+    //const payload = {
+    //  data_inicio: dayjs(retornoDialog.mesSelecionado.dataInicio).format('YYYY-MM-DD'),
+    //  data_fim: dayjs(retornoDialog.mesSelecionado.dataFim).format('YYYY-MM-DD'),
+    //  alunoid: retornoDialog.alunoid
+    //};
+
+    //this.agendaTreinoService.gerarAgendaTreino(payload);
+    this.agendaTreinoService.gerarAgendaTreino(payload).subscribe({
+      next: (retorno) => {
+        console.log('SUCESSO', retorno);
+      },
+      error: (erro) => {
+        console.log('ERRO', erro);
+      }
+    });
+
+  }
   //gerarAgenda(data: Date) {
-  gerarAgenda(mesSelecionado: { dataInicio: Date, dataFim: Date }) {
+  gerarAgenda(retornoDialog: any/*mesSelecionado: { dataInicio: Date, dataFim: Date }, alunoid: number*/) {
     this.mostrarSeletorMes = false;
 
     const payload = {
-      data_inicio: dayjs(mesSelecionado.dataInicio).format('YYYY-MM-DD'),
-      data_fim: dayjs(mesSelecionado.dataFim).format('YYYY-MM-DD'),
+      data_inicio: dayjs(retornoDialog.mesSelecionado.dataInicio).format('YYYY-MM-DD'),
+      data_fim: dayjs(retornoDialog.mesSelecionado.dataFim).format('YYYY-MM-DD'),
+      alunoid: retornoDialog.alunoid
     };
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
@@ -1022,20 +1041,23 @@ console.log('teste vai:');
         this.appointments$ = new BehaviorSubject<Appointment[]>([]);
         this.carregamentosFeitos = [];
         this.loadAppointments(); // ⬅️ recarrega os dados após sucesso
+        
         setTimeout(() => this.cd.markForCheck());
       },
       error: err => {
         this.snackBar.open('Erro ao gerar agenda!', 'Fechar', { duration: 3000 });
       }
     });
+    this.gerarTreino(payload);
   }
 
-  gerarRecebimentos(mesSelecionado: { dataInicio: Date, dataFim: Date }) {
+  gerarRecebimentos(retornoDialog: any/*mesSelecionado: { dataInicio: Date, dataFim: Date }, alunoid: number*/) {
     this.mostrarSeletorMes = false;
 
     const payload = {
-      data_inicio: dayjs(mesSelecionado.dataInicio).format('YYYY-MM-DD'),
-      data_fim: dayjs(mesSelecionado.dataFim).format('YYYY-MM-DD'),
+      data_inicio: dayjs(retornoDialog.mesSelecionado.dataInicio).format('YYYY-MM-DD'),
+      data_fim: dayjs(retornoDialog.mesSelecionado.dataFim).format('YYYY-MM-DD'),
+      alunoid: retornoDialog.alunoid
     };
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
@@ -1064,9 +1086,11 @@ console.log('teste vai:');
       }  
     });
 
-    dialogRef.afterClosed().subscribe((mesSelecionado) => {
-      if (mesSelecionado) {
-        this.gerarAgenda(mesSelecionado);
+    dialogRef.afterClosed().subscribe((retornoDialogo) => {
+      //mesSelecionado: retornoDialogo.mesSelcionado;
+      //const alunoid: retornoDialogo.alunoid;
+      if (retornoDialogo) {
+        this.gerarAgenda(retornoDialogo);
       }
     });
   }
@@ -1080,9 +1104,11 @@ console.log('teste vai:');
       }  
     });
 
-    dialogRef.afterClosed().subscribe((mesSelecionado) => {
-      if (mesSelecionado) {
-        this.gerarRecebimentos(mesSelecionado);
+    dialogRef.afterClosed().subscribe((retornoDialogo) => {
+      //mesSelecionado: retornoDialogo.mesSelcionado;
+      //alunoid: retornoDialogo.alunoid;
+      if (retornoDialogo) {
+        this.gerarRecebimentos(retornoDialogo/*mesSelcionado, alunoid*/);
       }
     });
   }
@@ -1096,10 +1122,12 @@ console.log('teste vai:');
       }  
     });
 
-    dialogRef.afterClosed().subscribe((mesSelecionado) => {
-      if (mesSelecionado) {
-        this.gerarAgenda(mesSelecionado);
-        this.gerarRecebimentos(mesSelecionado);
+    dialogRef.afterClosed().subscribe((retornoDialogo) => {
+      if (retornoDialogo) {
+        //this.gerarAgenda(mesSelecionado, alunoid);
+        //this.gerarRecebimentos(mesSelecionado);
+        this.gerarAgenda(retornoDialogo);
+        this.gerarRecebimentos(retornoDialogo);
       }
     });
   }

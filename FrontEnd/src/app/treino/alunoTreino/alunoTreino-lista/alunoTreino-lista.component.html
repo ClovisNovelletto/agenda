@@ -123,6 +123,7 @@
             <tr style="min-height: 30px!important; height: 30px!important;"
                 mat-row
                 cdkDrag
+                [cdkDragStartDelay]="{ touch: 200, mouse: 0 }"
                 *matRowDef="let row; columns: displayedColumns;"
                 (click)="alunoTreinosEditar(row)">
             </tr>
