@@ -24,8 +24,11 @@ export class AgendaStatusSheetComponent {
     @Inject(MAT_BOTTOM_SHEET_DATA) public data: any,
     private bottomSheetRef: MatBottomSheetRef<AgendaStatusSheetComponent>
     
-  ) {console.log("data", data);}
+  ) {console.log("data", data);
+    
+  }
 
+  
   select(statusid: number) {
     this.bottomSheetRef.dismiss({ action: 'status', statusid });
   }
