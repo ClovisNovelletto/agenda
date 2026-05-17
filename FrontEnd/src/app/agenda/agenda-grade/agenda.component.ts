@@ -910,7 +910,8 @@ console.log('teste vai:');
   abrirMenuStatus(appt: any, day: Date, hour: string, minute: number) {
     console.log('entrou no abrirMenuStatus.');
     const ref = this.bottomSheet.open(AgendaStatusSheetComponent, {
-      data: appt
+      data: appt,
+      autoFocus: false
     });
 
     ref.afterDismissed().subscribe(result => {

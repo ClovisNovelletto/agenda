@@ -347,7 +347,8 @@ export class AgendaIndividualComponent implements OnInit {
   abrirMenuStatusFull(appt: any, day: Date, hour: string, minute: number) {
     console.log('entrou no abrirMenuStatus.');
     const ref = this.bottomSheet.open(AgendaStatusSheetComponent, {
-      data: appt
+      data: appt,
+      autoFocus: false
     });
 
     ref.afterDismissed().subscribe(result => {

@@ -17,35 +17,14 @@ import { MatListModule } from '@angular/material/list'; // Se for usar <mat-list
     MatDividerModule,
     MatListModule // opcional, remova se não usar
   ],
-  template: `
-    <div class="status-sheet">
-      <button mat-button (click)="select(1)">✅ Agendado</button>
-      <button mat-button (click)="select(2)">🔵 Concluído</button>
-      <button mat-button (click)="select(3)">❌ Cancelado</button>
-      <button mat-button (click)="select(4)">🔴 Falta</button>
-      <mat-divider></mat-divider>
-      <button mat-button (click)="editar()">✏️ Editar</button>
-      <button mat-button (click)="descricao()">✏️ Descrição</button>
-      <button mat-button (click)="treino()">✏️ Treino</button>
-    </div>
-  `,
-  styles: [`
-    .status-sheet {
-      display: flex;
-      flex-direction: column;
-      padding: 16px;
-    }
-    button {
-      justify-content: flex-start;
-      text-align: left;
-    }
-  `]
+ 
 })
 export class AgendaStatusSheetComponent {
   constructor(
     @Inject(MAT_BOTTOM_SHEET_DATA) public data: any,
     private bottomSheetRef: MatBottomSheetRef<AgendaStatusSheetComponent>
-  ) {}
+    
+  ) {console.log("data", data);}
 
   select(statusid: number) {
     this.bottomSheetRef.dismiss({ action: 'status', statusid });

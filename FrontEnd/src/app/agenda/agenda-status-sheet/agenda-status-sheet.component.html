@@ -1,12 +1,42 @@
 <p>Mudar status ou editar dados!</p>
 
+
 <div class="status-sheet">
-  <button mat-button (click)="select(1)">✅ Agendado</button>
-  <button mat-button (click)="select(2)">🔵 Concluído</button>
-  <button mat-button (click)="select(3)">❌ Cancelado</button>
-  <button mat-button (click)="select(4)">🔴 Faltou</button>
+
+
+  <button
+    mat-button
+    (click)="select(1)"
+    [class.selected]="+data.statusid === 1">
+    <span class="status-dot pendente"></span>
+    Agendado
+  </button>
+
+  <button mat-button 
+    (click)="select(2)"
+    [class.selected]="+data.statusid === 2">
+    <span class="status-dot efetivado"></span>
+    Concluído
+  </button>
+
+  <button mat-button
+    (click)="select(3)"
+    [class.selected]="+data.statusid === 3">
+    <span class="status-dot cancelado"></span>
+    Cancelado
+  </button>
+
+  <button mat-button
+    (click)="select(4)"
+    [class.selected]="+data.statusid === 4">
+    <span class="status-dot falta"></span>
+    Faltou
+  </button>
+
   <mat-divider></mat-divider>
   <button mat-button (click)="editar()">✏️ Editar</button>
   <button mat-button (click)="descricao()">✏️ Descrição</button>
   <button mat-button (click)="treino()">✏️ Treino</button>
 </div>
+
+
