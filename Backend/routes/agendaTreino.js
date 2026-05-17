@@ -71,20 +71,20 @@ router.put('/concluirItem', authenticateToken, async (req, res) => {
 });
 
 router.put('/concluirTreino', authenticateToken, async (req, res) => {
-  const { id } = req.body;
+  const { id, concluido } = req.body;
   const personalid = req.user.personalid;
   console.log("id", id);
 
   try {
   await sql`
     UPDATE AgendaTreinoItems
-    SET atiConcluido = true
+    SET atiConcluido = ${concluido}
     WHERE atiagendatreinoid = ${id}
   `;
 
   const agendaTreino = await sql`
     UPDATE AgendaTreinos
-    SET atConcluido = true
+    SET atConcluido = ${concluido}
     WHERE AgendaTreino_ID = ${id}
     RETURNING *
   `;
