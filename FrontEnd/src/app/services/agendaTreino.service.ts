@@ -25,11 +25,11 @@ export class AgendaTreinoService {
     return this.http.put<AgendaTreino[]>(`${environment.apiUrl}/agendaTreino/concluirItem`, {id, concluido}, { headers });
   }
 
-  concluirTreino(id: number) {
+  concluirTreino(id: number, concluido: boolean) {
     console.log("id", id);
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    return this.http.put<AgendaTreino>(`${environment.apiUrl}/agendaTreino/concluirTreino`, {id}, { headers });
+    return this.http.put<AgendaTreino>(`${environment.apiUrl}/agendaTreino/concluirTreino`, {id, concluido}, { headers });
   }
 
   gerarAgendaTreino(payload: any) {

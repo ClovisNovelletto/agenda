@@ -119,7 +119,7 @@ export class AgendaTreinoComponent implements OnInit {
     }
 
     marcarTodos() {
-        this.agendaTreinoService.concluirTreino(this.agendaTreino.id).subscribe(() => {
+        this.agendaTreinoService.concluirTreino(this.agendaTreino.id, true).subscribe(() => {
             this.agendaTreino.concluido = true;
             this.agendaTreino.items.forEach(i => i.concluido = true);
             this.atualizarProgresso();
@@ -127,7 +127,7 @@ export class AgendaTreinoComponent implements OnInit {
     }
 
     desmarcarTodos() {
-        this.agendaTreinoService.concluirTreino(this.agendaTreino.id).subscribe(() => {
+        this.agendaTreinoService.concluirTreino(this.agendaTreino.id, false).subscribe(() => {
             this.agendaTreino.concluido = false;
             this.agendaTreino.items.forEach(i => i.concluido = false);
             this.atualizarProgresso();
