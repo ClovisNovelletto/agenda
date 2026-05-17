@@ -110,13 +110,13 @@ router.put('/agendaStatus', authenticateToken, async (req, res) => {
 
 router.post('/agendaGerar', authenticateToken, async (req, res) => {
   const personalid = req.user.personalid;
-  const {data_inicio, data_fim} = req.body;
+  const {data_inicio, data_fim, alunoid} = req.body;
 
   //console.error('personalid:', personalid);
   //console.error('data_inicio:', data_inicio);
   //console.error('data_fim:', data_fim);
   try {
-    await sql`DELETE FROM Agendas WHERE AgPersonalID=${personalid} AND AgData>=${data_inicio} AND AgData<=${data_fim} AND AgStatus IN(1,3); /*Pedente ou Cancelado*/`;
+    await sql`DELETE FROM Agendas WHERE AgPersonalID=${personalid} AND AgAlunoID=${alunoid} AND AgData>=${data_inicio} AND AgData<=${data_fim} AND AgStatus IN(1,3); /*Pedente ou Cancelado*/`;
   } catch (err) {
     console.error('Erro ao apagar agenda do mês:', err);
     res.status(500).json({ error: 'Erro ao apagar agenda' });
@@ -126,7 +126,7 @@ router.post('/agendaGerar', authenticateToken, async (req, res) => {
     const agenda = await sql`
     INSERT INTO Agendas(Agenda, AgPersonalID, AgAlunoID, AgLocalID, AgServicoID, AgEquiptoID, AgData, AgStatus) --ON CONFLICT DO NOTHING
     SELECT 'Teste', ${personalid}, AlunoID, LocalID, ServicoID, EquiptoID, datahora + interval '3 hour', 1
-      FROM h2ugetagendaEquipto(${data_inicio}, ${data_fim}, ${personalid})
+      FROM h2ugetagendaEquipto(${data_inicio}, ${data_fim}, ${personalid}, ${alunoid})
     ON CONFLICT DO NOTHING
     RETURNING *`;
     res.status(201).json(agenda);

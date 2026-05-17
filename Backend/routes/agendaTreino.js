@@ -5,10 +5,6 @@ import { authenticateToken } from "../middleware/authMiddleware.js";
 console.log(">>> agendaTreino.js !");
 const router = express.Router();
 
-//app.get('/agendaTreino/treino/:agendaId', (req, res) => {
-//  const { agendaId } = req.params;
-//});
-
 router.get('/treino/:agendaId', authenticateToken, async (req, res) => {
   try {
     console.log("carrega TreinoAgenda");
@@ -97,6 +93,266 @@ router.put('/concluirTreino', authenticateToken, async (req, res) => {
       console.error('Erro ao atualizar descrição item do treino:', err);
       res.status(500).json({ error: 'Erro ao atualizar item do treino' });
     }
+});
+
+
+router.post('/gerarAgendaTreinos', authenticateToken, async (req, res) => {
+
+  try {
+
+    console.log('entrou no agenda treinos');
+
+    const personalid = req.user.personalid;
+    const { data_inicio, data_fim, alunoid } = req.body;
+
+    console.log({
+      personalid,
+      data_inicio,
+      data_fim,
+      alunoid
+    });
+
+    // pegar alunos
+    const alunos = await sql`
+      SELECT DISTINCT atalunoid AS alunoid
+      FROM AlunosTreinos
+      WHERE atalunoid = COALESCE(${alunoid}, atalunoid)
+        AND atpersonalid = ${personalid}
+        AND atdataini >= ${data_inicio}
+        AND COALESCE(atdatafim, ${data_fim}) <= ${data_fim}
+    `;
+
+    console.log('alunos:', alunos.length);
+
+    // loop alunos
+    for (const aluno of alunos) {
+
+      try {
+
+        console.log('processando aluno', aluno.alunoid);
+
+        // pegar treinos
+        const treinos = await sql`
+          SELECT
+              alunostreino_id,
+              (SELECT treino
+                 FROM Treinos
+                WHERE treino_id = attreinoid) treino,
+              attreinoid treinoid,
+              atordem
+          FROM AlunosTreinos
+          WHERE atalunoid = ${aluno.alunoid}
+            AND atpersonalid = ${personalid}
+            AND atdataini >= ${data_inicio}
+            AND COALESCE(atdatafim, ${data_fim}) <= ${data_fim}
+          ORDER BY atordem
+        `;
+
+        console.log('treinos:', treinos.length);
+
+        // evitar divisão por zero
+        if (treinos.length === 0) {
+          console.log('Aluno sem treino:', aluno.alunoid);
+          continue;
+        }
+
+        // pegar agendas
+        const agendas = await sql`
+          SELECT agenda_id, agdata
+          FROM Agendas
+          WHERE agalunoid = ${aluno.alunoid}
+            AND agdata >= ${data_inicio}
+            AND agdata <= ${data_fim}
+          ORDER BY agdata
+        `;
+
+        console.log('agendas:', agendas.length);
+
+        // loop agendas
+        for (let i = 0; i < agendas.length; i++) {
+
+          const indiceTreino = i % treinos.length;
+
+          const treino = treinos[indiceTreino];
+          const agenda = agendas[i];
+
+          console.log(
+            'Agenda',
+            agenda.agenda_id,
+            'recebe treino',
+            treino.treino
+          );
+
+          // inserir AgendaTreinos
+          const [agendaTreinoIns] = await sql`
+            INSERT INTO AgendaTreinos (
+              atagendaid,
+              atalunoid,
+              attreino,
+              atordem
+            )
+            VALUES (
+              ${agenda.agenda_id},
+              ${aluno.alunoid},
+              ${treino.treino},
+              ${treino.atordem}
+            )
+            RETURNING *
+          `;
+
+          // inserir itens
+          await sql`
+            INSERT INTO AgendaTreinoItems(
+              atiagendatreinoid,
+              atiexercicio,
+              atiserie,
+              atirepeticao,
+              atipeso,
+              atitempo,
+              atiordem
+            )
+            SELECT
+              ${agendaTreinoIns.agendatreino_id},
+              tritexercicio,
+              tritserie,
+              tritrepeticao,
+              tritpeso,
+              trittempo,
+              tritordem
+            FROM TreinosItems
+            WHERE trittreinoid = ${treino.treinoid}
+          `;
+
+        }
+
+      } catch (erroAluno) {
+
+        console.error(
+          'Erro ao processar aluno',
+          aluno.alunoid,
+          erroAluno
+        );
+
+      }
+
+    }
+
+    return res.status(200).json({
+      sucesso: true,
+      mensagem: 'Agenda de treinos gerada com sucesso'
+    });
+
+  } catch (erro) {
+
+    console.error('Erro geral gerarAgendaTreinos:', erro);
+
+    return res.status(500).json({
+      sucesso: false,
+      mensagem: 'Erro ao gerar agenda de treinos',
+      erro: erro.message
+    });
+
+  }
+
+});
+
+router.post('/gerarAgendaTreinos_xxx', authenticateToken, async (req, res) => {
+  console.log('entrou no agenda treinos');
+  const personalid = req.user.personalid;
+  const {data_inicio, data_fim, alunoid} = req.body;
+  console.log('entrou no agenda treinos');
+  console.log(data_inicio, data_fim, alunoid);
+  //pegar alunos todos ou selecionado e que tem aula no período
+  const alunos = await sql`
+    SELECT DISTINCT atalunoid alunoid
+      FROM AlunosTreinos
+    WHERE atalunoid=COALESCE(${alunoid},atalunoid)
+      AND atpersonalid=${personalid}
+      AND atdataini>=${data_inicio}
+      AND COALESCE(atdatafim,${data_fim})<=${data_fim}    
+  `;
+
+  console.log("alunos:", alunos);
+  //loop de alunos
+  for (const aluno of alunos) {
+    //pegar os treinos do aluno
+    const treinos = await sql`
+      SELECT alunostreino_id, 
+             (SELECT Treino FROM Treinos WHERE Treino_id=attreinoid) treino,
+             attreinoid treinoid,
+            atordem
+        FROM alunostreinos
+      WHERE atalunoid=${aluno.alunoid}
+        AND atpersonalid=${personalid}
+        AND atdataini>=${data_inicio}
+        AND COALESCE(atdatafim,${data_fim})<=${data_fim}    
+      ORDER BY atordem
+    `;
+
+    console.log("treinos:", treinos);
+    //pega as agendas do aluno
+    const agendas = await sql`
+      SELECT agenda_id, agdata
+       FROM Agendas
+      WHERE agalunoid = ${aluno.alunoid}
+        AND agdata >= ${data_inicio}
+        AND agdata <= ${data_fim}
+      ORDER BY agdata
+    `;
+
+    console.log("agendas:", agendas);
+    //loop distribuição cíclica de treinos 
+    for (let i = 0; i < agendas.length; i++) {
+
+      const indiceTreino = i % treinos.length;
+      const treino = treinos[indiceTreino];
+      const agenda = agendas[i];
+
+      console.log('Agenda', agenda.agenda_id, 'recebe treino', treino.alunostreino_id,  treino.treino  );
+
+      //insere treinos do aluno
+      
+      const agendaTreinoIns = await sql`
+          INSERT INTO AgendaTreinos (
+              atagendaid,
+              atalunoid,
+              attreino,
+              atordem
+          )
+          VALUES (
+              ${agenda.agenda_id},
+              ${aluno.alunoid},
+              ${treino.treino},
+              ${treino.atordem}
+          )
+          RETURNING *
+      `;    
+      console.log('agendaTreinIns', agendaTreinoIns);
+      const agendaTreinoExerc = await sql`
+          INSERT INTO AgendaTreinoItems(
+                ATIAgendaTreinoID, 
+                atiexercicio, 
+                atiserie, 
+                atirepeticao, 
+                atipeso, 
+                atitempo, 
+                atiordem)
+          SELECT ${agendaTreinoIns[0].agendatreino_id},
+                tritexercicio, 
+                tritserie, 
+                tritrepeticao, 
+                tritpeso, 
+                trittempo, 
+                tritordem 
+            FROM TreinosItems
+          WHERE TritTreinoid=${treino.treinoid}
+          RETURNING *`;
+      
+      console.log('agendaTreinoExerc', agendaTreinoExerc);
+      
+    }
+  }
+
 });
 
 export default router;

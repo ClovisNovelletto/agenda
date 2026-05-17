@@ -83,7 +83,7 @@ console.log(req.body);
   try {
     const alunoPlano = await sql`
       UPDATE alunosplanos SET apalunoid=${alunoid}, applanoid=${planoid}, apfrequenciaid=${frequenciaid}, /*aptabprecoid,*/
-           apdataini=${dataini}, apdatafim=${datafim}, apvalortabela=${valortabela}, apvalordesconto=${valortabela},
+           apdataini=${dataini}, apdatafim=${datafim}, apvalortabela=${valortabela}, apvalordesconto=${valordesconto},
            apvalorreceber=${valorreceber}, apdiavcto=${diavcto}, apformapagtoid=${formapagtoid}, apstatus=${statusid}
       WHERE alunosplano_ID=${id}
       RETURNING *`; 
@@ -215,7 +215,7 @@ router.put('/recebimentoSave', authenticateToken, async (req, res) => {
 
 router.post('/recebimentosGerar', authenticateToken, async (req, res) => {
   const personalid = req.user.personalid;
-  const {data_inicio, data_fim} = req.body;
+  const {data_inicio, data_fim, alunoid} = req.body;
 
   //console.error('personalid:', personalid);
   //console.error('data_inicio:', data_inicio);
@@ -223,7 +223,7 @@ router.post('/recebimentosGerar', authenticateToken, async (req, res) => {
 
   try {
     const recebimentos = await sql`
-    CALL public.h2uGerarRecebimentos(${data_inicio}, ${data_fim}, ${personalid})`;
+    CALL public.h2uGerarRecebimentos(${data_inicio}, ${data_fim}, ${personalid}, ${alunoid})`;
     res.status(201).json(recebimentos);
   } catch (err) {
     console.error('Erro ao gerar recebimentos do mês:', err);
