@@ -1011,12 +1011,12 @@ console.log('teste vai:');
     this.mostrarSeletorMes = true;
   }
 
-  gerarTreino(payload: any) {
-    //const payload = {
-    //  data_inicio: dayjs(retornoDialog.mesSelecionado.dataInicio).format('YYYY-MM-DD'),
-    //  data_fim: dayjs(retornoDialog.mesSelecionado.dataFim).format('YYYY-MM-DD'),
-    //  alunoid: retornoDialog.alunoid
-    //};
+  gerarTreino(retornoDialog: any) {
+    const payload = {
+      data_inicio: dayjs(retornoDialog.mesSelecionado.dataInicio).format('YYYY-MM-DD'),
+      data_fim: dayjs(retornoDialog.mesSelecionado.dataFim).format('YYYY-MM-DD'),
+      alunoid: retornoDialog.alunoid
+    };
 
     //this.agendaTreinoService.gerarAgendaTreino(payload);
     this.agendaTreinoService.gerarAgendaTreino(payload).subscribe({
@@ -1029,6 +1029,7 @@ console.log('teste vai:');
     });
 
   }
+
   //gerarAgenda(data: Date) {
   gerarAgenda(retornoDialog: any/*mesSelecionado: { dataInicio: Date, dataFim: Date }, alunoid: number*/) {
     this.mostrarSeletorMes = false;
@@ -1054,7 +1055,6 @@ console.log('teste vai:');
         this.snackBar.open('Erro ao gerar agenda!', 'Fechar', { duration: 3000 });
       }
     });
-    this.gerarTreino(payload);
   }
 
   gerarRecebimentos(retornoDialog: any/*mesSelecionado: { dataInicio: Date, dataFim: Date }, alunoid: number*/) {
@@ -1082,7 +1082,25 @@ console.log('teste vai:');
     });
   }
 
-  
+
+    abrirDialogoGerarTreino() {
+    const dialogRef = this.dialog.open(DialogGerarAgendaComponent, {
+      width: '360px',
+      data: {
+        titulo: "Gerar Treinos do Mês",
+        mensagem: "Selecione um mês para gerar os Treinos com base nos agendamentos dos alunos", // 
+      }  
+    });
+
+    dialogRef.afterClosed().subscribe((retornoDialogo) => {
+      //mesSelecionado: retornoDialogo.mesSelcionado;
+      //const alunoid: retornoDialogo.alunoid;
+      if (retornoDialogo) {
+        this.gerarTreino(retornoDialogo);
+      }
+    });
+  }
+
   abrirDialogoGerarAgenda() {
     const dialogRef = this.dialog.open(DialogGerarAgendaComponent, {
       width: '360px',
@@ -1097,6 +1115,7 @@ console.log('teste vai:');
       //const alunoid: retornoDialogo.alunoid;
       if (retornoDialogo) {
         this.gerarAgenda(retornoDialogo);
+        this.gerarTreino(retornoDialogo);
       }
     });
   }
@@ -1134,6 +1153,7 @@ console.log('teste vai:');
         //this.gerarRecebimentos(mesSelecionado);
         this.gerarAgenda(retornoDialogo);
         this.gerarRecebimentos(retornoDialogo);
+        this.gerarTreino(retornoDialogo);
       }
     });
   }
