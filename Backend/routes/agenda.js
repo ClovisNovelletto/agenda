@@ -116,7 +116,7 @@ router.post('/agendaGerar', authenticateToken, async (req, res) => {
   //console.error('data_inicio:', data_inicio);
   //console.error('data_fim:', data_fim);
   try {
-    await sql`DELETE FROM Agendas WHERE AgPersonalID=${personalid} AND AgAlunoID=${alunoid} AND AgData>=${data_inicio} AND AgData<=${data_fim} AND AgStatus IN(1,3); /*Pedente ou Cancelado*/`;
+    await sql`DELETE FROM Agendas WHERE AgPersonalID=${personalid} AND AgAlunoID=COALESCE(${alunoid},AgAlunoID) AND AgData>=${data_inicio} AND AgData<=${data_fim} AND AgStatus IN(1,3); /*Pedente ou Cancelado*/`;
   } catch (err) {
     console.error('Erro ao apagar agenda do mês:', err);
     res.status(500).json({ error: 'Erro ao apagar agenda' });

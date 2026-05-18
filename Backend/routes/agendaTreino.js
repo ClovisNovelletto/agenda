@@ -163,6 +163,7 @@ router.post('/gerarAgendaTreinos', authenticateToken, async (req, res) => {
           WHERE agalunoid = ${aluno.alunoid}
             AND agdata >= ${data_inicio}
             AND agdata <= ${data_fim}
+            AND agstatus = 1 /*só pendentes*/
           ORDER BY agdata
         `;
 
@@ -197,8 +198,12 @@ router.post('/gerarAgendaTreinos', authenticateToken, async (req, res) => {
               ${treino.treino},
               ${treino.atordem}
             )
+            ON CONFLICT (atagendaid) DO NOTHING
             RETURNING *
           `;
+
+          //caso não insira treino, pula o insert de exercícios
+          if (!agendaTreinoIns) continue;
 
           // inserir itens
           await sql`
