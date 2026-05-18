@@ -435,6 +435,9 @@ export class AgendaIndividualComponent implements OnInit {
       width: '360px',
       data: {
         descricao: appt.descricao,
+        aluno: appt.aluno,
+        dataAg: appt.date,
+        hour: appt.hour
       }
     });
 console.log('teste vai:');

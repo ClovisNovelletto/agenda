@@ -112,7 +112,7 @@ main.conteudo {
 }
 
 .lista-scroll {
-  max-height: 60vh;
+  /*max-height: 60vh;*/
   overflow-y: auto;
 }
 

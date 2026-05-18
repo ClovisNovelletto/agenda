@@ -739,6 +739,9 @@ console.log("this.personal?.servicoid: ", this.configAgenda.servicoid);
       width: '360px',
       data: {
         descricao: appt.descricao,
+        aluno: appt.aluno,
+        dataAg: appt.date,
+        hour: appt.hour
       }
     });
 console.log('teste vai:');
@@ -991,7 +994,7 @@ console.log('teste vai:');
         console.log("agendaTreino", this.agendaTreino);
 
         this.dialog.open(AgendaTreinoComponent, {
-          width: '600px',
+          width: '400px',
           panelClass: 'agendaTreino',
           data: {
             agendaTreino: this.agendaTreino,

@@ -23,9 +23,10 @@ export class DescricaoDialogComponent {
 
   constructor(
     public dialogRef: MatDialogRef<DescricaoDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { descricao: string }
+    @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.descricao = data.descricao || '';
+    console.log('data', data);
   }
 
   ngOnInit(): void {
