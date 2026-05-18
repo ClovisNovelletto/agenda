@@ -7,9 +7,10 @@
     <mat-icon style="display: column; align-items: center !important; justify-content: center !important;">arrow_back</mat-icon>
   </button>
 
-  <span style="font-size: 16px !important; padding: 2px;">Aluno: {{ aluno }} </span>
+  <span style="font-size: 16px !important; padding: 2px;">{{ data.dataAg | date:'dd/MM' }} {{ data.dataAg | date:'EEE' }} {{ data.hour }} - {{data.aluno}} </span>
   </label>  
-  </mat-toolbar>
+<mat-divider></mat-divider>  
+</mat-toolbar>
 <!--
     <button mat-icon-button class="btn-voltar" (click)="fechar()">
       <mat-icon>arrow_back</mat-icon>

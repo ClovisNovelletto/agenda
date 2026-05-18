@@ -82,6 +82,7 @@ export class AgendaTreinoComponent implements OnInit {
 
     ngOnInit() {
     
+        console.log("teste", this.data);
         this.aluno = this.data.aluno;
         this.agendaTreino = this.data.agendaTreino;
         this.atualizarProgresso();

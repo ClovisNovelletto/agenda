@@ -360,7 +360,7 @@ export class AgendaIndividualComponent implements OnInit {
       } else if (result.action === 'descricao') {
         this.editarDescricao(appt);
       } else if (result.action === 'treino') {
-        this.abrirTreino(appt.agenda_id, appt.aluno);
+        this.abrirTreino(appt.agenda_id, appt.aluno, appt.date, appt.hour);
       } else if (result.action === 'status' && appt.statusid != result.statusid) {
         const statusid = result.statusid ?? 1;
         console.log('appt:', appt);
@@ -387,7 +387,7 @@ export class AgendaIndividualComponent implements OnInit {
     });
   }
 
-  abrirTreino(agendaId: number, aluno: string) {
+  abrirTreino(agendaId: number, aluno: string, dataAg: Date, hour: string) {
     //
     this.agendaTreinoService.getTreino(agendaId)
       .subscribe((res: any) => {
@@ -417,7 +417,9 @@ export class AgendaIndividualComponent implements OnInit {
           panelClass: 'agendaTreino',
           data: {
             agendaTreino: this.agendaTreino,
-            aluno
+            aluno,
+            dataAg,
+            hour
           }
         });
 

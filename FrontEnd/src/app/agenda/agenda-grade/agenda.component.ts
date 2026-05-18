@@ -923,7 +923,7 @@ console.log('teste vai:');
       } else if (result.action === 'descricao') {
         this.editarDescricao(appt);
       } else if (result.action === 'treino') {
-        this.abrirTreino(appt.agenda_id, appt.aluno);
+        this.abrirTreino(appt.agenda_id, appt.aluno, appt.date, appt.hour);
       } else if (result.action === 'status' && appt.statusid != result.statusid) {
         const statusid = result.statusid ?? 1;
         console.log('appt:', appt);
@@ -965,9 +965,9 @@ console.log('teste vai:');
   }
 
   
-  abrirTreino(agendaId: number, aluno: string) {
+  abrirTreino(agendaId: number, aluno: string, dataAg: Date, hour: string) {
     //
-    this.agendaTreinoService.getTreino(agendaId)
+        this.agendaTreinoService.getTreino(agendaId)
       .subscribe((res: any) => {
 
         if (!res || res.length === 0) {
@@ -995,7 +995,9 @@ console.log('teste vai:');
           panelClass: 'agendaTreino',
           data: {
             agendaTreino: this.agendaTreino,
-            aluno
+            aluno,
+            dataAg,
+            hour
           }
         });
 
