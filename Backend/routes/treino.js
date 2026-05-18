@@ -212,12 +212,12 @@ router.put('/treinoSave', authenticateToken, async (req, res) => {
   
   // UPDATE
   try {
-    const treino = await sql`
+    const rsttreino = await sql`
       UPDATE Treinos SET treino=${treino}, treativo=${ativo}, treservicoid=${servicoid}
        WHERE treino_ID = ${id}
       RETURNING *
     `;    
-    res.status(201).json(treino);
+    res.status(201).json(rsttreino);
     } catch (err) {
       console.error('Erro ao atualizar treino:', err);
       res.status(500).json({ error: 'Erro ao atualizar treino' });

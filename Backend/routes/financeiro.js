@@ -217,9 +217,10 @@ router.post('/recebimentosGerar', authenticateToken, async (req, res) => {
   const personalid = req.user.personalid;
   const {data_inicio, data_fim, alunoid} = req.body;
 
-  //console.error('personalid:', personalid);
-  //console.error('data_inicio:', data_inicio);
-  //console.error('data_fim:', data_fim);
+  console.error('personalid:', personalid);
+  console.error('data_inicio:', data_inicio);
+  console.error('data_fim:', data_fim);
+  console.error('alunoid:', alunoid);
 
   try {
     const recebimentos = await sql`
