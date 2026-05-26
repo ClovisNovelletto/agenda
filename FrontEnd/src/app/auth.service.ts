@@ -5,6 +5,7 @@ import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../environments/environment';
 import { HttpHeaders } from '@angular/common/http';
+//import { HttpService } from './http.service';
 //import * as jwt_decode from 'jwt-decode';
 import jwtDecode from 'jwt-decode';
 
@@ -20,12 +21,18 @@ export class AuthService {
   public isLoggedIn$: Observable<boolean> = this.loggedIn.asObservable();
   private refreshing = false;
 
-  constructor(private http: HttpClient, private router: Router) {
+  private personalIdSubject = new BehaviorSubject<number | null>(null);
+  personalId$ = this.personalIdSubject.asObservable();
+
+  private alunoIdSubject = new BehaviorSubject<number | null>(null);
+  alunoId$ = this.alunoIdSubject.asObservable();
+
+  constructor(/*private httpService: HttpService, */private http: HttpClient, private router: Router) {
     this.setaStatusLogin();
     this.startTokenWatcher(); // ativa a renovação automática
-  }
-
-
+    this.restaurarUsuario();
+  } 
+  
   private safeDecodeToken(token: string | null): any {
     if (!token || typeof token !== 'string' || token.split('.').length !== 3) {
       return null;
@@ -119,28 +126,46 @@ export class AuthService {
 
   // ---------- LOGIN ----------
   login(email: string, password: string): void {
-    console.log('AS login');
-    this.http.post<{ accessToken: string, refreshToken: string }>(`${environment.apiUrl}/login`, { email, password })
-      .subscribe({
-        next: (response) => {
-          localStorage.setItem(this.tokenKey, response.accessToken);
-          localStorage.setItem(this.refreshKey, response.refreshToken);
-          console.log('response.accessToken:', response.accessToken);
-          console.log('response.refreshToken:', response.refreshToken);
-          this.setaStatusLogin();
-          if(this.getAlunoId() ?? 0 > 0) {
-            this.router.navigate(['/agenda-Aluno']);
-          } else if(this.getPersonalId() ?? 0 > 0) {
-            this.router.navigate(['/agenda']);
-          } else {        
-            this.router.navigate(['/home']);
-          }
-        },
-        error: (err) => {
-          console.error('Erro ao logar:', err);
-          alert('Falha no login. Verifique suas credenciais.');
+
+    this.http.post<{
+      token: string;
+      tokenRefresh: string;
+    }>(
+      `${environment.apiUrl}/auth/login`,
+      {
+        email,
+        password
+      }
+    ).subscribe({
+
+      next: (response) => {
+
+        localStorage.setItem('jwt-token', response.token);
+        localStorage.setItem('refresh-token', response.tokenRefresh);
+
+        this.setaStatusLogin();
+
+        this.personalIdSubject.next(this.getPersonalId());
+        this.alunoIdSubject.next(this.getAlunoId());
+
+        if ((this.getAlunoId() ?? 0) > 0) {
+
+          this.router.navigate(['/agenda-Aluno']);
+
+        } else if ((this.getPersonalId() ?? 0) > 0) {
+
+          this.router.navigate(['/agenda']);
+
+        } else {
+
+          this.router.navigate(['/home']);
         }
-      });
+      },
+
+      error: (err) => {
+        console.error(err);
+      }
+    });
   }
 
   // ---------- LOGOUT ----------
@@ -150,6 +175,8 @@ export class AuthService {
     //localStorage.removeItem(this.refreshKey);
     console.log('logout está passando aqui');
     this.setaStatusLogout();
+    this.personalIdSubject.next(null);
+    this.alunoIdSubject.next(null);
     //this.router.navigate(['/login']);
   }
 
@@ -335,6 +362,21 @@ export class AuthService {
   getUserId(): number | null {
     const payload = this.decodeToken();
     return payload?.userid ?? null;
+  }
+
+  restaurarUsuario() {
+
+    const personalId = this.getPersonalId();
+    const alunoId = this.getAlunoId();
+
+    this.personalIdSubject.next(personalId);
+    this.alunoIdSubject.next(alunoId);
+
+    this.setaStatusLogin();
+
+    console.log('Usuário restaurado');
+    console.log('personalId', personalId);
+    console.log('alunoId', alunoId);
   }
 }
 

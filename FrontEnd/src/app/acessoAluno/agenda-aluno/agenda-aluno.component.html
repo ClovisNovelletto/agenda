@@ -72,12 +72,12 @@
                 </td>
             </ng-container>
           <!--</div>-->
-
+        
           <tr style="min-height: 30px!important; height: 30px!important;"
               mat-row
               *matRowDef="let row; columns: displayedColumns;"
               [ngClass]="rowClass(row.status)"
-              (click)="abrirMenuStatus(row)">
+              >
           </tr>
       </table>
       

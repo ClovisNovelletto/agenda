@@ -27,6 +27,10 @@ export class LoginComponent {
   isLoading = false;
 
   onLogin(): void {
+    this.authService.login(
+      this.email.trim(),
+      this.password
+    ); /*
     this.httpService.post(`${environment.apiUrl}/auth/login`, {
       email: this.email.trim(),
       password: this.password
@@ -65,7 +69,7 @@ export class LoginComponent {
         });
         //alert(mensagem);
       }
-    });
+    });*/
   }
 
   

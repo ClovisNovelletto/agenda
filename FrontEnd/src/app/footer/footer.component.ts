@@ -40,8 +40,19 @@ export class FooterComponent {
   constructor(private authService: AuthService, private router: Router, private snackBar: MatSnackBar) {}
 
   ngOnInit() {
-    this.personalid = this.authService.getPersonalId();
-    this.alunoid = this.authService.getAlunoId();
+
+    this.authService.personalId$.subscribe(id => {
+      this.personalid = id;
+      console.log('footer personal', id);
+    });
+
+    this.authService.alunoId$.subscribe(id => {
+      this.alunoid = id;
+      console.log('footer aluno', id);
+    });
+    
+    //this.personalid = this.authService.getPersonalId();
+    //this.alunoid = this.authService.getAlunoId();
     console.log("personal", this.personalid);
     console.log("alunoid", this.alunoid);
     // Subscribing ao estado de login
@@ -74,11 +85,18 @@ export class FooterComponent {
   }
 
   onTabChange(event: any): void {
-    const tabIndex = event.index;
-    if (tabIndex === 0) {
+    if(this.authService.getAlunoId() ?? 0 > 0) {
+      this.router.navigate(['/agenda-Aluno']);
+    } else if(this.authService.getPersonalId() ?? 0 > 0) {
       this.router.navigate(['/agenda']);
-    } else if (tabIndex === 2) {
-      this.router.navigate(['/financeiro']);
+    } else {        
+      this.router.navigate(['/home']);
     }
+    //const tabIndex = event.index;
+    //if (tabIndex === 0) {
+    //  this.router.navigate(['/agenda']);
+    //} else if (tabIndex === 2) {
+    //  this.router.navigate(['/financeiro']);
+    //}
   }
 }
