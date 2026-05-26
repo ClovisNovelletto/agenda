@@ -52,6 +52,41 @@ router.get('/treino/:agendaId', authenticateToken, async (req, res) => {
   }
 });
 
+
+router.post('/agendatreinoaluno', authenticateToken, async (req, res) => {
+  try { console.log("carrega agendatreinoaluno");
+    const alunoid = req.user.alunoid;
+    const {ano, mes1a12} = req.body;
+    
+    console.log('ano', ano);
+    console.log('mes1a12', mes1a12);
+    console.log('alunoid', alunoid);
+
+    // tratamento treino indefinido
+    if (typeof req.body[`alunoid`] === 'undefined') {
+      req.body[`alunoid`] = null;
+    }
+
+    const agtreinoaluno = await sql`
+      SELECT agendatreino_id AS id, agenda_id AS agendaid, date AS data, hour, 
+            attreino AS treino, atordem AS ordem, atconcluido concluido, aluno
+        FROM h2uagendaslista
+          INNER JOIN AgendaTreinos ON ATAgendaID=Agenda_ID
+      WHERE alunoID=${alunoid}
+        AND EXTRACT(YEAR FROM date)=${ano} 
+        AND EXTRACT(MONTH FROM date)=${mes1a12} 
+      ORDER BY atordem`;
+
+console.log('agtreinoaluno: ', agtreinoaluno)
+
+    res.json(agtreinoaluno);
+    
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao buscar AgendasTreinos do aluno');
+  }
+});
+
 router.put('/concluirItem', authenticateToken, async (req, res) => {
   const { id, concluido  } = req.body;
   const personalid = req.user.personalid;
@@ -105,9 +140,13 @@ router.post('/gerarAgendaTreinos', authenticateToken, async (req, res) => {
     const personalid = req.user.personalid;
     const { data_inicio, data_fim, alunoid } = req.body;
 
+    const data_inicio3h = new Date(data_inicio);
+    data_inicio3h.setHours(data_inicio3h.getHours() + 3);
+    
     console.log({
       personalid,
       data_inicio,
+      data_inicio3h,
       data_fim,
       alunoid
     });
@@ -118,8 +157,8 @@ router.post('/gerarAgendaTreinos', authenticateToken, async (req, res) => {
       FROM AlunosTreinos
       WHERE atalunoid = COALESCE(${alunoid}, atalunoid)
         AND atpersonalid = ${personalid}
-        AND atdataini >= ${data_inicio}
-        AND COALESCE(atdatafim, ${data_fim}) <= ${data_fim}
+        AND atdataini <= ${data_inicio3h}
+        AND COALESCE(atdatafim, ${data_fim}) >= ${data_fim}
     `;
 
     console.log('alunos:', alunos.length);
@@ -143,8 +182,8 @@ router.post('/gerarAgendaTreinos', authenticateToken, async (req, res) => {
           FROM AlunosTreinos
           WHERE atalunoid = ${aluno.alunoid}
             AND atpersonalid = ${personalid}
-            AND atdataini >= ${data_inicio}
-            AND COALESCE(atdatafim, ${data_fim}) <= ${data_fim}
+            AND atdataini <= ${data_inicio3h}
+            AND COALESCE(atdatafim, ${data_fim}) >= ${data_fim}
           ORDER BY atordem
         `;
 
@@ -161,7 +200,7 @@ router.post('/gerarAgendaTreinos', authenticateToken, async (req, res) => {
           SELECT agenda_id, agdata
           FROM Agendas
           WHERE agalunoid = ${aluno.alunoid}
-            AND agdata >= ${data_inicio}
+            AND agdata >= ${data_inicio3h}
             AND agdata <= ${data_fim}
             AND agstatus = 1 /*só pendentes*/
           ORDER BY agdata
@@ -261,103 +300,5 @@ router.post('/gerarAgendaTreinos', authenticateToken, async (req, res) => {
 
 });
 
-router.post('/gerarAgendaTreinos_xxx', authenticateToken, async (req, res) => {
-  console.log('entrou no agenda treinos');
-  const personalid = req.user.personalid;
-  const {data_inicio, data_fim, alunoid} = req.body;
-  console.log('entrou no agenda treinos');
-  console.log(data_inicio, data_fim, alunoid);
-  //pegar alunos todos ou selecionado e que tem aula no período
-  const alunos = await sql`
-    SELECT DISTINCT atalunoid alunoid
-      FROM AlunosTreinos
-    WHERE atalunoid=COALESCE(${alunoid},atalunoid)
-      AND atpersonalid=${personalid}
-      AND atdataini>=${data_inicio}
-      AND COALESCE(atdatafim,${data_fim})<=${data_fim}    
-  `;
-
-  console.log("alunos:", alunos);
-  //loop de alunos
-  for (const aluno of alunos) {
-    //pegar os treinos do aluno
-    const treinos = await sql`
-      SELECT alunostreino_id, 
-             (SELECT Treino FROM Treinos WHERE Treino_id=attreinoid) treino,
-             attreinoid treinoid,
-            atordem
-        FROM alunostreinos
-      WHERE atalunoid=${aluno.alunoid}
-        AND atpersonalid=${personalid}
-        AND atdataini>=${data_inicio}
-        AND COALESCE(atdatafim,${data_fim})<=${data_fim}    
-      ORDER BY atordem
-    `;
-
-    console.log("treinos:", treinos);
-    //pega as agendas do aluno
-    const agendas = await sql`
-      SELECT agenda_id, agdata
-       FROM Agendas
-      WHERE agalunoid = ${aluno.alunoid}
-        AND agdata >= ${data_inicio}
-        AND agdata <= ${data_fim}
-      ORDER BY agdata
-    `;
-
-    console.log("agendas:", agendas);
-    //loop distribuição cíclica de treinos 
-    for (let i = 0; i < agendas.length; i++) {
-
-      const indiceTreino = i % treinos.length;
-      const treino = treinos[indiceTreino];
-      const agenda = agendas[i];
-
-      console.log('Agenda', agenda.agenda_id, 'recebe treino', treino.alunostreino_id,  treino.treino  );
-
-      //insere treinos do aluno
-      
-      const agendaTreinoIns = await sql`
-          INSERT INTO AgendaTreinos (
-              atagendaid,
-              atalunoid,
-              attreino,
-              atordem
-          )
-          VALUES (
-              ${agenda.agenda_id},
-              ${aluno.alunoid},
-              ${treino.treino},
-              ${treino.atordem}
-          )
-          RETURNING *
-      `;    
-      console.log('agendaTreinIns', agendaTreinoIns);
-      const agendaTreinoExerc = await sql`
-          INSERT INTO AgendaTreinoItems(
-                ATIAgendaTreinoID, 
-                atiexercicio, 
-                atiserie, 
-                atirepeticao, 
-                atipeso, 
-                atitempo, 
-                atiordem)
-          SELECT ${agendaTreinoIns[0].agendatreino_id},
-                tritexercicio, 
-                tritserie, 
-                tritrepeticao, 
-                tritpeso, 
-                trittempo, 
-                tritordem 
-            FROM TreinosItems
-          WHERE TritTreinoid=${treino.treinoid}
-          RETURNING *`;
-      
-      console.log('agendaTreinoExerc', agendaTreinoExerc);
-      
-    }
-  }
-
-});
 
 export default router;

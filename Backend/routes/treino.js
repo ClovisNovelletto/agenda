@@ -90,13 +90,13 @@ router.post('/treinoItemInsert', authenticateToken, async (req, res) => {
   if (typeof req.body[`peso`] === 'undefined') {
     req.body[`peso`] = null;
   }
-  // tratamento ordem indefinido
-  if (typeof req.body[`ordem`] === 'undefined') {
-    req.body[`ordem`] = null;
-  }
+
   // Agora que os valores estão garantidos, você pode extrair:
-  const {id, treinoid, exercicio, serie, repeticao, tempo, peso, ordem } = req.body;
+  const {id, treinoid, exercicio, serie, repeticao, tempo, peso } = req.body;
   
+  const ordExerc = await sql`SELECT MAX(tritordem)+10 ordem FROM TreinosItems WHERE trittreinoid=${treinoid}`;
+  const ordem = ordExerc[0]?.ordem ?? 10;
+
   try {
     const treinoItem = await sql`
       INSERT INTO TreinosItems(trittreinoid, tritexercicio, tritserie, tritrepeticao, tritpeso, trittempo, tritordem)

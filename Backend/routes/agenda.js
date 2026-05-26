@@ -142,10 +142,12 @@ router.post('/agendaAluno', authenticateToken, async (req, res) => {
     console.log("carrega agenda do aluno");
     const personalid = req.user.personalid;
     const {alunoid, ano, mes1a12} = req.body;
-    //console.log("alunoid: ", alunoid);
-    //console.log("ano: ", ano);
-    //console.log("mes1a12: ", mes1a12);
-    const agendas = await sql`SELECT * FROM h2uagendaslista WHERE PersonalID = ${personalid} AND AlunoID = ${alunoid} AND EXTRACT(YEAR FROM Date)=${ano} AND EXTRACT(MONTH FROM Date) =${mes1a12} ORDER BY Date`;
+    console.log("personalid: ", personalid);
+    console.log("alunoid: ", alunoid);
+    console.log("ano: ", ano);
+    console.log("mes1a12: ", mes1a12);
+    const agendas = await sql`SELECT * FROM h2uagendaslista WHERE PersonalID = COALESCE(${personalid},PersonalID) AND AlunoID = ${alunoid} AND EXTRACT(YEAR FROM Date)=${ano} AND EXTRACT(MONTH FROM Date) =${mes1a12} ORDER BY Date`;
+    //console.log("agendas: ", agendas);
     res.json(agendas);
   } catch (err) {
     console.error(err);

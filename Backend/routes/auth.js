@@ -28,6 +28,7 @@ router.post('/login', async (req, res) => {
     const result = await sql`SELECT id, password, tipo_usuario, forcarlogin, email_verified FROM users WHERE UPPER(email) = ${email}`;
     // Garante compatibilidade: alguns drivers retornam array direto, outros objeto com "rows"
     const rows = result?.rows || result;
+  
     if (!rows || rows.length === 0) { 
       console.log("E-mail não cadastrado.");
       return res.status(400).json({ mensagem: "E-mail não cadastrado." });
@@ -51,7 +52,7 @@ router.post('/login', async (req, res) => {
         personalid = resPersonal[0]?.personal_id ?? null;
       } else if (tipo ==3) {
         const resAluno = await sql`SELECT aluno_id FROM alunos WHERE aluuserid = ${userid}`;
-        const alunoid = resAluno[0]?.aluno_id ?? null;
+        alunoid = resAluno[0]?.aluno_id ?? null;
       }
 
       // Gera o token JWT com informações do usuário
@@ -59,8 +60,8 @@ router.post('/login', async (req, res) => {
 
       const tokenRefresh = jwt.sign(
       { email: email, tipo: tipo, personalid: personalid, alunoid: alunoid, userid: userid }, SECRET_KEY_REFRESH, { expiresIn: '30d' });
-      console.log(token);
-      console.log(tokenRefresh);
+      //console.log(token);
+      //console.log(tokenRefresh);
       res.json({ token, tokenRefresh, mensagem: 'Login bem-sucedido!' });
 
     } else {
@@ -201,6 +202,80 @@ router.post('/cadastro-personal', async (req, res) => {
 
 });
 
+// 🔹 Registrar novo aluno
+router.post('/register-aluno', async (req, res) => {
+  const { nome, email, senha, codigoConvite } = req.body;
+  const tipousuario = 3;
+  if (!email || !senha || !codigoConvite) {
+    return res.status(400).json({ erro: 'Preencha todos os campos' });
+  }
+
+  try {
+    /*supabase*/
+    const result = await sql`SELECT id FROM users WHERE UPPER(email) = ${email?.trim().toUpperCase()}`;
+    // Garante compatibilidade: alguns drivers retornam array direto, outros objeto com "rows"
+    const rows = result?.rows || result;
+    if (rows.length > 0) { 
+      console.log("E-mail já cadastrado.");
+      return res.status(400).json({ mensagem: "E-mail já cadastrado." });
+    }
+
+    /*pegar id do aluno, pelo código convite informado*/
+    const resultAluno = await sql`SELECT aluno_id id FROM Alunos WHERE alucodconvite = ${codigoConvite}`;
+    // Garante compatibilidade: alguns drivers retornam array direto, outros objeto com "rows"
+    const rowsAluno = resultAluno?.rows || resultAluno;
+    if (rowsAluno.length < 1) { 
+      console.log("Aluno não encontrato.");
+      return res.status(400).json({ mensagem: "Aluno não encontrado." });
+    }
+
+    const alunoid = rowsAluno[0].id;
+
+    // 1. Criptografa a senha
+    const hashed = await bcrypt.hash(senha, 10);
+    const verificationToken = crypto.randomUUID();
+
+    // 2. Cria o usuário do tipo 'aluno'
+    const user = await sql`
+      INSERT INTO users (username, email, password, tipo_usuario, email_verified, verification_token)
+      VALUES (${nome}, ${email}, ${hashed}, ${tipousuario}, false, ${verificationToken})
+      RETURNING *`; 
+    const userid  = user[0].id;
+
+    // 4. Faz a associação do usuario_id ao aluno
+    const associa = await sql`
+      UPDATE Alunos SET aluuserid = ${userid} WHERE aluno_id = ${alunoid}
+      `; 
+
+    // link de verificação
+    const verifyLink = `${FRONTEND_URL}/verify-email?token=${verificationToken}`;
+
+    try {
+      await sendMail(
+        email,
+        "Confirme seu e-mail",
+        `<p>Olá ${nome},</p>
+        <p>Confirme seu e-mail clicando no link abaixo:</p>
+        <a href="${verifyLink}">${verifyLink}</a>`
+      );
+    } catch (err) {
+      console.error('Erro ao enviar e-mail:', err);
+      return res.status(500).json({ mensagem: 'Usuário criado, mas falha ao enviar e-mail de confirmação.' });
+    }
+
+    //return res.status(201).json({ sucesso: true, usuario_id: usuarioid });
+    // ✅ resposta única
+    return res.status(200).json({
+      mensagem: "Usuário cadastrado com sucesso. Verifique seu e-mail para confirmar.",
+      alunoid: alunoid
+    });
+
+  } catch (erro) {
+    console.error('Erro no registro do aluno:', erro);
+    return res.status(500).json({ erro: 'Erro ao registrar o aluno' });
+  }
+});
+
 // ✅ Verificação de e-mail
 router.get('/verify-email', async (req, res) => {
 
@@ -251,6 +326,48 @@ router.post('/esqueci-senha', async (req, res) => {
   } catch (err) {
     console.error('Erro no esqueci minha senha:', err);
     res.status(500).json({ mensagem: 'Erro ao enviar e-mail de recuperação.' });
+  }
+});
+
+
+// 🔹 Esqueci minha senha (gera token e envia por e-mail)
+router.post('/envia-cod-convite', async (req, res) => {
+  try {
+    const { email } = req.body;
+    const result = await sql`SELECT aluno AS nome, alucodconvite codconvite FROM alunos WHERE UPPER(aluemail) = UPPER(${email})`;
+
+    const rows = result?.rows || result;
+
+
+    if (!rows || rows.length === 0) { 
+      console.log("E-mail não encontrado.");
+      return res.status(400).json({ mensagem: "E-mail não encontrado." });
+    }
+
+    const user = rows[0];
+
+    await sendMail(
+      email,
+      "Códgio Convite senha",
+      `<p>Olá ${user.nome},</p>
+
+      <p>Seu código de convite para acessar a plataforma H2uAgenda é:</p>
+      
+      <h1>${user.codconvite}</h1>
+
+      <p>Se você não solicitou este acesso, ignore este e-mail.</p>
+      
+      <p>Não responder este email.</p>
+
+      <p>H2u Agenda.</p>
+      `
+    );    
+
+
+    res.json({ mensagem: 'E-mail código de convite enviado, verifique sua caixa de entrada.' });
+  } catch (err) {
+    console.error('Erro ao enviar código de convite:', err);
+    res.status(500).json({ mensagem: 'Erro ao enviar código de convite.' });
   }
 });
 
@@ -307,7 +424,7 @@ router.post('/register_xxx', async (req, res) => {
 });
 
 // 🔹 Registrar novo aluno
-router.post('/register-aluno', authenticateToken, async (req, res) => {
+router.post('/register-aluno_apagar', authenticateToken, async (req, res) => {
   const { email, senha, codigoConvite } = req.body;
 
   if (!email || !senha || !codigoConvite) {

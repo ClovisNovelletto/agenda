@@ -6,7 +6,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function sendMail(to, subject, html) {
   try {
     const data = await resend.emails.send({
-      from: 'h2u Agenda <no-reply@h2uagenda.com.br>', // pode mudar o domínio depois
+      from: 'h2u Agenda <contato@h2uagenda.com.br>', 
       to,
       subject,
       html,

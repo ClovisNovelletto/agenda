@@ -113,7 +113,7 @@ router.post('/recebimentoAlunoLista', authenticateToken, async (req, res) => {
 
     const recebimento = await sql`SELECT *
       FROM h2urecebimentoslista
-      WHERE personalid = ${personalid} AND EXTRACT(YEAR FROM datavcto)=${ano} AND alunoid=${alunoid} 
+      WHERE personalid = COALESCE(${personalid},personalid) AND EXTRACT(YEAR FROM datavcto)=${ano} AND alunoid=${alunoid} 
       ORDER BY aluno, datavcto`;
     res.json(recebimento);
     //console.log(result.rows); // apenas isso para logar

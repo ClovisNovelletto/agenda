@@ -243,4 +243,5 @@ router.post('/cadastro-aluno', async (req, res) => {
   res.status(201).send({ ok: true });
 });
 
+
 export default router;
