@@ -1,0 +1,65 @@
+<div class="tela-container">
+  <div class="filtros">
+
+
+    <mat-form-field appearance="fill">
+      <mat-label>Ano Filtro:</mat-label>
+        <mat-select 
+          [(value)]="anoSelecionadoLabel" 
+          (selectionChange)="onYearSelected($event)">
+          <mat-option *ngFor="let ano of anos" [value]="ano">
+            {{ ano.label }}
+          </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    
+    <mat-form-field appearance="fill">
+      <mat-label>Status</mat-label>
+      <mat-select [(value)]="filtroStatus" (selectionChange)="aplicarFiltro()">
+        <mat-option value="Todos">Todos</mat-option>
+        <mat-option value="Não Recebidos">Não Recebidos</mat-option>
+        <mat-option value="Recebidos">Recebidos</mat-option>
+        <mat-option value="Renegociados">Renegociados</mat-option>
+        <mat-option value="Cancelados">Cancelados</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+  </div>
+
+  <div class="lista-container">
+    <div class="lista-header">
+      <span class="coluna-geral">Vencto</span>
+      <span class="coluna-geral">Recbto</span>
+      <span class="coluna-geral">Valor</span>
+      <span class="coluna-geral">Rec Em</span>
+      <span class="coluna-geral">Status</span>
+    </div>
+
+    <div class="lista-scroll">
+      <div 
+        class="aluno-item" 
+        *ngFor="let recebimento of recebimentosFiltrados" 
+      >
+        <span class="coluna-geral">{{ recebimento.datavcto | date:'dd/MM/yy'}}</span>
+        <span class="coluna-geral">{{ recebimento.datarcto | date:'dd/MM/yy'}}</span>
+        <span class="coluna-geral">{{ recebimento.valor | number:'1.2-2' }}</span>
+        <span class="coluna-geral">{{ recebimento.formapagto }}</span>
+        <span class="status-col">
+          <span
+            class="status-dot"
+            [ngClass]="{
+              recebido: recebimento.status === 'Recebido',
+              naoRecebido: recebimento.status === 'Não Recebido' && !isVencido(recebimento),
+              vencido: recebimento.status === 'Não Recebido' && isVencido(recebimento),
+              cancelado: recebimento.status === 'Cancelado',
+              renegociado: recebimento.status === 'Renegociado'
+            }"
+            matTooltip="{{ getTooltip(recebimento) }}"
+          ></span>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -10,6 +10,7 @@
 
   <button
     mat-button
+    [disabled]="!acessoPersonal"
     (click)="select(1)"
     [class.selected]="+data.statusid === 1">
     <span class="status-dot pendente"></span>
@@ -17,6 +18,7 @@
   </button>
 
   <button mat-button 
+    [disabled]="!acessoPersonal"
     (click)="select(2)"
     [class.selected]="+data.statusid === 2">
     <span class="status-dot efetivado"></span>
@@ -24,6 +26,7 @@
   </button>
 
   <button mat-button
+    [disabled]="!acessoPersonal"
     (click)="select(3)"
     [class.selected]="+data.statusid === 3">
     <span class="status-dot cancelado"></span>
@@ -31,6 +34,7 @@
   </button>
 
   <button mat-button
+    [disabled]="!acessoPersonal"
     (click)="select(4)"
     [class.selected]="+data.statusid === 4">
     <span class="status-dot falta"></span>
@@ -38,7 +42,7 @@
   </button>
 
   <mat-divider></mat-divider>
-  <button mat-button (click)="editar()">✏️ Editar</button>
+  <button *ngIf="acessoPersonal" mat-button (click)="editar()">✏️ Editar</button>
   <button mat-button (click)="descricao()">✏️ Descrição</button>
   <button mat-button (click)="treino()">✏️ Treino</button>
 </div>

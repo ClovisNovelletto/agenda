@@ -35,10 +35,15 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class FooterComponent {
   isLoggedIn: boolean = false; // Inicialmente o usuário não está logado
-
+  personalid: any = 0;
+  alunoid: any = 0;
   constructor(private authService: AuthService, private router: Router, private snackBar: MatSnackBar) {}
 
   ngOnInit() {
+    this.personalid = this.authService.getPersonalId();
+    this.alunoid = this.authService.getAlunoId();
+    console.log("personal", this.personalid);
+    console.log("alunoid", this.alunoid);
     // Subscribing ao estado de login
     console.log('top onInit Executando', this.isLoggedIn);
     this.authService.isLoggedIn$.subscribe((status) => {

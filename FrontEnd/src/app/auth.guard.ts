@@ -15,11 +15,13 @@ export class AuthGuard implements CanActivate {
     const token = localStorage.getItem('jwt-token');
 
     if (!token) {
+      console.log('achei kkk')
       this.router.navigate(['/login']);
       return of(false);
     }
 
     try {
+      console.log('achei try')
       const decodedToken: any = jwt_decode(token);
       const currentTime = Math.floor(Date.now() / 1000);
 

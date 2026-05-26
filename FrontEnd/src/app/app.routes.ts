@@ -20,13 +20,18 @@ import { ConfiguracoesServicosComponent } from './configuracoes-servicos/configu
 import { AnamneseListaComponent} from './anamnese/anamnese-lista/anamnese-lista.component'
 import { RecebGeralListaComponent} from './financeiro/recebimentos/geral/recebGeral-lista/recebGeral-lista.component'
 import { RecebIndividualListaComponent} from './financeiro/recebimentos/individual/recebIndividual-lista.component'
+import { AgendaAlunoComponent} from './acessoAluno/agenda-aluno/agenda-aluno.component'
+import { RecebimentoAlunoComponent} from './acessoAluno/recebimento-aluno/recebimento-aluno.component'
+import { TreinoAlunoComponent} from './acessoAluno/treino-aluno/treino-aluno.component'
+
 import { HomeComponent } from './home/home.component';
 import { PdfListaComponent } from './pdfs/pdf-lista.component';
 import { AuthGuard } from './auth.guard';
 import { AppComponent } from './app.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'home', pathMatch: 'full' }, // Redireciona a rota raiz para /home
+  { path: 'verify-email', component: VerifyEmailComponent },
+ // { path: '', redirectTo: 'home', pathMatch: 'full' }, // Redireciona a rota raiz para /home
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
   /*{ path: 'agenda', component: AgendaComponent, canActivate: [AuthGuard] },*/
   { path: 'agenda', canActivate: [AuthGuard], loadComponent: () => import('./agenda/agenda-grade/agenda.component').then(m => m.AgendaComponent)},
@@ -49,7 +54,11 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'esqueci-senha', component: EsqueciSenhaComponent },
   { path: 'resetar-senha', component: ResetarSenhaComponent },
-  { path: 'verify-email', component: VerifyEmailComponent },
+
+  /*acessos do aluno*/
+  { path: 'agenda-Aluno', canActivate: [AuthGuard], loadComponent: () => import('./acessoAluno/agenda-aluno/agenda-aluno.component').then(m => m.AgendaAlunoComponent)},
+  { path: 'recebimento-Aluno',  canActivate: [AuthGuard], loadComponent: () => import('./acessoAluno/recebimento-aluno/recebimento-aluno.component').then(m => m.RecebimentoAlunoComponent)},  
+  { path: 'treino-Aluno',  canActivate: [AuthGuard], loadComponent: () => import('./acessoAluno/treino-aluno/treino-aluno.component').then(m => m.TreinoAlunoComponent)},  
 
 ];
 

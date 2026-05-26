@@ -9,6 +9,7 @@ import { NgModule } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
+import { AuthService } from '../../auth.service';
 
 @Component({
   selector: 'app-descricao-dialog',
@@ -18,19 +19,23 @@ import { MatIconModule } from '@angular/material/icon';
   imports: [MatDialogContent, MatFormFieldModule, CommonModule, FormsModule, MatInputModule, MatToolbarModule, MatIconModule],
 
 })
-export class DescricaoDialogComponent {
+export class DescricaoDialogComponent implements OnInit {
+  acessoPersonal: Boolean = false; 
+    
   descricao: string ="";
 
   constructor(
     public dialogRef: MatDialogRef<DescricaoDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: any, private authService: AuthService,
   ) {
     this.descricao = data.descricao || '';
     console.log('data', data);
   }
 
   ngOnInit(): void {
-    /*descricao: string = '';*/
+    if(this.authService.getPersonalId() ?? 0 > 0){
+      this.acessoPersonal = true
+    }
   }
 
   salvar() {

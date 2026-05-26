@@ -14,6 +14,7 @@
     <mat-label>Digite a descrição</mat-label>
     <textarea
       matInput
+      [disabled]="!acessoPersonal"
       [(ngModel)]="descricao"
       rows="10">
     </textarea>
@@ -21,7 +22,7 @@
 </mat-dialog-content>
 
     <div>
-      <button mat-raised-button (click)="salvar()" class="btn-salvar" style="margin-left: 25px; margin-bottom: 20px;">
+      <button [disabled]="!acessoPersonal" mat-raised-button (click)="salvar()" class="btn-salvar" style="margin-left: 25px; margin-bottom: 20px;">
         Salvar
       </button>
     </div>

@@ -128,7 +128,13 @@ export class AuthService {
           console.log('response.accessToken:', response.accessToken);
           console.log('response.refreshToken:', response.refreshToken);
           this.setaStatusLogin();
-          this.router.navigate(['/home']);
+          if(this.getAlunoId() ?? 0 > 0) {
+            this.router.navigate(['/agenda-Aluno']);
+          } else if(this.getPersonalId() ?? 0 > 0) {
+            this.router.navigate(['/agenda']);
+          } else {        
+            this.router.navigate(['/home']);
+          }
         },
         error: (err) => {
           console.error('Erro ao logar:', err);
@@ -144,7 +150,7 @@ export class AuthService {
     //localStorage.removeItem(this.refreshKey);
     console.log('logout está passando aqui');
     this.setaStatusLogout();
-    this.router.navigate(['/login']);
+    //this.router.navigate(['/login']);
   }
 
   // ---------- TOKENS ----------
@@ -322,6 +328,7 @@ export class AuthService {
 
   getAlunoId(): number | null {
     const payload = this.decodeToken();
+    console.log('payload', payload);
     return payload?.alunoid ?? null;
   }
 

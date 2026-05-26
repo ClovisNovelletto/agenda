@@ -1,0 +1,263 @@
+html, body {
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
+  overflow: hidden!important; }
+
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0px;
+  /*height: calc(100vh - 64px);*/
+}
+
+  
+
+.toolbar {
+  position: sticky;
+  top: 0px;
+  z-index: 5;
+}
+
+.btn-voltar {
+  border-radius: 50%;
+  /*background-color: black;*/
+  background: #494646;
+  width: 36px;
+  height: 36px;
+  margin-right: 10px;
+  color: #fff;
+}
+
+.titulo {
+  font-size: 16px;
+  padding-left: 5px;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.agenda-layout {
+  display: flex;
+  flex-direction: row;
+  overflow: hidden!important;
+  height: calc(100vh - 64px);
+}
+
+
+.content  {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background: black;
+  /*border-radius: 8px;*/
+  /*box-shadow: 0 1px 3px rgba(0,0,0,0.8);*/
+  padding: 0px;
+  overflow: hidden!important;
+  overflow-y: auto;   
+  min-height: 0;
+}
+
+.header-linha {
+  padding: 0 4px 8px;
+  /*border-bottom: 1px solid #eee;*/
+}
+
+.tabela-wrap {
+  width: 100%; 
+  flex: 1;
+  overflow: auto;
+  padding: 0px 0px 0px;
+  /*border: 1px solid #ccc;*/
+  overflow-y: auto;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 16px 0;
+}
+
+.empty {
+  text-align: center;
+  color: #ffabf3;
+  padding: 16px;
+}
+
+.content table {
+  width: 100%;
+  max-width: 500px;
+  table-layout: auto;
+}
+
+.agenda-table th,
+.agenda-table td {
+  padding: 0px 0px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.month-picker .mat-calendar-period-button {
+  pointer-events: none;
+}
+.month-picker .mat-calendar-content .mat-calendar-body-label {
+  display: none;
+}
+
+.filtros {
+  position: sticky;
+  top: 0px;
+  background: #494646;
+  z-index: 10;
+  padding: 0px 8px 2px 0px;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+  overflow: visible;
+  display: flex;
+}
+
+.filtros mat-form-field {
+  flex: 1;
+  min-width: 90px;
+  overflow: visible;
+}
+
+.corFonte {
+  color: #004d40 !important;
+  font-weight: normal;
+}
+
+table.mat-table {
+  width: 100%;
+  table-layout: fixed;
+  font-size: 13px;
+}
+
+th.mat-header-cell {
+  padding: 4px 6px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+td.mat-cell {
+  padding: 0px 0px;
+  font-size: 13px;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.mat-column-data {
+  width: 100px;
+  padding-left: 10px;
+  font-size: 14px;
+}
+.mat-column-equipto {
+  width: 50px;
+  padding: 5px;
+  font-size: 14px;
+}
+
+.mat-column-descricao {
+  width: 500px;
+  padding: 5px;
+  font-size: 14px;
+}
+
+.tabela-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+
+}
+
+.tabela-header {
+  width: 100%;
+  table-layout: fixed;
+  /*border-radius: 8px;*/
+  border: 1px solid #ccc;
+  height: 30px!important;
+  /*border-bottom: 1px solid #eee;*/
+  background:#494646;
+  /*color: rgb(67, 58, 58);*/
+
+}
+
+.tabela-body {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.tabela-body table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.tabela-header .mat-header-row {
+  height: 40px; 
+}
+
+.tabela-header-linha {
+  padding: 0 4px 8px;
+  /*border-bottom: 1px solid #eee;*/
+}
+
+.tabela-header .mat-header-cell {
+  padding: 0 8px; 
+  line-height: 40px; 
+  font-size: 14px; 
+}
+
+::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+}
+
+::ng-deep .mat-mdc-form-field {
+  width: 100%;
+}
+
+::ng-deep .tabela-header .mat-header-row {
+  height: 40px;
+}
+
+.custom-height {
+  /*--mat-form-field-density: -1!important;*/
+  flex: 1;
+  width: 100%;
+}
+
+
+@media (max-width: 768px) {
+
+  .agenda-table th,
+  .agenda-table td {
+    padding: 0px 0px 0px 0px!important;
+    font-size: 12px;
+  }
+  .mat-column-data {
+    width: 100px;
+    padding: 3px;
+    font-size: 12px;
+  }
+  .mat-column-equipto {
+    width: 50px;
+    padding: 3px;
+    font-size: 12px;
+  }
+
+  .mat-column-descricao {
+    width: 250px;
+    padding: 3px;
+    font-size: 12px;
+  }
+
+  .custom-height {
+    width: 150px;
+  }
+}

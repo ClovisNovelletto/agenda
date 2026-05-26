@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AgendaTreino } from '../models/agendaTreino.model';
 import { AgendaTreinoItem } from '../models/agendaTreinoItem.model';
+import { AgendaTreinoAluno } from '../models/agendaTreinoAluno.model';
+
 import { HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../src/environments/environment';
 
@@ -40,5 +42,11 @@ export class AgendaTreinoService {
     console.log("payload saiu", payload);
   }
 
+  
+  getAgendaTreinoAluno(payload: any) {
+    const token = localStorage.getItem('jwt-token');
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    return this.http.post<AgendaTreinoAluno[]>(`${environment.apiUrl}/agendaTreino/agendatreinoaluno`, payload, { headers });
+  }
 
 }

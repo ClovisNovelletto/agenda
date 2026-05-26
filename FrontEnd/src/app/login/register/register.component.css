@@ -116,3 +116,14 @@ h2 {
   flex-wrap: wrap;
   height: 10px;
 }
+
+.btn-enviaconvite {
+  width: 70%;
+  padding: 0.7rem;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  background-color: #00c853 !important;
+  color: white !important;
+  font-weight: 600;
+}

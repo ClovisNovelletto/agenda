@@ -38,7 +38,13 @@ export class LoginComponent {
 
         localStorage.setItem('jwt-token', response.token);
         localStorage.setItem('refresh-token', response.tokenRefresh);
-        this.router.navigate(['/home']);
+        if(this.authService.getAlunoId() ?? 0 > 0) {
+          this.router.navigate(['/agenda-Aluno']);
+        } else if(this.authService.getPersonalId() ?? 0 > 0) {
+          this.router.navigate(['/agenda']);
+        } else {        
+          this.router.navigate(['/home']);
+        }
       },
       error: (err: HttpErrorResponse) => {
         console.error('Erro ao logar:', err);

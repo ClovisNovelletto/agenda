@@ -60,7 +60,7 @@ html, body {
   flex-direction: column;
   justify-content: flex-start;
   background: black;
-  border-radius: 8px;
+  /*border-radius: 8px;*/
   box-shadow: 0 1px 3px rgba(0,0,0,.08);
   padding: 0px;
   overflow: hidden!important;
@@ -106,30 +106,6 @@ html, body {
   white-space: nowrap;
 }
 
-.sidebar-header {
-  font-weight: 600;
-  padding: 8px 8px;
-  border-bottom: 1px solid #eee;
-  color: white;
-}
-
-.sidebar {
-  width: 520px;
-  flex-shrink: 0;
-  max-width: 520px;
-  float: left; 
-  overflow-y: auto;
-  background:#494646;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  padding: 0px;
-  color: #ccc;
-  flex: 0 0 250px; 
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
-
 .month-picker .mat-calendar-period-button {
   pointer-events: none;
 }
@@ -151,15 +127,16 @@ html, body {
 }
 
 .mat-column-treino {
-  width: 100px;
+  width: 200px;
 }
 
-.mat-column-dataini, .mat-column-datafim{
-  width: 100px;
+.mat-column-data {
+  width: 200px;
+  padding-left: 10px;
 }
 
-.mat-column-ativo {
-  width: 40px;
+.mat-column-concluido {
+  width: 200px;
 }
 
 .tabela-header {
@@ -183,21 +160,11 @@ html, body {
   height: 40px;
 }
 
-::ng-deep .mdc-checkbox__checkmark{
-  color: white !important;;
-  background-color: hwb(24 12% 18%);
-}
-::ng-deep .mat-mdc-checkbox.mat-accent .mdc-checkbox__background {
-  border-color: white !important; 
-}
 
 ::ng-deep .mat-mdc-form-field-subscript-wrapper {
   display: none !important;
 }
 
-::ng-deep .mdc-label {
-  font-size: 10px;
-}
 
 .mat-mdc-header-cell {
   background: rgba(58, 49, 49, 0);
@@ -213,78 +180,8 @@ html, body {
   background: rgb(67, 58, 58);;
 }
 
-.aluno-lista {
-  overflow-y: auto;
-}
-
-.cdk-drag-preview {
-  background-color: #ff9800; 
-  border: 1px solid #ff9800;
-}
-
-.cdk-drag-placeholder {
-  background-color: #ff9800; 
-  opacity: 0.3;
-}
-
-.cdk-drag-dragging {
-  background-color: #ff9800; 
-  opacity: 0.8;
-}
-
-.aluno {
-  padding: 0px;
-  color: black;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.aluno.ativo {
-  background: #ff9800;
-  color: white;
-  font-weight: 500;
-  border-left: 4px solid #e65100;
-}
-
-.fab-btnAdd {
-  bottom: calc(var(--safe-bottom, 40px) + 96px);
-  position: fixed;
-  right: 25px;
-}
-
-.btn-float-menu {
-  background: linear-gradient(135deg, green, green) !important;
-  color: #fff !important;
-  box-shadow: 0 6px 12px rgba(0,0,0,0.25);
-  width: 32px !important;
-  height: 32px !important;
-  min-width: 32px !important;
-  line-height: 32px !important;
-  align-items: center!important;
-  justify-content: center!important; 
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
 
 @media (max-width: 768px) {
-  .sidebar-header {
-    font-size: 14px;
-  }
-  .sidebar {
-    flex: 1;
-    max-width: 100%;
-    order: -1;
-    width: 180px;
-    float: left;
-    position: relative;
-    margin-right: 10px;
-    flex: 0 0 120px;
-    margin: 0px;
-    font-size: 12px;
-    --mat-checkbox-label-text-size: 10spx;
-  }
 
   .agenda-table th,
   .agenda-table td {
@@ -299,28 +196,17 @@ html, body {
     width: 100px;
   }
 
-  .mat-column-dataini, .mat-column-datafim{
+  .mat-column-data{
     width: 50px;
   }
 
-  .mat-column-ativo {
+  .mat-column-concluido {
     width: 35px;
   }
   .custom-height {
     width: 0px;
   }
 
-  .fab-btnAdd {
-    bottom: calc(var(--safe-bottom, 40px) + 60px);
-    right: 10px;
-  }
-
-  .btn-float-menu mat-icon {
-    margin-bottom: 5px !important;
-    margin-right: 5px !important;
-    font-size: 20px !important;
-    line-height: 1 !important;
-  }  
 }
 
 

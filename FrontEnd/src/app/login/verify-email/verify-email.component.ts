@@ -27,12 +27,14 @@ export class VerifyEmailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    
     const token = this.route.snapshot.queryParamMap.get('token');
+console.log('token', token)    
     if (!token) {
       this.mensagem = 'Token não encontrado na URL.';
       return;
     }
-
+console.log('token', token)
     //this.http.get<any[]>(`${environment.apiUrl}/aluno/alunos`
     this.http.get<{ mensagem: string }>(`${environment.apiUrl}/auth/verify-email?token=${token}`).subscribe({
       next: (res) => {

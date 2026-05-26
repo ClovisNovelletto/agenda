@@ -58,27 +58,17 @@
 
         </mat-form-field>
 
-<div class="lado-alado ">
-        <p class="password-strength-text"> <!--*ngIf="formData.get('senha')?.value"-->
-          Força: <strong [style.color]="passwordColor">{{ passwordLabel }} </strong>
-        </p>  
-        <div class="password-strength strength-ba" [ngStyle]="{
-                      width: passwordStrength *.6 + '%',
-                      backgroundColor: passwordColor
-                    }"></div>        
-  <!-- Barra de força 
-        <div class="password-strength">
-          <div
-            class="strength-bar"
-            [ngStyle]="{
-              width: passwordStrength + '%',
-              backgroundColor: passwordColor
-            }"
-          ></div>
-        </div>
--->
+        <div class="lado-alado ">
+          <p class="password-strength-text"> <!--*ngIf="formData.get('senha')?.value"-->
+            Força: <strong [style.color]="passwordColor">{{ passwordLabel }} </strong>
+          </p>  
+          <div class="password-strength strength-ba" [ngStyle]="{
+                        width: passwordStrength *.6 + '%',
+                        backgroundColor: passwordColor
+                      }">
+          </div>        
+        </div>                
 
-</div>                
         <div class="password-rules">
           <p>Sua senha deve conter:</p>
           <ul>
@@ -102,16 +92,26 @@
             <mat-label>Código do convite</mat-label>
             <input matInput formControlName="codigoConvite">
           </mat-form-field>
-        </div>
-<div class="lado-alado" style="margin-bottom: 20px;">
-        <button mat-raised-button style="margin-top:10px" color="primary" type="submit" [disabled]="formData.invalid || !canSave">
-          Cadastrar
-        </button>
 
-        <div class="links">
-          <a routerLink="/login">Voltar ao login</a>
+
+              <button class="btn-enviaconvite"              
+                      type="button"
+                      (click)="enviarCodigoEmail()"
+                      [disabled]="!formData.get('email')?.value">
+
+                Enviar Cód Convite Email
+              </button>
+          
         </div>
-</div>
+        <div class="lado-alado" style="margin-bottom: 20px;">
+            <button mat-raised-button style="margin-top:10px" color="primary" type="submit" [disabled]="formData.invalid || !canSave">
+              Cadastrar
+            </button>
+
+            <div class="links">
+              <a routerLink="/login">Voltar ao login</a>
+            </div>
+        </div>
       </div>
     </form>
   </div>

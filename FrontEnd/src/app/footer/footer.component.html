@@ -1,7 +1,27 @@
 <ng-container *ngIf="isLoggedIn">
   <mat-toolbar class="footer mat-elevation-z8">
     <!--<div class="tituloh2u">h2u Agenda</div>-->
-    <div class="footer-menu" >
+
+    <div *ngIf="alunoid > 0" class="footer-menu">
+      <button mat-icon-button class="mat-icon-button__icon" routerLink="/agenda-Aluno">
+        <mat-icon>calendar_month</mat-icon>
+      </button>
+
+      <button mat-icon-button class="mat-icon-button__icon" routerLink="/recebimento-Aluno">
+        <mat-icon>attach_money</mat-icon>
+      </button>
+
+      <button mat-icon-button class="mat-icon-button__icon" routerLink="/treino-Aluno">
+        <mat-icon>fitness_center</mat-icon>
+      </button>
+
+      <button mat-icon-button class="mat-icon-button__icon"  (click)="logout()" matTooltip="Sair">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </div>
+
+    <div *ngIf="personalid > 0" class="footer-menu" >
+
       <button mat-icon-button class="mat-icon-button__icon" 
               [matMenuTriggerFor]="menuAgenda" routerLinkActive="active" matTooltip="Agenda">
         <mat-icon>calendar_month</mat-icon>
@@ -25,12 +45,6 @@
         <button mat-menu-item routerLink="/recebIndividualLista">Receb Individuais</button>
       </mat-menu>
 
-<!--
-      <button mat-icon-button class="mat-icon-button__icon"
-              routerLink="/financeiro" routerLinkActive="active" matTooltip="Financeiro">
-        <mat-icon>attach_money</mat-icon>
-      </button>
-    -->      
       <button mat-icon-button class="mat-icon-button__icon" 
               [matMenuTriggerFor]="menuCadastro" routerLinkActive="active" matTooltip="Mais">
         <mat-icon>menu</mat-icon>
@@ -46,7 +60,7 @@
       </mat-menu>
 
       <button mat-icon-button class="mat-icon-button__icon" 
-               [matMenuTriggerFor]="menuConf" routerLinkActive="active" matTooltip="Configurações">
+              [matMenuTriggerFor]="menuConf" routerLinkActive="active" matTooltip="Configurações">
         <mat-icon>settings</mat-icon>
       </button>
 
@@ -54,10 +68,10 @@
         <button mat-menu-item routerLink="/configuracoes">Agenda</button>
         <button mat-menu-item routerLink="/configuracoesServicos">Serviços</button>
       </mat-menu>
-
       <button mat-icon-button class="mat-icon-button__icon"  (click)="logout()" matTooltip="Sair">
         <mat-icon>logout</mat-icon>
       </button>
     </div>
+
   </mat-toolbar>
 </ng-container>

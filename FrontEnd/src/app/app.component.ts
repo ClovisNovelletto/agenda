@@ -37,6 +37,13 @@ export class AppComponent {
     this.authService.isLoggedIn$.subscribe((status) => {
       this.isLoggedIn = status;
       console.log('app Estado atualizado:', this.isLoggedIn);
+      if(this.authService.getAlunoId() ?? 0 > 0) {
+        this.router.navigate(['/agenda-Aluno']);
+      } else if(this.authService.getPersonalId() ?? 0 > 0) {
+        this.router.navigate(['/agenda']);
+      } else {        
+        this.router.navigate(['/home']);
+      }
     });
 
     Filesystem.requestPermissions();

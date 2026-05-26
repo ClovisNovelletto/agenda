@@ -72,9 +72,23 @@ export class RegisterComponent implements OnInit {
     this.erro = '';
 
     const tipoUsuario = this.formData.get('tipoUsuario')?.value;
+
+    console.log('tipoUsuario',tipoUsuario)
+    console.log('codconv',this.formData.get('codigoConvite')?.value)
+    if(tipoUsuario === 'aluno' && this.formData.get('codigoConvite')?.value ==='') {
+      this.mensagem = 'Código convite é obrigatório para cadastro de launo.';
+      this.snackBar.open(this.mensagem, 'Fechar', {
+        duration: 5000,
+        panelClass: ['snackbar-success'],
+        horizontalPosition: 'center',
+        verticalPosition: 'top'
+      });
+      return;
+    }
+
     const url = tipoUsuario === 'personal'
       ? `${environment.apiUrl}/auth/cadastro-personal`
-      : `${environment.apiUrl}/auth/cadastro-aluno`;
+      : `${environment.apiUrl}/auth/register-aluno`;
 
     this.http.post<{ mensagem: string }>(url, this.formData.value).subscribe({
       next: (res) => {
@@ -151,5 +165,36 @@ export class RegisterComponent implements OnInit {
         this.canSave = true;
         break;
     }
+  }
+
+  enviarCodigoEmail() {
+
+    console.log(this.formData.invalid)
+
+    if (this.formData.invalid) return;
+    const email = this.formData.value.email;
+    console.log("enviando")
+    this.http.post<{ mensagem: string }>(`${environment.apiUrl}/auth/envia-cod-convite`, {email: email}).subscribe({
+      next:  (res) => {
+        this.mensagem = res.mensagem || 'E-mail código de convite enviado, verifique sua caixa de entrada.';
+        this.snackBar.open(this.mensagem, 'Fechar', {
+          duration: 5000,
+          panelClass: ['snackbar-success'],
+          horizontalPosition: 'center',
+          verticalPosition: 'top'
+        });
+      },
+      error: (err) => {
+        console.error(err);
+        this.mensagem = err.error?.mensagem || 'Erro ao enviar código convite.';
+        this.carregando = false;
+        this.snackBar.open(this.mensagem, 'Fechar', {
+          duration: 5000,
+          panelClass: ['snackbar-error'],
+          horizontalPosition: 'center',
+          verticalPosition: 'top'
+        });
+      }
+    });      
   }
 }
