@@ -7,11 +7,11 @@ const router = express.Router();
 
 router.get('/treino/:agendaId', authenticateToken, async (req, res) => {
   try {
-    console.log("carrega TreinoAgenda");
+    
     const personalid = req.user.personalid;
     const { agendaId } = req.params;
 
-    console.log("agendaId: ", agendaId );
+    //console.log("agendaId: ", agendaId );
 
     const agendaTreino = await sql`
      SELECT agendatreino_id, agendatreino_id AS id, atagendaid AS agendaid, atalunoid AS alunoid, attreino AS treino, atconcluido concluido FROM AgendaTreinos
@@ -28,10 +28,10 @@ router.get('/treino/:agendaId', authenticateToken, async (req, res) => {
       //});
 
     }      
-    console.log("agendaTreino: ", agendaTreino[0] );
+    //console.log("agendaTreino: ", agendaTreino[0] );
 
     const agendaTreinoid = agendaTreino[0].agendatreino_id;
-    console.log("agendaTreinoid: ", agendaTreinoid );
+    //console.log("agendaTreinoid: ", agendaTreinoid );
 
     const items = await sql`
       SELECT AgendaTreinoItem_ID AS id, atiexercicio AS exercicio, atiserie AS serie, atirepeticao AS repeticao, atipeso AS peso,  atitempo AS tempo, aticoncluido concluido, atiordem ordem
@@ -39,7 +39,7 @@ router.get('/treino/:agendaId', authenticateToken, async (req, res) => {
       WHERE atiagendatreinoid = ${agendaTreinoid}
       ORDER BY atiordem`;
 
-    console.log("items: ", items );    
+    //console.log("items: ", items );    
     res.json({
       ...agendaTreino[0],
       items: items
@@ -54,13 +54,13 @@ router.get('/treino/:agendaId', authenticateToken, async (req, res) => {
 
 
 router.post('/agendatreinoaluno', authenticateToken, async (req, res) => {
-  try { console.log("carrega agendatreinoaluno");
+  try { 
     const alunoid = req.user.alunoid;
     const {ano, mes1a12} = req.body;
     
-    console.log('ano', ano);
-    console.log('mes1a12', mes1a12);
-    console.log('alunoid', alunoid);
+    //console.log('ano', ano);
+    //console.log('mes1a12', mes1a12);
+    //console.log('alunoid', alunoid);
 
     // tratamento treino indefinido
     if (typeof req.body[`alunoid`] === 'undefined') {
@@ -77,7 +77,7 @@ router.post('/agendatreinoaluno', authenticateToken, async (req, res) => {
         AND EXTRACT(MONTH FROM date)=${mes1a12} 
       ORDER BY atordem`;
 
-console.log('agtreinoaluno: ', agtreinoaluno)
+    //console.log('agtreinoaluno: ', agtreinoaluno)
 
     res.json(agtreinoaluno);
     
@@ -88,7 +88,7 @@ console.log('agtreinoaluno: ', agtreinoaluno)
 });
 
 router.put('/concluirItem', authenticateToken, async (req, res) => {
-  const { id, concluido  } = req.body;
+  const { treinoid, id, concluido  } = req.body;
   const personalid = req.user.personalid;
   console.log("id", id);
 
@@ -98,11 +98,34 @@ router.put('/concluirItem', authenticateToken, async (req, res) => {
         atiConcluido = ${concluido}
       WHERE AgendaTreinoItem_ID = ${id}
       RETURNING *`;
+
+    // atualiza o treino  
+    try {  
+      const pendentes = await sql`
+        SELECT COUNT(*) quantidade
+          FROM AgendaTreinoItems
+        WHERE atiagendatreinoid = ${treinoid}
+          AND COALESCE(aticoncluido, false) = false
+      `;
+      
+      const treinoConcluido = pendentes[0].quantidade == 0;
+
+      await sql`
+        UPDATE AgendaTreinos
+          SET atConcluido = ${treinoConcluido ? true : false}
+        WHERE AgendaTreino_ID = ${treinoid}
+      `;
+      } catch (err) {
+        console.error('Erro ao atualizar descrição item do treino:', err);
+        res.status(500).json({ error: 'Erro ao atualizar item do treino' });
+    }
+      
     res.status(201).json(agendaTreino)
     } catch (err) {
-      console.error('Erro ao atualizar descrição item do treino:', err);
+      console.error('Erro ao atualizar o item como concluido:', err);
       res.status(500).json({ error: 'Erro ao atualizar item do treino' });
-    }
+  }
+
 });
 
 router.put('/concluirTreino', authenticateToken, async (req, res) => {
