@@ -66,7 +66,7 @@ html, body {
   overflow: hidden!important;
   overflow-y: auto;   
   min-height: 0;
-  border: 1px solid #ccc;
+  /*border: 1px solid #ccc;*/
 }
 
 .header-linha {
@@ -78,7 +78,7 @@ html, body {
   flex: 1;
   overflow: auto;
   padding: 0px 0px 0px;
-  border: 1px solid #ccc;
+  /*border: 1px solid #ccc;*/
   overflow-y: auto;
 }
 
@@ -90,7 +90,7 @@ html, body {
 
 .empty {
   text-align: center;
-  color: hwb(202 38% 17%);
+  color: orange;
   padding: 16px;
 }
 
@@ -128,15 +128,18 @@ html, body {
 
 .mat-column-treino {
   width: 200px;
+  font-size: 14px;
 }
 
 .mat-column-data {
   width: 200px;
   padding-left: 10px;
+  font-size: 14px;
 }
 
 .mat-column-concluido {
   width: 200px;
+  font-size: 14px;
 }
 
 .tabela-header {
@@ -144,6 +147,7 @@ html, body {
   table-layout: fixed;
   background:#494646;
   color: rgb(67, 58, 58);
+  border: 1px solid #ccc;
 }
 
 .tabela-header, .mat-header-cell, .mat-cel {
@@ -194,14 +198,17 @@ html, body {
   }    
   .mat-column-treino {
     width: 100px;
+    font-size: 12px;
   }
 
   .mat-column-data{
     width: 50px;
+    font-size: 12px;
   }
 
   .mat-column-concluido {
     width: 35px;
+    font-size: 12px;
   }
   .custom-height {
     width: 0px;

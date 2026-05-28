@@ -113,7 +113,7 @@ export class AgendaTreinoComponent implements OnInit {
 
     marcar(item: any, event: any) {
         const concluido = event.target.checked;
-        this.agendaTreinoService.concluirItem(item.id, concluido ).subscribe(() => {
+        this.agendaTreinoService.concluirItem(this.agendaTreino.id, item.id, concluido ).subscribe(() => {
             item.concluido = concluido;
             this.atualizarProgresso();
         });

@@ -15,6 +15,18 @@
         <mat-icon>fitness_center</mat-icon>
       </button>
 
+      <button mat-icon-button class="mat-icon-button__icon" routerLink="/anamnese-Aluno">
+        <mat-icon>medical_information</mat-icon>
+      </button>
+
+      <button mat-icon-button class="mat-icon-button__icon" routerLink="/configuracoes-Aluno">
+        <mat-icon>settings</mat-icon>
+      </button>
+
+      <button mat-icon-button class="mat-icon-button__icon"  (click)="logout()" matTooltip="Sair">
+        <mat-icon>logout</mat-icon>
+      </button>
+
     </div>
 
     <div *ngIf="personalid > 0" class="footer-menu" >
@@ -65,11 +77,11 @@
         <button mat-menu-item routerLink="/configuracoes">Agenda</button>
         <button mat-menu-item routerLink="/configuracoesServicos">Serviços</button>
       </mat-menu>
-    <!--
+    
       <button mat-icon-button class="mat-icon-button__icon"  (click)="logout()" matTooltip="Sair">
         <mat-icon>logout</mat-icon>
       </button>
-    -->
+    
     </div>
 
   </mat-toolbar>

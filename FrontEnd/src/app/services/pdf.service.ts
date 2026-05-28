@@ -22,6 +22,10 @@ export class PdfService {
    */
 
   async salvarPDF(nomeArquivo: string, docDef: any) {
+
+    //console.log('salvarPDF', nomeArquivo);
+    //console.log(docDef);
+    
     //alert(`Iniciando salvarPDF: ${nomeArquivo}`);
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 

@@ -23,6 +23,8 @@ import { RecebIndividualListaComponent} from './financeiro/recebimentos/individu
 import { AgendaAlunoComponent} from './acessoAluno/agenda-aluno/agenda-aluno.component'
 import { RecebimentoAlunoComponent} from './acessoAluno/recebimento-aluno/recebimento-aluno.component'
 import { TreinoAlunoComponent} from './acessoAluno/treino-aluno/treino-aluno.component'
+import { AnamneseAlunoListaComponent} from './acessoAluno/anamnese-aluno/anamnese-lista/anamnese-lista.component'
+import { ConfiguracoesAlunoComponent} from './acessoAluno/configuracoes-aluno/configuracoes-aluno.component'
 
 import { HomeComponent } from './home/home.component';
 import { PdfListaComponent } from './pdfs/pdf-lista.component';
@@ -59,7 +61,8 @@ export const routes: Routes = [
   { path: 'agenda-Aluno', canActivate: [AuthGuard], loadComponent: () => import('./acessoAluno/agenda-aluno/agenda-aluno.component').then(m => m.AgendaAlunoComponent)},
   { path: 'recebimento-Aluno',  canActivate: [AuthGuard], loadComponent: () => import('./acessoAluno/recebimento-aluno/recebimento-aluno.component').then(m => m.RecebimentoAlunoComponent)},  
   { path: 'treino-Aluno',  canActivate: [AuthGuard], loadComponent: () => import('./acessoAluno/treino-aluno/treino-aluno.component').then(m => m.TreinoAlunoComponent)},  
-
+  { path: 'anamnese-Aluno',  canActivate: [AuthGuard], loadComponent: () => import('./acessoAluno/anamnese-aluno/anamnese-lista/anamnese-lista.component').then(m => m.AnamneseAlunoListaComponent)},  
+  { path: 'configuracoes-Aluno',  canActivate: [AuthGuard], loadComponent: () => import('./acessoAluno/configuracoes-aluno/configuracoes-aluno.component').then(m => m.ConfiguracoesAlunoComponent)},  
 ];
 
 

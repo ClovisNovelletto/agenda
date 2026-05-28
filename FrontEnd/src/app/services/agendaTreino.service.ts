@@ -20,11 +20,11 @@ export class AgendaTreinoService {
     return this.http.get<AgendaTreino[]>(`${environment.apiUrl}/agendaTreino/treino/${agendaId}`, { headers });
   }
 
-  concluirItem(id: number, concluido: boolean) {
+  concluirItem(treinoid: number, id: number, concluido: boolean) {
     console.log("id", id);
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    return this.http.put<AgendaTreino[]>(`${environment.apiUrl}/agendaTreino/concluirItem`, {id, concluido}, { headers });
+    return this.http.put<AgendaTreino[]>(`${environment.apiUrl}/agendaTreino/concluirItem`, {treinoid, id, concluido}, { headers });
   }
 
   concluirTreino(id: number, concluido: boolean) {

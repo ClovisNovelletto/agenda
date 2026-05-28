@@ -29,7 +29,7 @@
 
   <div class="lista-container">
     <div class="lista-header">
-      <span class="coluna-geral">Vencto</span>
+      <span class="coluna-vencto">Vencto</span>
       <span class="coluna-geral">Recbto</span>
       <span class="coluna-geral">Valor</span>
       <span class="coluna-geral">Rec Em</span>
@@ -41,7 +41,7 @@
         class="aluno-item" 
         *ngFor="let recebimento of recebimentosFiltrados" 
       >
-        <span class="coluna-geral">{{ recebimento.datavcto | date:'dd/MM/yy'}}</span>
+        <span class="coluna-vencto">{{ recebimento.datavcto | date:'dd/MM/yy'}}</span>
         <span class="coluna-geral">{{ recebimento.datarcto | date:'dd/MM/yy'}}</span>
         <span class="coluna-geral">{{ recebimento.valor | number:'1.2-2' }}</span>
         <span class="coluna-geral">{{ recebimento.formapagto }}</span>
@@ -61,5 +61,11 @@
       </div>
     </div>
   </div>
+
+        <div class="empty" *ngIf="!carregandoRecebimentos && recebimentosFiltrados.length === 0" >
+        Sem recebimentos para o filtro selecionado: <br>
+        Status: {{this.filtroStatus}}  <br> 
+        Ano: {{this.anoSelecionado | date:'yyyy'}}
+      </div>
 </div>
 

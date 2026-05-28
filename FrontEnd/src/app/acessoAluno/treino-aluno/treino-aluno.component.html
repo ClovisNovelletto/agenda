@@ -86,7 +86,8 @@
         </table>
         
         <div class="empty" *ngIf="!carregandoAlunosTreinos && dataSource.data.length === 0" >
-          Sem treino no mês.
+          Sem treinos para o filtro selecionado: <br>
+          Mês/Ano: {{this.mesFormatado}}
         </div>
 
       </div>

@@ -3,7 +3,9 @@ export interface Aluno {
   nome: string;
   telefone: string;
   aludias: string;
+  localid: number,
   local: string,
+  servicoid: number,
   servico: string,
   email?: string;
   datanasc?: string;
@@ -16,4 +18,18 @@ export interface Aluno {
   frequenciaid: number;
   frequencia: string;
   mostrarEquipto: boolean;
+  aludia0: boolean;
+  aludia1: boolean;
+  aludia2: boolean;
+  aludia3: boolean;
+  aludia4: boolean;
+  aludia5: boolean;
+  aludia6: boolean;
+  aluhora0: string;
+  aluhora1: string;
+  aluhora2: string;
+  aluhora3: string;
+  aluhora4: string;
+  aluhora5: string;
+  aluhora6: string;
 }

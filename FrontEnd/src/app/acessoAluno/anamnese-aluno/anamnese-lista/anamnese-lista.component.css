@@ -12,8 +12,6 @@ html, body {
   /*height: calc(100vh - 64px);*/
 }
 
-  
-
 .toolbar {
   position: sticky;
   top: 0px;
@@ -22,8 +20,7 @@ html, body {
 
 .btn-voltar {
   border-radius: 50%;
-  /*background-color: black;*/
-  background: #494646;
+  background-color: black;
   width: 36px;
   height: 36px;
   margin-right: 10px;
@@ -32,7 +29,6 @@ html, body {
 
 .titulo {
   font-size: 16px;
-  padding-left: 5px;
 }
 
 .spacer {
@@ -46,6 +42,17 @@ html, body {
   height: calc(100vh - 64px);
 }
 
+.aluno-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  padding: 0px;
+  color: #004d40 !important;
+  font-size: 12px !important;
+  flex: 1;
+  overflow-y: auto;
+}
+
 
 .content  {
   flex: 1;
@@ -54,7 +61,7 @@ html, body {
   justify-content: flex-start;
   background: black;
   /*border-radius: 8px;*/
-  /*box-shadow: 0 1px 3px rgba(0,0,0,0.8);*/
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
   padding: 0px;
   overflow: hidden!important;
   overflow-y: auto;   
@@ -63,7 +70,7 @@ html, body {
 
 .header-linha {
   padding: 0 4px 8px;
-  /*border-bottom: 1px solid #eee;*/
+  border-bottom: 1px solid #eee;
 }
 
 .tabela-wrap {
@@ -71,7 +78,7 @@ html, body {
   flex: 1;
   overflow: auto;
   padding: 0px 0px 0px;
-  /*border: 1px solid #ccc;*/
+  border: 1px solid #ccc;
   overflow-y: auto;
 }
 
@@ -100,6 +107,10 @@ html, body {
   white-space: nowrap;
 }
 
+::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+}
+
 .month-picker .mat-calendar-period-button {
   pointer-events: none;
 }
@@ -107,29 +118,10 @@ html, body {
   display: none;
 }
 
-.filtros {
-  position: sticky;
-  top: 0px;
-  background: #494646;
-  z-index: 10;
-  padding: 0px 8px 2px 0px;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-  flex-shrink: 0;
-  overflow: visible;
-  display: flex;
-}
-
-.filtros mat-form-field {
-  flex: 1;
-  min-width: 90px;
-  overflow: visible;
-}
-
 .corFonte {
-  color: #004d40 !important;
   font-weight: normal;
+  color: white;
+  background-color: black;
 }
 
 table.mat-table {
@@ -152,20 +144,23 @@ td.mat-cell {
 }
 
 .mat-column-data {
-  width: 100px;
-  padding-left: 10px;
-  font-size: 14px;
+  width: 60px;
+  padding-left: 3px;
+  padding-right: 3px;
+  font-size: 13px;
 }
-.mat-column-equipto {
-  width: 50px;
-  padding: 5px;
-  font-size: 14px;
+
+.mat-column-titulo {
+  width: 150px;
+  padding-left: 2px;
+  padding-right: 2px;
 }
 
 .mat-column-descricao {
-  width: 500px;
-  padding: 5px;
-  font-size: 14px;
+  width: 250px;
+  padding-left: 3px;
+  padding-right: 3px;
+  white-space: pre-line;
 }
 
 .tabela-container {
@@ -178,16 +173,14 @@ td.mat-cell {
 
 .tabela-header {
   width: 100%;
-  padding-left: 0px;
   table-layout: fixed;
   /*border-radius: 8px;*/
   border: 1px solid #ccc;
-  height: 30px!important;
-  /*border-bottom: 1px solid #eee;*/
-  /*padding: 8px 10px;*/
-  background:#494646;
-  /*color: rgb(67, 58, 58);*/
-
+  /*height: 20px!important;*/
+  background-color: #494646;
+  border-bottom: 1px solid #eee;
+  /*height: 20px !important;*/ /* diminui a altura do header */
+  /*min-height: 20px !important;*/
 }
 
 .tabela-body {
@@ -200,40 +193,49 @@ td.mat-cell {
   width: 100%;
   table-layout: fixed;
 }
-
+/*
 .tabela-header .mat-header-row {
-  height: 40px; 
-}
+  height: 20px;
+}*/
 
 .tabela-header-linha {
   padding: 0 4px 8px;
-  /*border-bottom: 1px solid #eee;*/
+  border-bottom: 1px solid #eee;
 }
 
 .tabela-header .mat-header-cell {
   padding: 0 8px; 
-  line-height: 40px; 
+  line-height: 20px;
   font-size: 14px; 
 }
-
-::ng-deep .mat-mdc-form-field-subscript-wrapper {
-  display: none !important;
-}
-
-::ng-deep .mat-mdc-form-field {
-  width: 100%;
-}
-
+/*
 ::ng-deep .tabela-header .mat-header-row {
-  height: 40px;
+  height: 20px;
+}*/
+
+
+::ng-deep .mat-mdc-checkbox.mat-accent .mdc-checkbox__background {
+  border-color: white !important; /* cor da borda */
+  background-color: hwb(202 38% 17%) !important; /* cor do preenchimento */
 }
 
-.custom-height {
-  /*--mat-form-field-density: -1!important;*/
-  flex: 1;
-  width: 100%;
+::ng-deep .mat-mdc-checkbox-checked .mdc-checkbox__checkmark-path {
+  stroke: white !important; /* cor do ícone ✓ */
 }
 
+.pdf-icon mat-icon {
+  color: #e53935; /* vermelho mais forte */
+  opacity: 0.9;
+  transition: transform 0.2s, opacity 0.2s;
+  background-color: white;
+  transform: scale(1.5);
+  border-radius: 3px;
+}
+
+.pdf-icon:hover mat-icon {
+  transform: scale(2.0);
+  opacity: 1;
+}
 
 @media (max-width: 768px) {
 
@@ -242,24 +244,22 @@ td.mat-cell {
     padding: 0px 0px 0px 0px!important;
     font-size: 12px;
   }
+  
   .mat-column-data {
-    width: 110px;
-    padding: 3px;
+    width: 60px;
     font-size: 12px;
   }
-  .mat-column-equipto {
-    width: 70px;
-    padding: 3px;
+
+  .mat-column-titulo {
+    width: 60px;
     font-size: 12px;
   }
 
   .mat-column-descricao {
-    width: 250px;
-    padding: 3px;
+    width: 90px;
     font-size: 12px;
+    white-space: pre-line;
   }
 
-  .custom-height {
-    width: 150px;
-  }
 }
+

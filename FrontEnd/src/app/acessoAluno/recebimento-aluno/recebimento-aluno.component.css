@@ -89,6 +89,12 @@ main.conteudo {
   overflow: visible !important;
 }
 
+.empty {
+  text-align: center;
+  color: orange;
+  padding: 16px;
+}
+
 /*-------------*/
 .lista-container {
   display: flex;
@@ -107,9 +113,9 @@ main.conteudo {
   color: #ddd;
   font-weight: 600;
   font-size: 14px;
-  padding: 8px 10px;
+  padding: 6px 3px;
   /*border-bottom: 1px solid #444;*/
-  border-bottom: 1px solid #ddd;
+  border: 1px solid #ddd;
   font-size: 14px;
 }
 
@@ -123,7 +129,7 @@ main.conteudo {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr 1fr 0.5fr;
   align-items: center;
-  padding: 8px 10px;
+  padding: 8px 3px;
   color: #eee;
   cursor: pointer;
   transition: background 0.2s;
@@ -148,6 +154,13 @@ main.conteudo {
   background: #555;
   /*border-radius: 4px;*/
 
+}
+
+.coluna-vencto {
+  display: flex;
+  justify-content: left;
+  align-items: left;
+  width: 70px;
 }
 
 .coluna-geral {

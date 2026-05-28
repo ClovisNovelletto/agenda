@@ -1,0 +1,100 @@
+<mat-toolbar color="primary" style="margin-bottom: 10px; margin-top: 5px;">
+  <button mat-icon-button style="display: flex; width: 20px !important; height: 20px !important; align-items: center !important; justify-content: center !important; background-color: black; padding: 7px; margin-right: 10px;" (click)="fechar()">
+    <mat-icon style="display: flex; align-items: center !important; justify-content: center !important;">arrow_back</mat-icon>
+  </button>
+  <span style="font-size: 16px !important; padding: 2px;">Cadastro de Aluno</span>
+</mat-toolbar>
+
+<div style="margin-bottom: 25px; margin-left: 5px;" class="form-wrapper">
+  <form *ngIf="form" [formGroup]="form" (ngSubmit)="salvar()">
+
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;" >
+      <mat-label>Nome</mat-label>
+      <input matInput formControlName="nome" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+      <mat-label>Telefone</mat-label>
+      <input matInput formControlName="telefone" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" formControlName="email" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+      <mat-label>CPF</mat-label>
+      <input matInput formControlName="cpf" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+      <mat-label>Nascimento</mat-label>
+
+      <input matInput [matDatepicker]="pickerDataNasc" formControlName="datanasc">
+      <mat-datepicker-toggle matSuffix [for]="pickerDataNasc"></mat-datepicker-toggle>
+      <mat-datepicker #pickerDataNasc></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+      <mat-label>Inicio</mat-label>
+
+      <input matInput [matDatepicker]="pickerDataInicio" formControlName="datainicio" readonly>
+      <mat-datepicker #pickerDataInicio></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+      <mat-label>Local</mat-label>
+      <input matInput formControlName="local" readonly>
+
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+      <mat-label>Servico</mat-label>
+      <input matInput formControlName="servico" readonly>
+    </mat-form-field>    
+
+    <div style="margin-left: 3px; margin-top: 5px; margin-bottom: 5px">
+          <mat-slide-toggle formControlName="ativo" style="margin-left: 3px; margin-bottom: 5px">Aluno ativo</mat-slide-toggle>
+    </div>
+
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+      <mat-label>Plano</mat-label>
+      <input matInput formControlName="plano" readonly/>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="margin-left: 3px; margin-bottom: 5px; width: 80%;">
+      <mat-label>Frequência</mat-label>
+      <input matInput formControlName="frequencia" readonly/>
+    </mat-form-field>
+    
+    <!--dias horas-->
+    <div style="margin-top: 16px; margin-bottom: 16px;">
+      <label style="color: white !important; margin-left: 8px; font-weight: 50;">Dias de Aula:</label>
+
+      <div formArrayName="diasAula" class="dias-aula">
+        <ng-container *ngFor="let grupo of diasAulaArray.controls; let j = index">
+          <div [formGroupName]="j" class="dia">
+
+            <mat-checkbox formControlName="ativo">
+              {{ diasSemana[j] }}
+            </mat-checkbox>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Horário</mat-label>
+              <input matInput formControlName="hora" readonly>
+
+            </mat-form-field>
+
+          </div>
+        </ng-container>
+      </div>
+    </div>
+
+    <div>
+      <button mat-raised-button type="submit" [disabled]="form.invalid || form.pristine" class="btn-salvar">
+        Salvar
+      </button>
+    </div>
+  </form>
+</div>
