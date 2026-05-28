@@ -10,6 +10,7 @@ router.get('/localLista', authenticateToken, async (req, res) => {
     console.log("carrega locais");
     const personalid = req.user.personalid;
     const local = await sql`SELECT Local_ID id, Local nome, LocEndereco endereco, LocAtivo ativo FROM Locals WHERE LocPersonalID = ${personalid}`;
+    console.log('local', local);
     res.json(local);
   } catch (err) {
     console.error(err);

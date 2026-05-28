@@ -31,6 +31,53 @@ router.get('/alunoLista', authenticateToken, async (req, res) => {
   }
 });
 
+router.get('/dadosAluno', authenticateToken, async (req, res) => {
+  try {
+    console.log("carrega dados do aluno");
+    const alunoid = req.user.alunoid;
+
+    const aluno = await sql`
+      SELECT * FROM h2ualunolista
+      WHERE id = ${alunoid}`;
+    if (aluno.length === 0) {
+      return res.status(404).json({ mensagem: 'Aluno não encontrado' });
+    }
+
+    res.json(aluno[0]);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao buscar dados do luno');
+  }
+});
+
+
+router.put('/salvarDadosAluno', authenticateToken, async (req, res) => {
+
+  // Agora que os valores estão garantidos, você pode extrair:
+  const { id, nome, telefone, datanasc, cpf, email } = req.body;
+  //console.log("id",id);
+  //console.log("nome",nome);
+  //console.log("telefone",telefone);
+  //console.log("localid",localid);
+  //console.log("servicoid",servicoid);
+  //console.log("datainicio",datainicio);
+
+  // UPDATE
+  try {
+    const aluno = await sql`
+      UPDATE Alunos SET
+       Aluno = ${nome}, AluCPF = ${cpf}, AluDataNasc = ${datanasc}, AluEmail = ${email},
+       alufone = ${telefone}
+       WHERE Aluno_ID = ${id}
+      RETURNING *
+    `;    
+    res.status(201).json(aluno);
+    } catch (err) {
+      console.error('Erro ao atualizar aluno:', err);
+      res.status(500).json({ error: 'Erro ao atualizar aluno' });
+    }
+});
 
 router.put('/alunoSave', authenticateToken, async (req, res) => {
 
