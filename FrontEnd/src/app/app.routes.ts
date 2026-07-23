@@ -25,6 +25,7 @@ import { RecebimentoAlunoComponent} from './acessoAluno/recebimento-aluno/recebi
 import { TreinoAlunoComponent} from './acessoAluno/treino-aluno/treino-aluno.component'
 import { AnamneseAlunoListaComponent} from './acessoAluno/anamnese-aluno/anamnese-lista/anamnese-lista.component'
 import { ConfiguracoesAlunoComponent} from './acessoAluno/configuracoes-aluno/configuracoes-aluno.component'
+import { AssinaturaComponent} from './assinatura/assinatura.component'
 
 import { HomeComponent } from './home/home.component';
 import { PdfListaComponent } from './pdfs/pdf-lista.component';
@@ -50,6 +51,7 @@ export const routes: Routes = [
   { path: 'anamneseLista',  canActivate: [AuthGuard], loadComponent: () => import('./anamnese/anamnese-lista/anamnese-lista.component').then(m => m.AnamneseListaComponent)},
   { path: 'pdfsLista',  canActivate: [AuthGuard], loadComponent: () => import('./pdfs/pdf-lista.component').then(m => m.PdfListaComponent)},
   { path: 'configuracoesServicos',  canActivate: [AuthGuard], loadComponent: () => import('./configuracoes-servicos/configuracoes-servicos.component').then(m => m.ConfiguracoesServicosComponent)},
+  { path: 'assinaturaCriarPgtoPix',  canActivate: [AuthGuard], loadComponent: () => import('./assinatura/assinatura.component').then(m => m.AssinaturaComponent)},
   { path: 'equiptoLista',  canActivate: [AuthGuard], loadComponent: () => import('./equipto/equipto-lista/equipto-lista.component').then(m => m.EquiptoListaComponent)},
   { path: 'financeiro', component: FinanceiroComponent, canActivate: [AuthGuard]},
   { path: 'login', component: LoginComponent },

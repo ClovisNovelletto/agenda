@@ -1,0 +1,135 @@
+.container{
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 15px;
+}
+
+.cards-superiores{
+    display:flex;
+    gap:20px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+}
+
+.card-plano{
+    flex:2;
+    min-width:420px;
+}
+
+.card-vencimento{
+    flex:1;
+    min-width:300px;
+}
+
+.valor{
+    font-size:38px;
+    font-weight:bold;
+    color:#1976d2;
+    margin:20px 0;
+}
+
+.valor span{
+    font-size:18px;
+    color:#666;
+}
+
+.linha{
+    display:flex;
+    justify-content:space-between;
+    margin:16px 0;
+}
+
+.status{
+    font-weight:bold;
+}
+
+.ativo{
+    color:#2e7d32;
+}
+
+.vencido{
+    color:#d32f2f;
+}
+
+.dias{
+    font-size:54px;
+    text-align:center;
+    font-weight:bold;
+    color:#1976d2;
+    margin-top:15px;
+}
+
+.texto{
+    text-align:center;
+    color:#777;
+    margin-bottom:20px;
+}
+
+.btn-renovar{
+    width:100%;
+    margin-top:25px;
+}
+
+.historico{
+    width:100%;
+}
+
+table{
+    width:100%;
+}
+
+mat-card-header{
+    margin-bottom:15px;
+}
+
+mat-icon{
+    color: #ff7a00;   /* laranja da marca */
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+mat-card-title{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+
+.card-pix{
+    margin-top:20px;
+    margin-bottom:20px;
+    text-align:center;
+}
+
+.pix-qrcode{
+    width:240px;
+    max-width:100%;
+    height:auto;
+    margin:20px auto;
+    display:block;
+    border-radius:8px;
+    background:white;
+    padding:8px;
+}
+
+.texto-pix{
+    color:#bdbdbd;
+    margin-bottom:16px;
+}
+
+.expiracao{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:6px;
+
+    margin:15px 0;
+
+    color:#ff9800;
+
+    font-weight:bold;
+}
+
+.btn-copiar{
+    width:100%;
+}

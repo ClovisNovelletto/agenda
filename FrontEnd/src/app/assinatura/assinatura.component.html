@@ -1,0 +1,285 @@
+
+<div class="container">
+
+    <div class="cards-superiores">
+
+        <!-- Meu Plano -->
+        <mat-card class="card-plano">
+
+           <mat-card-title>
+                <mat-icon>card_membership</mat-icon>
+                Meu Plano
+            </mat-card-title>
+
+            <mat-card-content>
+
+                <h2>Plano Básico</h2>
+
+                <div class="valor">
+                    R$ {{ assinatura.valor | number:'1.2-2' }}
+                    <span>/mês</span>
+                </div>
+
+                <mat-divider></mat-divider>
+
+                <div class="linha">
+                    <strong>Status</strong>
+
+                    <span
+                        class="status"
+                        [class.ativo]="assinatura.status == 'ATIVA'"
+                        [class.vencido]="assinatura.status != 'ATIVA'">
+
+                        {{ assinatura.status }}
+
+                    </span>
+
+                </div>
+
+                <div class="linha">
+                    <strong>Início</strong>
+
+                    <span>
+                        {{ assinatura.dataInicio | date:'dd/MM/yyyy' }}
+                    </span>
+                </div>
+
+                <div class="linha">
+                    <strong>Vencimento</strong>
+
+                    <span>
+                        {{ assinatura.dataFim | date:'dd/MM/yyyy' }}
+                    </span>
+                </div>
+
+            </mat-card-content>
+
+        </mat-card>
+
+
+        <!-- Próximo pagamento -->
+        <mat-card class="card-vencimento">
+
+            <mat-card-header>
+                <mat-icon>payment</mat-icon>
+                <mat-card-title>Próximo Pagamento</mat-card-title>
+            </mat-card-header>
+
+            <mat-card-content>
+
+                <div class="dias">
+
+                    {{ assinatura.diasRestantes }}
+
+                </div>
+
+                <div class="texto">
+
+                    dias restantes
+
+                </div>
+
+                <mat-divider></mat-divider>
+
+                <div class="linha">
+
+                    <strong>Vence em</strong>
+
+                    <span>
+
+                        {{ assinatura.dataFim | date:'dd/MM/yyyy' }}
+
+                    </span>
+
+                </div>
+
+                <button
+                    *ngIf="!pix"
+                    mat-raised-button
+                    color="primary"
+                    class="btn-renovar"
+                    (click)="assinaturaCriarPgtoPix()">
+
+                    <mat-icon>qr_code_2</mat-icon>
+
+                    Renovar Assinatura
+
+                </button>
+
+            </mat-card-content>
+
+        </mat-card>
+
+    </div>
+
+    <mat-card *ngIf="pix" class="card-pix">
+
+        <mat-card-header>
+
+            <mat-card-title>
+
+                <mat-icon>qr_code</mat-icon>
+
+                Pagamento PIX
+
+            </mat-card-title>
+
+        </mat-card-header>
+
+        <mat-card-content>
+
+            <img
+                [src]="'data:image/png;base64,' + pix.asppix_qrcodebase64"
+                class="pix-qrcode">
+
+            <p class="texto-pix">
+
+                Escaneie o QR Code acima para efetuar o pagamento.
+
+            </p>
+
+            <p class="expiracao">
+
+                <mat-icon>schedule</mat-icon>
+
+                Expira em <strong>{{ pix.aspexpiracao | date:'dd/MM/yyyy HH:mm' }}</strong>
+
+            </p>
+
+            <button
+                mat-raised-button
+                class="btn-copiar"
+                (click)="copiarPix()">
+
+                <mat-icon>content_copy</mat-icon>
+
+                {{textoBotao}}
+
+            </button>
+
+        </mat-card-content>
+
+    </mat-card>
+
+    <!-- Histórico -->
+
+    <mat-card class="historico">
+
+        <mat-card-header>
+
+            <mat-icon>history</mat-icon>
+
+            <mat-card-title>
+
+                Histórico de Pagamentos
+
+            </mat-card-title>
+
+        </mat-card-header>
+
+        <mat-card-content>
+
+            <table
+                mat-table
+                [dataSource]="pagamentos"
+                class="mat-elevation-z1">
+
+                <!-- Data -->
+
+                <ng-container matColumnDef="data">
+
+                    <th mat-header-cell *matHeaderCellDef>
+
+                        Data
+
+                    </th>
+
+                    <td mat-cell *matCellDef="let p">
+
+                        {{ p.data }}
+
+                    </td>
+
+                </ng-container>
+
+
+                <!-- Valor -->
+
+                <ng-container matColumnDef="valor">
+
+                    <th mat-header-cell *matHeaderCellDef>
+
+                        Valor
+
+                    </th>
+
+                    <td mat-cell *matCellDef="let p">
+
+                        {{ p.valor | currency:'BRL' }}
+
+                    </td>
+
+                </ng-container>
+
+
+                <!-- Status -->
+
+                <ng-container matColumnDef="status">
+
+                    <th mat-header-cell *matHeaderCellDef>
+
+                        Status
+
+                    </th>
+
+                    <td mat-cell *matCellDef="let p">
+
+                        <span
+                            class="status"
+                            [class.ativo]="p.status == 'PAGO'"
+                            [class.vencido]="p.status != 'PAGO'">
+
+                            {{ p.status }}
+
+                        </span>
+
+                    </td>
+
+                </ng-container>
+
+
+                <!-- Gateway -->
+
+                <ng-container matColumnDef="gateway">
+
+                    <th mat-header-cell *matHeaderCellDef>
+
+                        Gateway
+
+                    </th>
+
+                    <td mat-cell *matCellDef="let p">
+
+                        {{ p.gateway }}
+
+                    </td>
+
+                </ng-container>
+
+                <tr
+                    mat-header-row
+                    *matHeaderRowDef="['data','valor','status','gateway']">
+                </tr>
+
+                <tr
+                    mat-row
+                    *matRowDef="let row; columns:['data','valor','status','gateway'];">
+                </tr>
+
+            </table>
+
+        </mat-card-content>
+
+    </mat-card>
+
+</div>
