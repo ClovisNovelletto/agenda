@@ -21,6 +21,9 @@ import alunoTreinoRoutes from "./routes/alunotreino.js";
 import tabelaPrecoRoutes from "./routes/tabelaPreco.js";
 import agendaTreinoRoutes from "./routes/agendaTreino.js";
 import configuracaoRoutes from "./routes/configuracao.js";
+import pagamentoRoutes from "./routes/pagamentoRoutes.js";
+import assinaturaRoutes from "./routes/assinatura.js";
+import webhookRoutes from "./routes/webhook.js";
 
 process.env.TZ = 'UTC';
 dotenv.config();
@@ -48,6 +51,9 @@ app.use("/api/alunoTreino", alunoTreinoRoutes);
 app.use("/api/tabelaPreco", tabelaPrecoRoutes);
 app.use("/api/agendaTreino", agendaTreinoRoutes);
 app.use("/api/configuracao", configuracaoRoutes);
+app.use("/api/pagamentos", pagamentoRoutes);
+app.use("/api/assinatura", assinaturaRoutes);
+app.use("/api/webhook", webhookRoutes);
 
 //const isProd = process.env.NODE_ENV === 'production'
 
