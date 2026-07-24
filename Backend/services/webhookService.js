@@ -1,4 +1,4 @@
-import { assinaturaService } from '../services/assinaturaService';
+import { assinaturaService } from '../services/assinaturaService.js';
 
 export async function processar(body) {
 
