@@ -25,9 +25,6 @@ router.post('/', async (req, res) => {
     logWebhook('QUERY', req.query);
     logWebhook('BODY', req.body);
 
-    // Sempre responder 200 rapidamente
-    res.sendStatus(200);
-
     // Responde rapidamente ao Mercado Pago
     res.sendStatus(200);
 

@@ -78,6 +78,8 @@ export const renovarAssinatura = async (personalid) => {
 
 export async function confirmarPagamento(payment) {
 
+    console.log('ENTROU ASSINATURA SERVICE CONFIRMAR PAGAMENTO');
+
     // atualiza assinatura
     // grava pagamento
     // altera status
