@@ -76,6 +76,13 @@ export const renovarAssinatura = async (personalid) => {
 
 }
 
+export async function confirmarPagamento(payment) {
+
+    // atualiza assinatura
+    // grava pagamento
+    // altera status
+}
+
 
 
 export const buscarAssinatura_excluir = async (req, res) => {
