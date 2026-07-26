@@ -76,38 +76,102 @@ export const renovarAssinatura = async (personalid) => {
 
 }
 
-export async function confirmarPagamento(payment) {
+export async function confirmarPagamento(body) {
 
     console.log('ENTROU ASSINATURA SERVICE CONFIRMAR PAGAMENTO');
 
-    // atualiza assinatura
-    // grava pagamento
-    // altera status
+    const referencia = body.data.external_reference;
+
+    const partes = referencia.split("_");
+
+    const assinaturaId = Number(partes[2]);
+    //const assinaturaspagto_id = Number(partes[3]);
+    const payment = body.data.transactions.payments[0];
+
+    console.log("assinaturaId:", assinaturaId);
+    //console.log("assinaturaspagto_id:", assinaturaspagto_id);
+    console.log("payment:", payment);
+
+    // UPDATE assinatura
+     await sql`
+
+        UUPDATE assinaturaspagtos SET aspstatus = 'PAGO'
+        WHERE aspassinaturaid = ${assinaturaId}
+          AND data.id
+          AND aspstatus='PENDENTE'
+        `
+
+    // INSERT histórico
+    await sql`
+
+        INSERT INTO historicopagamentos
+        (   order_id,
+            payment_id,
+            external_reference,
+            valor,
+            status,
+            status_detail,
+            e2e_id,
+            data_pagamento,
+            live,
+            user_id
+        )
+
+        VALUES
+        (
+            ${body.data.id},
+            ${payment.id},
+            ${body.data.external_reference},
+            ${payment.paid_amount},
+            ${payment.status},
+            ${payment.status_detail},
+            ${payment.payment_method.e2e_id},
+            ${body.date_created},
+            ${body.live_mode},
+            ${body.user_id}
+        )
+    `;
 }
 
-
-
-export const buscarAssinatura_excluir = async (req, res) => {
-
-    const personalid = req.user.personalid;
-
-    // Busca assinatura
-    router.get('/treinoLista', authenticateToken, async (req, res) => {
-    try {
-        console.log("carrega Assinatura");
-        const personalid = req.user.personalid;
-
-        const assinatura = await sql`SELECT *
-            FROM h2uassinaturaspagtos
-            WHERE personalid = ${personalid}`;
-        res.json(assinatura);
-        
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Erro ao buscar Assinatura');
-    }
-    });
-
-    res.json(retorno);
-
+/*
+{
+  "action": "order.processed",
+  "api_version": "v1",
+  "application_id": "5539186215915513",
+  "data": {
+    "currency_id": "BRL",
+    "external_reference": "ASS_1_RENOVACAO",
+    "id": "ORD01KYE10S4QXZSDHWCKGKEFR2NF",
+    "status": "processed",
+    "status_detail": "accredited",
+    "total_amount": "0.10",
+    "total_paid_amount": "0.10",
+    "transactions": {
+      "payments": [
+        {
+          "amount": "0.10",
+          "id": "PAY01KYE10S527BBYXX6KXPE8QAQ2",
+          "paid_amount": "0.10",
+          "payment_method": {
+            "e2e_id": "PIXE00360305202607260140c5589350187",
+            "id": "pix",
+            "installments": 0,
+            "type": "bank_transfer"
+          },
+          "reference": {
+            "id": "000dz0uv3a"
+          },
+          "status": "processed",
+          "status_detail": "accredited"
+        }
+      ]
+    },
+    "type": "online",
+    "version": 2
+  },
+  "date_created": "2026-07-26T01:40:30.173608393Z",
+  "live_mode": true,
+  "type": "order",
+  "user_id": "227121296"
 }
+*/

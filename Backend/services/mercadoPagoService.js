@@ -16,10 +16,10 @@ export const gerarPix = async (dados) => {
     const body = {
 
         type: "online",
-        external_reference: `ASS_${dados.assinatura.assinatura_id}_RENOVACAO`,
+        external_reference: dados.assinatura.external_reference,
         processing_mode: "automatic",
         total_amount:  dados.assinatura.asvalor,
-        description: "Pedido de teste via PIX",
+        description: dados.assinatura.description,
         payer: {
             email: dados.assinatura.peremail,
             first_name: dados.assinatura.first_name,
