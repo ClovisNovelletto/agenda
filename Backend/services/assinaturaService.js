@@ -97,7 +97,7 @@ export async function confirmarPagamento(body) {
 
         UUPDATE assinaturaspagtos SET aspstatus = 'PAGO'
         WHERE aspassinaturaid = ${assinaturaId}
-          AND data.id
+          AND asporder_id = ${payment.id}
           AND aspstatus='PENDENTE'
         `
 
