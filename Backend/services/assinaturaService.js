@@ -9,7 +9,7 @@ export const buscarAssinatura = async (personalid) => {
             SELECT  *
             FROM h2uassinaturaspagtos
             WHERE personalid=${personalid}
-
+            LIMIT 1
         `;
 
         return retorno[0];
@@ -35,7 +35,7 @@ export const renovarAssinatura = async (personalid) => {
 
     // Se não existir:
     const pagamento = await mercadoPagoService.gerarPix({
-        personalid
+        assinatura
     });
 
     // Gravar no banco

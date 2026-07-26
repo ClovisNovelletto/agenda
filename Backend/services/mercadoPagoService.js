@@ -12,61 +12,44 @@ const orderClient = new Order(client);
 export const gerarPix = async (dados) => {
 
     console.log("EXECUTNADO MercadoPagoService");
-    console.log("PersonalID:", dados.personalid);
+    console.log("PersonalID:", dados.assinatura);
     console.log("TOKEN:", process.env.MP_ACCESS_TOKEN_TESTE);
     console.log("orderClient", orderClient);
-
 
     const body = {
 
         type: "online",
-
-        external_reference: "ext_ref_1234",
-
+        external_reference: `ASS_${dados.assinatura.assinatura_id}_RENOVACAO`,
         processing_mode: "automatic",
-
-        total_amount: "10.00",
-
+        total_amount:  dados.assinatura.asvalor.toFixed(2),
         description: "Pedido de teste via PIX",
-
         payer: {
-
-            email: "test_user_2408511951980407254@testuser.com",
-
-            first_name: "APRO",
-
-            last_name: "TESTE",
-
+            email: dados.assinatura.permail,
+            first_name: dados.assinatura.first_name,
+            last_name:  dados.assinatura.last_name,
             identification: {
-                type: "CPF",
-                number: "19119119100"
+                type:  "CPF",
+                number:  dados.assinatura.percpf
             },
 
             address: {
-                zip_code: "01310930",
-                street_name: "Av Paulista",
-                street_number: "1000"
+                zip_code:  dados.assinatura.percep,
+                street_name:  dados.assinatura.perlogradouro,
+                street_number:  dados.assinatura.pernumero
             }
 
         },
 
         transactions: {
-
             payments: [
-
                 {
-
-                    amount: "10.00",
-
+                    amount: assinatura.asvalor.toFixed(2),
                     payment_method: {
                         id: "pix",
                         type: "bank_transfer"
                     }
-
                 }
-
             ]
-
         }
 
     };
