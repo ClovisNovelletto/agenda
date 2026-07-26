@@ -24,7 +24,7 @@ export const gerarPix = async (dados) => {
         total_amount:  dados.assinatura.asvalor,
         description: "Pedido de teste via PIX",
         payer: {
-            email: dados.assinatura.permail,
+            email: dados.assinatura.peremail,
             first_name: dados.assinatura.first_name,
             last_name:  dados.assinatura.last_name,
             identification: {
