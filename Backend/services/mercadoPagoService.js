@@ -21,7 +21,7 @@ export const gerarPix = async (dados) => {
         type: "online",
         external_reference: `ASS_${dados.assinatura.assinatura_id}_RENOVACAO`,
         processing_mode: "automatic",
-        total_amount:  dados.assinatura.asvalor.toFixed(2),
+        total_amount:  dados.assinatura.asvalor,
         description: "Pedido de teste via PIX",
         payer: {
             email: dados.assinatura.permail,
@@ -43,7 +43,7 @@ export const gerarPix = async (dados) => {
         transactions: {
             payments: [
                 {
-                    amount: assinatura.asvalor.toFixed(2),
+                    amount: dados.assinatura.asvalor,
                     payment_method: {
                         id: "pix",
                         type: "bank_transfer"
