@@ -1,10 +1,8 @@
 import { MercadoPagoConfig, Payment, Order } from 'mercadopago';
 import crypto from "crypto";
 
-console.log("TOKEN:", process.env.MP_ACCESS_TOKEN_TESTE);
-
 const client = new MercadoPagoConfig({
-    accessToken: process.env.MP_ACCESS_TOKEN_TESTE
+    accessToken: process.env.MP_ACCESS_TOKEN_PROD
 });
 
 const orderClient = new Order(client);
@@ -12,8 +10,7 @@ const orderClient = new Order(client);
 export const gerarPix = async (dados) => {
 
     console.log("EXECUTNADO MercadoPagoService");
-    console.log("PersonalID:", dados.assinatura);
-    console.log("TOKEN:", process.env.MP_ACCESS_TOKEN_TESTE);
+    console.log("dados.assinatura:", dados.assinatura);
     console.log("orderClient", orderClient);
 
     const body = {
