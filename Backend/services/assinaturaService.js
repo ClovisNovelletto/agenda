@@ -95,7 +95,7 @@ export async function confirmarPagamento(body) {
     // UPDATE assinatura
      await sql`
 
-        UUPDATE assinaturaspagtos SET aspstatus = 'PAGO'
+        UPDATE assinaturaspagtos SET aspstatus = 'PAGO'
         WHERE aspassinaturaid = ${assinaturaId}
           AND asporder_id = ${payment.id}
           AND aspstatus='PENDENTE'
