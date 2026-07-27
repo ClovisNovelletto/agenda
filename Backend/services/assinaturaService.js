@@ -90,16 +90,33 @@ export async function confirmarPagamento(body) {
 
     console.log("assinaturaId:", assinaturaId);
     //console.log("assinaturaspagto_id:", assinaturaspagto_id);
+    console.log("payment.id:", payment.id);
     console.log("payment:", payment);
 
     // UPDATE assinatura
-     await sql`
 
-        UPDATE assinaturaspagtos SET aspstatus = 'PAGO'
+    console.log("Antes do UPDATE");
+
+    const resultado = await sql`
+        UPDATE assinaturaspagtos
+        SET aspstatus = 'PAGO'
         WHERE aspassinaturaid = ${assinaturaId}
-          AND asporder_id = ${payment.id}
-          AND aspstatus='PENDENTE'
-        `
+        AND asporder_id = ${payment.id}
+        AND aspstatus = 'PENDENTE'
+        RETURNING *;
+    `;
+
+    console.log("Resultado UPDATE:", resultado);
+    console.log("Depois do UPDATE");
+
+    // await sql`
+    //    UPDATE assinaturaspagtos SET aspstatus = 'PAGO',
+    //           aspexternal_reference =${body.data.external_reference},
+    //           aspdata_pagamento = ${body.date_created}
+    //    WHERE aspassinaturaid = ${assinaturaId}
+    //      AND asporder_id = ${payment.id}
+    //      AND aspstatus='PENDENTE'
+    //    `
 
     // INSERT histórico
     await sql`
