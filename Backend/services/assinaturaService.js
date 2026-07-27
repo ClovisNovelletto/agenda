@@ -99,9 +99,12 @@ export async function confirmarPagamento(body) {
 
     const resultado = await sql`
         UPDATE assinaturaspagtos
-        SET aspstatus = 'PAGO'
+        SET aspstatus = 'PAGO',
+            aspstatusgateway = ${payment.status},
+            aspexternal_reference =${body.data.external_reference},
+            aspdata_pagamento = ${body.date_created}
         WHERE aspassinaturaid = ${assinaturaId}
-        AND asporder_id = ${payment.id}
+        AND asppayment_id = ${payment.id}
         AND aspstatus = 'PENDENTE'
         RETURNING *;
     `;
