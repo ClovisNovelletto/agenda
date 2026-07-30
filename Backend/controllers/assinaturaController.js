@@ -26,10 +26,13 @@ export const buscarAssinatura = async (req, res) => {
 
 export const renovarAssinatura = async (req, res) => {
 
+    const { planoId } = req.body;
+
     try {
 
         const retorno = await assinaturaService.renovarAssinatura(
-            req.user.personalid
+            req.user.personalid,
+            planoId
         );
 
         res.json(retorno);

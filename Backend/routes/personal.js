@@ -117,4 +117,59 @@ router.put('/personal/configuracoes', authenticateToken, async (req, res) => {
   }
 });
 
+
+router.get('/dadosPersonal', authenticateToken, async (req, res) => {
+  try {
+    console.log("carrega dados do personal");
+    const personalid = req.user.personalid;
+
+    const personal = await sql`
+      SELECT personal_id AS id, personal AS nome, peremail AS email, percpf AS cpf,
+             percep AS cep, perlogradouro AS logradouro, pernumero AS numero,
+             percomple AS complemento, perfone AS telefone, percidade AS cidade,
+             peruf AS uf
+      FROM Personals
+      WHERE personal_id = ${personalid}`;
+    if (personal.length === 0) {
+      return res.status(404).json({ mensagem: 'personal não encontrado' });
+    }
+
+    res.json(personal[0]);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao buscar dados do luno');
+  }
+});
+
+
+router.put('/salvarDadosPersonal', authenticateToken, async (req, res) => {
+
+  // Agora que os valores estão garantidos, você pode extrair:
+  const { id, nome, cpf, email, telefone, cep, logradouro, numero, complemento, cidade, uf } = req.body;
+  //console.log("id",id);
+  //console.log("nome",nome);
+  //console.log("telefone",telefone);
+  //console.log("localid",localid);
+  //console.log("servicoid",servicoid);
+  //console.log("datainicio",datainicio);
+
+  // UPDATE
+  try {
+    const personal = await sql`
+      UPDATE personals SET
+       Personal = ${nome}, PerCPF = ${cpf}, PerCep = ${cep}, PerEmail = ${email},
+       perfone = ${telefone}, perlogradouro = ${logradouro}, pernumero = ${numero},
+       percidade = ${cidade}, peruf = ${uf}, percomple = ${complemento}
+       WHERE Personal_ID = ${id}
+      RETURNING *
+    `;    
+    res.status(201).json(personal);
+    } catch (err) {
+      console.error('Erro ao atualizar personal:', err);
+      res.status(500).json({ error: 'Erro ao atualizar personal' });
+    }
+});
+
+
 export default router;

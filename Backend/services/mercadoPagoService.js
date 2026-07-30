@@ -7,32 +7,32 @@ const client = new MercadoPagoConfig({
 
 const orderClient = new Order(client);
 
-export const gerarPix = async (dados) => {
+export const gerarPix = async ({assinatura, plano}) => {
 
     console.log("EXECUTNADO MercadoPagoService");
-    console.log("dados.assinatura:", dados.assinatura);
+    console.log("assinatura:", assinatura);
     console.log("orderClient", orderClient);
 
     const body = {
 
         type: "online",
-        external_reference: dados.assinatura.external_reference,
+        external_reference: assinatura.external_reference,
         processing_mode: "automatic",
-        total_amount:  dados.assinatura.asvalor,
-        description: dados.assinatura.description,
+        total_amount:  plano.valorAtivo,
+        description: plano.DescPeriodo,
         payer: {
-            email: dados.assinatura.peremail,
-            first_name: dados.assinatura.first_name,
-            last_name:  dados.assinatura.last_name,
+            email: assinatura.peremail,
+            first_name: assinatura.first_name,
+            last_name:  assinatura.last_name,
             identification: {
                 type:  "CPF",
-                number:  dados.assinatura.percpf
+                number:  assinatura.percpf
             },
 
             address: {
-                zip_code:  dados.assinatura.percep,
-                street_name:  dados.assinatura.perlogradouro,
-                street_number:  dados.assinatura.pernumero
+                zip_code:  assinatura.percep,
+                street_name:  assinatura.perlogradouro,
+                street_number:  assinatura.pernumero
             }
 
         },
@@ -40,7 +40,7 @@ export const gerarPix = async (dados) => {
         transactions: {
             payments: [
                 {
-                    amount: dados.assinatura.asvalor,
+                    amount: plano.valorAtivo,
                     payment_method: {
                         id: "pix",
                         type: "bank_transfer"

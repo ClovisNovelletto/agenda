@@ -173,6 +173,12 @@ router.post('/cadastro-personal', async (req, res) => {
       VALUES (${nome}, ${email}, ${userid})
       RETURNING *`; 
 
+    const assinatura = await sql`      
+      INSERT INTO assinaturas(ASPersonalID, asplano, asvalor, asdias_aviso, asstatus, asgateway, asdata_inicio, asdata_fim)
+      SELECT 11 personalid, 'teste 10 dias' plano, 0.00 valor, 10 dias_aviso, 'Ativa' status,
+            'Mercado Pago' getway, now() inicio, now() + interval '10 day' validade
+      RETURNING *`; 
+
     // link de verificação
     const verifyLink = `${FRONTEND_URL}/verify-email?token=${verificationToken}`;
 

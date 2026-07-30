@@ -1,6 +1,23 @@
 import * as mercadoPagoService from '../services/mercadoPagoService.js';
 import { sql } from '../db.js';
 
+export const buscarPlano = async (personalid) => {
+
+    try {
+        const retorno = await sql`
+            SELECT Descricao, ValorAtivo, Validade, DescPeriodo
+            FROM h2uplanos
+            WHERE plano_id=${planoId}
+        `;
+
+        return retorno[0];
+        
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Erro ao buscar Assinatura');
+    }
+};        
+
 export const buscarAssinatura = async (personalid) => {
 
     try {
@@ -9,6 +26,8 @@ export const buscarAssinatura = async (personalid) => {
             SELECT  *
             FROM h2uassinaturaspagtos
             WHERE personalid=${personalid}
+              AND ASPStatus='PENDENTE'
+              AND ASPExpiracao > NOW()
             LIMIT 1
         `;
 
@@ -20,11 +39,67 @@ export const buscarAssinatura = async (personalid) => {
     }
 };
 
-export const renovarAssinatura = async (personalid) => {
+export const buscarDadosAtualizAss = async (assinaturaid) => {
+
+    try {
+        const retorno = await sql`
+            SELECT Descricao,
+                aspvalor,
+                aspdata_pagamento,
+                aspdata_pagamento + (meses * INTERVAL '1 month') AS validade
+            FROM AssinaturasPagtos
+                LEFT JOIN Planos ON Plano_ID=ASPlanoID
+            WHERE AspAssinaturaID=1
+            AND ASPStatus='PAGO'
+            ORDER BY AssinaturasPagto_ID
+            DESC LIMIT 1
+     `;
+
+        return retorno[0];
+        
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Erro na buscarDadosAtualizAss');
+    }
+};
+
+export const renovarAssinatura = async (personalid, planoId) => {
 
     // Buscar assinatura
+    const gateway = 'Mercado Pago';
     
     const assinatura = await buscarAssinatura(personalid);
+    const plano = await buscarPlano(planoId);
+
+    console.log('planoID', planoId);
+    console.log('plano', plano);
+
+    //Verifica no mercado pago
+    if (assinatura.asporder_id) {
+
+        const payment = await paymentClient.get({
+            id: assinatura.asporder_id
+        });
+
+        switch (payment.status) {
+
+            case 'pending':
+                // retorna o QRCode existente
+                break;
+
+            case 'approved':
+                // assinatura já paga
+                break;
+
+            default:
+                // cancelled, expired...
+                // gera um novo PIX
+                break;
+        }
+    }
+
+
+    console.log("payment", payment)
 
     // Verificar PIX pendente
     if (assinatura.assinaturaspagto_id) {
@@ -35,7 +110,7 @@ export const renovarAssinatura = async (personalid) => {
 
     // Se não existir:
     const pagamento = await mercadoPagoService.gerarPix({
-        assinatura
+        assinatura, plano
     });
 
     // Gravar no banco
@@ -55,19 +130,23 @@ export const renovarAssinatura = async (personalid) => {
             asppayment_id,
             asppix_copia_cola,
             asppayload,
-            aspexpiracao
+            aspexpiracao,
+            aspgateway,
+            asplanoid
         )
 
         VALUES
         (   ${assinatura.assinatura_id},
-            ${assinatura.asvalor},
+            ${plano.valorvalido},
             'PENDENTE',
             ${pix.status},
             ${pagamento.pagamento.id},
             ${pix.id},
             ${pix.payment_method.qr_code},
             ${pagamento.pagamento},
-            ${pix.date_of_expiration}
+            ${pix.date_of_expiration},
+            gateway,
+            ${planoId}
         )
 
     `;
@@ -87,6 +166,8 @@ export async function confirmarPagamento(body) {
     const assinaturaId = Number(partes[2]);
     //const assinaturaspagto_id = Number(partes[3]);
     const payment = body.data.transactions.payments[0];
+
+    const dadAtAss = buscarDadosAtualizAss(assinaturaId);
 
     console.log("assinaturaId:", assinaturaId);
     //console.log("assinaturaspagto_id:", assinaturaspagto_id);
@@ -112,14 +193,20 @@ export async function confirmarPagamento(body) {
     console.log("Resultado UPDATE:", resultado);
     console.log("Depois do UPDATE");
 
-    // await sql`
-    //    UPDATE assinaturaspagtos SET aspstatus = 'PAGO',
-    //           aspexternal_reference =${body.data.external_reference},
-    //           aspdata_pagamento = ${body.date_created}
-    //    WHERE aspassinaturaid = ${assinaturaId}
-    //      AND asporder_id = ${payment.id}
-    //      AND aspstatus='PENDENTE'
-    //    `
+     console.log("Antes do UPDATE");
+
+    const resultAssina = await sql`
+        UPDATE assinaturas
+        SET asplano = ${dadAtAss.descricao},
+            asvalor = ${dadAtAss.aspvalor},
+            asdata_inicio = ${dadAtAss.aspdata_pagamento} ,
+	        asdata_fim = ${dadAtAss.validade}
+        WHERE assinatura_id = ${assinaturaId}
+        RETURNING *;
+    `;
+
+    console.log("Resultado UPDATE:", resultAssina);
+    console.log("Depois do UPDATE");
 
     // INSERT histórico
     await sql`
