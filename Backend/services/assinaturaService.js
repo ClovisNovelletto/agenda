@@ -68,6 +68,8 @@ export const renovarAssinatura = async (personalid, planoId) => {
     console.log('personalid', personalid);
     console.log('planoId', planoId);
 
+    const gateway = 'Mercado Pago';
+
     // Buscar assinatura atual
     const assinatura = await buscarAssinatura(personalid);
 
@@ -130,7 +132,7 @@ console.log('plano', plano);
     const pix = pagamento.pagamento.transactions.payments[0];
 
     console.log('ASSINATURA', assinatura);
-
+    console.pagamento('pagamento', pagamento);
     await sql`
 
         INSERT INTO assinaturaspagtos
