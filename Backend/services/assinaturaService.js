@@ -91,7 +91,7 @@ console.log('plano', plano);
 
             // compara valor do PIX pendente com o novo plano
 
-            if (Number(payment.transaction_amount) === Number(plano.valorvalido)) {
+            if (Number(payment.transaction_amount) === Number(plano.valorativo)) {
 
                 console.log('Existe PIX pendente para o mesmo valor');
                 return assinatura;
@@ -134,7 +134,7 @@ console.log('plano', plano);
     console.log('ASSINATURA', assinatura);
     console.log('pagamento', pagamento);
 
-    console.log(pix.status);
+console.log(pix.status);
 console.log(pagamento.pagamento.id);
 console.log(pix.id);
 console.log(pix.payment_method.qr_code);
@@ -161,7 +161,7 @@ console.log(planoId);
 
         VALUES
         (   ${assinatura.assinatura_id},
-            ${plano.valorvalido},
+            ${plano.valorativo},
             'PENDENTE',
             ${pix.status},
             ${pagamento.pagamento.id},
