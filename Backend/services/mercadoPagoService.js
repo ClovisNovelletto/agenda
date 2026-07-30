@@ -18,8 +18,8 @@ export const gerarPix = async ({assinatura, plano}) => {
         type: "online",
         external_reference: assinatura.external_reference,
         processing_mode: "automatic",
-        total_amount:  plano.valorAtivo,
-        description: plano.DescPeriodo,
+        total_amount:  plano.valorativo,
+        description: plano.Descperiodo,
         payer: {
             email: assinatura.peremail,
             first_name: assinatura.first_name,
@@ -40,7 +40,7 @@ export const gerarPix = async ({assinatura, plano}) => {
         transactions: {
             payments: [
                 {
-                    amount: plano.valorAtivo,
+                    amount: plano.valorativo,
                     payment_method: {
                         id: "pix",
                         type: "bank_transfer"
