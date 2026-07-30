@@ -131,17 +131,7 @@ console.log('plano', plano);
 
     const pix = pagamento.pagamento.transactions.payments[0];
 
-    console.log('ASSINATURA', assinatura);
     console.log('pagamento', pagamento);
-
-console.log(pix.status);
-console.log(pagamento.pagamento.id);
-console.log(pix.id);
-console.log(pix.payment_method.qr_code);
-console.log(pagamento.pagamento);
-console.log(pix.date_of_expiration);
-console.log(gateway);
-console.log(planoId);
 
     await sql`
 
@@ -169,7 +159,7 @@ console.log(planoId);
             ${pix.payment_method.qr_code},
             ${pagamento.pagamento},
             ${pix.date_of_expiration},
-            gateway,
+            ${gateway},
             ${planoId}
         )
 

@@ -10,8 +10,6 @@ const orderClient = new Order(client);
 export const gerarPix = async ({assinatura, plano}) => {
 
     console.log("EXECUTNADO MercadoPagoService");
-    console.log("assinatura:", assinatura);
-    console.log("orderClient", orderClient);
 
     const body = {
 
