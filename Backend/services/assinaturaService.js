@@ -77,7 +77,7 @@ export const renovarAssinatura = async (personalid, planoId) => {
     const plano = await buscarPlano(planoId);
 console.log('plano', plano);
 
-    if (assinatura.asporder_id) {
+    if (assinatura?.asporder_id) {
 
         const payment = await paymentClient.get({
             id: assinatura.asporder_id
