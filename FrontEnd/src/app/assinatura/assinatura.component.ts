@@ -132,6 +132,9 @@ export class AssinaturaComponent implements OnInit{
 
     assinaturaCriarPgtoPix(planoId: number) {
 
+
+        console.log("this.planoselecionado", this.planoSelecionado);
+        console.log("planoId", planoId);
         console.log("personalxxx", this.personal);
         console.log("console.log(this.personal.cpf)", this.personal.cpf);
 
@@ -151,7 +154,7 @@ export class AssinaturaComponent implements OnInit{
                 '',
                 {
                     duration: 5000,
-                    panelClass: ['multi-line-snackbar'],
+                    panelClass: ['snackbar-warning'],
                     horizontalPosition: 'center',
                     verticalPosition: 'top'
                 }

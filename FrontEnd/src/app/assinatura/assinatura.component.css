@@ -224,7 +224,3 @@ mat-card-title{
     font-weight:600;
     font-size:11px;
 }
-
-.multi-line-snackbar {
-  white-space: pre-wrap;
-}

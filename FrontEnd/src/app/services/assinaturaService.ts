@@ -45,12 +45,12 @@ export class AssinaturaService {
     return this.http.post<Plano[]>(`${environment.apiUrl}/assinatura/carregaPlanos`, {}, { headers });
   }
 
-  assinaturaCriarPgtoPix(planoid: number): Observable<Assinatura> {
+  assinaturaCriarPgtoPix(planoId: number): Observable<Assinatura> {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
     console.log('Assinatura: ');
 
-    return this.http.post<Assinatura>(`${environment.apiUrl}/assinatura/assinaturaCriarPgtoPix`, {planoid}, { headers });
+    return this.http.post<Assinatura>(`${environment.apiUrl}/assinatura/assinaturaCriarPgtoPix`, {planoId}, { headers });
 
   }
 
