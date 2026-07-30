@@ -132,7 +132,17 @@ console.log('plano', plano);
     const pix = pagamento.pagamento.transactions.payments[0];
 
     console.log('ASSINATURA', assinatura);
-    console.pagamento('pagamento', pagamento);
+    console.log('pagamento', pagamento);
+
+    console.log(pix.status);
+console.log(pagamento.pagamento.id);
+console.log(pix.id);
+console.log(pix.payment_method.qr_code);
+console.log(pagamento.pagamento);
+console.log(pix.date_of_expiration);
+console.log(gateway);
+console.log(planoId);
+
     await sql`
 
         INSERT INTO assinaturaspagtos
