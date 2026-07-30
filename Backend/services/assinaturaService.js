@@ -1,7 +1,7 @@
 import * as mercadoPagoService from '../services/mercadoPagoService.js';
 import { sql } from '../db.js';
 
-export const buscarPlano = async (personalid) => {
+export const buscarPlano = async (planoId) => {
 
     try {
         const retorno = await sql`
