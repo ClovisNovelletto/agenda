@@ -26,8 +26,8 @@ export const buscarAssinatura = async (personalid) => {
             SELECT  *
             FROM h2uassinaturaspagtos
             WHERE personalid=${personalid}
-              AND ASPStatus='PENDENTE'
-              AND ASPExpiracao > NOW()
+              AND COALESCE(ASPStatus,'PENDENTE')='PENDENTE'
+              AND COALESCE(ASPExpiracao, NOW() + interval '1 day') > NOW()
             LIMIT 1
         `;
 
