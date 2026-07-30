@@ -28,36 +28,41 @@ export class AppComponent {
 
   constructor(private authService: AuthService, private router: Router) {}
 
-  ngOnInit() {
+ngOnInit() {
 
-  this.authService.isLoggedIn$.subscribe((status) => {
+    this.authService.checkTokenOnStartup();
 
-    this.isLoggedIn = status;
+    const path = window.location.pathname;
 
-    const url = this.router.url;
-
-    // Se já está em uma rota pública, não faz nada
     if (
-        url.startsWith('/verify-email') ||
-        url.startsWith('/login') ||
-        url.startsWith('/register') ||
-        url.startsWith('/esqueci-senha') ||
-        url.startsWith('/resetar-senha')
+        path === '/verify-email' ||
+        path === '/register' ||
+        path === '/login' ||
+        path === '/resetar-senha' ||
+        path === '/esqueci-senha'
     ) {
         return;
     }
 
-    if ((this.authService.getAlunoId() ?? 0) > 0) {
-        this.router.navigate(['/agenda-Aluno']);
-    } else if ((this.authService.getPersonalId() ?? 0) > 0) {
-        this.router.navigate(['/agenda']);
-    } else {
-        this.router.navigate(['/home']);
-    }
-  });
+    this.authService.isLoggedIn$.subscribe(status => {
+
+        if ((this.authService.getAlunoId() ?? 0) > 0) {
+            this.router.navigate(['/agenda-Aluno']);
+        }
+        else if ((this.authService.getPersonalId() ?? 0) > 0) {
+            this.router.navigate(['/agenda']);
+        }
+        else {
+            this.router.navigate(['/login']);
+        }
+
+    });
+
+    Filesystem.requestPermissions();
+}
 
 
-  }
+  
   ngOnInitOLD() {
     console.log('app onInit Executando', this.isLoggedIn);
    
