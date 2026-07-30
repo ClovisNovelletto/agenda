@@ -173,9 +173,10 @@ router.post('/cadastro-personal', async (req, res) => {
       VALUES (${nome}, ${email}, ${userid})
       RETURNING *`; 
 
+    const personalid  = personal[0].personal_id;
     const assinatura = await sql`      
       INSERT INTO assinaturas(ASPersonalID, asplano, asvalor, asdias_aviso, asstatus, asgateway, asdata_inicio, asdata_fim)
-      SELECT 11 personalid, 'teste 10 dias' plano, 0.00 valor, 10 dias_aviso, 'Ativa' status,
+      SELECT ${personalid} personalid, 'teste 10 dias' plano, 0.00 valor, 10 dias_aviso, 'Ativa' status,
             'Mercado Pago' getway, now() inicio, now() + interval '10 day' validade
       RETURNING *`; 
 
@@ -198,7 +199,7 @@ router.post('/cadastro-personal', async (req, res) => {
     // ✅ resposta única
     return res.status(200).json({
       mensagem: "Usuário cadastrado com sucesso. Verifique seu e-mail para confirmar.",
-      personalid: personal[0].personal_id
+      personalid: personalid
     });
 
   } catch (err) {
@@ -284,6 +285,7 @@ router.post('/register-aluno', async (req, res) => {
 
 // ✅ Verificação de e-mail
 router.get('/verify-email', async (req, res) => {
+  console.log('entrou na very-email');
 
   const { token } = req.query;
   if (!token) return res.status(400).json({ mensagem: 'Token inválido.' });
