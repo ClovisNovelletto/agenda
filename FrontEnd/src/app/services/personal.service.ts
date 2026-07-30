@@ -38,4 +38,19 @@ export class PersonalService {
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
     return this.http.get<Personal>(`${environment.apiUrl}/personal/personal/me`, { headers });
   }
+
+  getDadosPersonal(): Observable<Personal> {
+    const token = localStorage.getItem('jwt-token');
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    return this.http.get<Personal>(`${environment.apiUrl}/personal/dadosPersonal`, { headers });
+  }
+
+  salvarDadosPersonal(personal: Personal): Observable<Personal> {
+    const token = localStorage.getItem('jwt-token');
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    console.log('personal: ', personal);
+
+    return this.http.put<Personal>(`${environment.apiUrl}/personal/salvarDadosPersonal`, personal, { headers });
+  }
+
 }

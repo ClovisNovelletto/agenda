@@ -1,6 +1,15 @@
 export interface Personal {
   id: number;
   nome: string;
+  telefone: string;
+  email: string;
+  cpf: string;
+  cep: string;
+  logradouro: string;
+  numero: string;
+  complemento: string;
+  cidade: string;
+  uf: string;
   hora_inicio: number;
   hora_fim: number;
   intervalo_minutos: number;

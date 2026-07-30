@@ -1,0 +1,9 @@
+.form-wrapper {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 70vh;   /* limita a altura dentro do dialog */
+  overflow-y: auto;   /* rolagem só no formulário */
+}
+

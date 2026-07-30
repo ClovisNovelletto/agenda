@@ -1,10 +1,12 @@
 export interface Assinatura {
 
-    assinaturaId:number;
-    valor:number;
-    status:string;
-    dataInicio:Date;
-    dataFim:Date;
-    diasRestantes:number;
+    assinatura_id:number;
+    asvalor:number;
+    asdias_aviso:number;
+    asstatus:string;
+    asdata_inicio:Date;
+    asdata_fim:Date;
+    asgateway:string;    
+    diasrestantes:number;
 
 }

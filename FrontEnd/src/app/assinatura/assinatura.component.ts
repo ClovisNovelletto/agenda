@@ -5,10 +5,18 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon'; 
 import { MatTableModule } from '@angular/material/table';
 import type { Assinatura } from '../models/assinatura.model';
+import type { AssinaturaPagto } from '../models/assinaturaPagto.model';
+import type { Plano } from '../models/plano.model';
 import { AssinaturaService } from '../services/assinaturaService';
 import { AuthService } from '../auth.service';
 import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { finalize } from 'rxjs/operators';
+import { Router } from '@angular/router';
+//import { RouterModule } from '@angular/router';
+
+import { Personal } from '../models/personal.model';
+import { PersonalService } from '../services/personal.service';
 
 @Component({
     selector: 'app-assinatura',
@@ -24,89 +32,130 @@ export class AssinaturaComponent implements OnInit{
     historico:any;
     pagamentos:any[]=[];
     carregando=true;
+    carregandoDadosPersonal=true;
+    carregandoDadosPlano=true;
+    carregandoDadosPagtos=true;
+    carregandoPlanos=true;
     assinatura:any; /* Assinatura[] = [];*/
+    assinaturaPagto: AssinaturaPagto[] = [];
+    planos: Plano[] = [];
     pix:any;
+    planoSelecionado: any;
+    //personal: Personal[] = [];
+    personal!: Personal;
 
     constructor(private assinaturaService: AssinaturaService, private authService: AuthService,
                 /*private cd: ChangeDetectorRef, private bottomSheet: MatBottomSheet, */
-                private http: HttpClient, private snackBar: MatSnackBar /*, private dialog: MatDialog*/
+                private http: HttpClient, private snackBar: MatSnackBar, /*, private dialog: MatDialog*/
+                private personalService: PersonalService, private router: Router,
     ) {}
 
     ngOnInit(){
 
-        //depois vamos buscar na API
+        this.getDadosPersonal() ;
+        this.carregaPlanos();
+        this.carregaDadosPlano();
+        this.carregaDadosPagtos();
 
-    /*assinaturaId:number;
-    valor:number;
-    status:string;
-    dataInicio:Date;
-    dataFim:Date;
-    diasRestantes:number;
-    */
-        this.assinatura={
-            assinaturaId:1,
-            valor:10,
-            status:'ATIVA',
-            dataInicio:new Date(2026,6,10),
-            dataFim:new Date(2026,7,10),
-            diasRestantes:8
-
-        };
-
-        this.pagamentos=[
-
-            {
-
-                data:'10/07/2026',
-
-                valor:10,
-
-                status:'PAGO',
-
-                gateway:'Mercado Pago'
-
-            },
-
-            {
-
-                data:'10/06/2026',
-
-                valor:10,
-
-                status:'PAGO',
-
-                gateway:'Mercado Pago'
-
-            }
-
-        ];
-
-        this.carregando=false;
 
     }
 
-    assinaturaCriarPgtoPix() {
+    private getDadosPersonal() {
+      this.carregandoDadosPersonal = true;
+      //console.log("carregar planos:");
+    
+      this.personalService.getDadosPersonal()
+          .pipe(finalize(() => this.carregandoDadosPersonal = false))
+        .subscribe({
+          next: (resp: any) => {
+            this.personal = resp; // 👈 força nova referência
+    
+            console.log("this.personal:", this.personal);
+          },
+          error: (e: any) => console.error('Erro ao carregar personal', e)
+        });
+    }
 
-        this.assinaturaService.assinaturaCriarPgtoPix().subscribe(ret => {
+
+    selecionarPlano(plano: any) {
+        this.planoSelecionado = plano;
+        console.log("plano selecionado", this.planoSelecionado);
+    }
+    
+    private carregaPlanos() {
+      this.carregandoPlanos = true;
+      console.log("carregar planos:");
+    
+      this.assinaturaService.carregaPlanos()
+          .pipe(finalize(() => this.carregandoPlanos = false))
+        .subscribe({
+          next: (resp: any) => {
+            this.planos = [...resp]; // 👈 força nova referência
+    
+            console.log("this.planos:", this.planos);
+          },
+          error: (e: any) => console.error('Erro ao carregar planos', e)
+        });
+    }
+
+    private carregaDadosPlano() {
+      this.carregandoDadosPlano = true;
+      console.log("carregar dados plano:");
+    
+      this.assinaturaService.carregaDadosPlano()
+          .pipe(finalize(() => this.carregandoDadosPlano = false))
+        .subscribe({
+          next: (resp: any) => {
+            this.assinatura = resp; 
+    
+            console.log("this.plano:", this.assinatura);
+          },
+          error: (e: any) => console.error('Erro ao carregar dados do plano', e)
+        });
+    }
+
+    private carregaDadosPagtos() {
+      this.carregandoDadosPagtos = true;
+      console.log("carregar dados pagamentos:");
+    
+      this.assinaturaService.carregaAssinaturaPagtos()
+          .pipe(finalize(() => this.carregandoDadosPagtos = false))
+        .subscribe({
+          next: (resp: any) => {
+            this.assinaturaPagto = [...resp]; // 👈 força nova referência
+    
+            console.log("this.assinaturaPagto:", this.assinaturaPagto);
+          },
+          error: (e: any) => console.error('Erro ao carregar dados do pagamentos', e)
+        });
+    }
+
+    assinaturaCriarPgtoPix(planoId: number) {
+
+        console.log("personalxxx", this.personal);
+        console.log("console.log(this.personal.cpf)", this.personal.cpf);
+
+        if (!this.personal?.email || !this.personal?.cpf || !this.personal?.cep || !this.personal?.logradouro || !this.personal?.numero) {
+            this.snackBar.open(
+                '✔ Falta dados para gerar pix (Nome, Email, CPF, CEP, Logradouro e Número)!',
+                '',
+                {
+                    duration: 3500,
+                    panelClass: ['snackbar-success'],
+                    horizontalPosition: 'center',
+                    verticalPosition: 'top'
+                }
+            );
+            this.router.navigate(['/configuracoesConta']);
+        }
+
+        return;
+        this.assinaturaService.assinaturaCriarPgtoPix(planoId).subscribe(ret => {
 
             console.log(ret);
             this.pix = ret;
             
         });
-
-        //this.assinaturaService.assinaturaCriarPgtoPix()
-        //    .subscribe({
-        //        next: (res)=>{
-
-        //            console.log(res);
-
-        //        },
-        //        error:(err)=>{
-
-        //            console.error(err);
-
-        //        }
-        //    });
 
     }
 

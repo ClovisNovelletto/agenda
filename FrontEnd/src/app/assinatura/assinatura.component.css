@@ -1,7 +1,7 @@
 .container{
-    max-width: 700px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 15px;
+    padding: 10px;
 }
 
 .cards-superiores{
@@ -11,14 +11,40 @@
     margin-bottom:20px;
 }
 
+.mdc-card  {
+    min-width:50%;
+    max-width:100%;
+}
+
+.cdk-header-row {
+    min-width:10%;
+    max-width:100%;
+}
+
+.mat-column-data, .mat-column-valor, .mat-column-status, .mat-column-gateway{
+    padding: 0px 5px;
+    font-size: 11px;
+
+}
+
+.mat-mdc-card-content {
+    padding: 0px 10px 10px;
+}
+
+.mat-card-content {
+    padding: 0px 10px 10px;
+}
+
 .card-plano{
+    min-width:50%;
+    max-width:100%;
     flex:2;
-    min-width:420px;
+    /*min-width:420px;*/
 }
 
 .card-vencimento{
     flex:1;
-    min-width:300px;
+    /*min-width:300px;*/
 }
 
 .valor{
@@ -34,6 +60,8 @@
 }
 
 .linha{
+    min-width:50%;
+    max-width:100%;
     display:flex;
     justify-content:space-between;
     margin:16px 0;
@@ -67,7 +95,7 @@
 
 .btn-renovar{
     width:100%;
-    margin-top:25px;
+    margin-top:10px;
 }
 
 .historico{
@@ -132,4 +160,69 @@ mat-card-title{
 
 .btn-copiar{
     width:100%;
+}
+
+.planos{
+    display:flex;
+    flex-wrap:wrap;
+    gap:18px
+
+    /*display:flex;
+    flex-direction:column;
+    gap:15px;*/
+}
+
+.plano-card{
+    flex:1 1 180px;
+    max-width:220px;
+
+    position: relative;
+    padding: 14px 18px;
+    border-radius: 12px;
+    min-height: 150px;
+    border:2px solid #444;
+    cursor:pointer;
+    transition:.2s;
+    background:#242024;
+}
+
+.plano-card:hover{
+    border-color:#ff7a00;
+}
+
+.plano-card.selecionado{
+    border:2px solid #ff7a00;
+    box-shadow:0 0 12px rgba(255,122,0,.4);
+}
+
+.valor-antigo{
+    text-decoration:line-through;
+    color:#999;
+}
+
+.valor-promocao{
+    color:#27ae60;
+    font-size:24px;
+    font-weight:bold;
+}
+
+.descricao{
+    font-size:18px;
+    font-weight:bold;
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+
+.badge {
+    position:absolute;
+    top:12px;
+    right:12px;
+    background:#ff7a00;
+    color:#fff;
+    padding:4px 10px;
+    border-radius:20px;
+    font-weight:600;
+    font-size:11px;
+
+
 }
