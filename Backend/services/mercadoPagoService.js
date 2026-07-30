@@ -19,7 +19,7 @@ export const gerarPix = async ({assinatura, plano}) => {
         external_reference: assinatura.external_reference,
         processing_mode: "automatic",
         total_amount:  plano.valorativo,
-        description: plano.Descperiodo,
+        description: plano.descperiodo,
         payer: {
             email: assinatura.peremail,
             first_name: assinatura.first_name,
