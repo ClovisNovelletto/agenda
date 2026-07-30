@@ -29,8 +29,38 @@ export class AppComponent {
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
-    console.log('app onInit Executando', this.isLoggedIn);
 
+  this.authService.isLoggedIn$.subscribe((status) => {
+
+    this.isLoggedIn = status;
+
+    const url = this.router.url;
+
+    // Se já está em uma rota pública, não faz nada
+    if (
+        url.startsWith('/verify-email') ||
+        url.startsWith('/login') ||
+        url.startsWith('/register') ||
+        url.startsWith('/esqueci-senha') ||
+        url.startsWith('/resetar-senha')
+    ) {
+        return;
+    }
+
+    if ((this.authService.getAlunoId() ?? 0) > 0) {
+        this.router.navigate(['/agenda-Aluno']);
+    } else if ((this.authService.getPersonalId() ?? 0) > 0) {
+        this.router.navigate(['/agenda']);
+    } else {
+        this.router.navigate(['/home']);
+    }
+  });
+
+
+  }
+  ngOnInitOLD() {
+    console.log('app onInit Executando', this.isLoggedIn);
+   
     // 🔥 Verifica se token ativo
     this.authService.checkTokenOnStartup();
 
