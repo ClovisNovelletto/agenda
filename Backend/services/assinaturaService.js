@@ -83,6 +83,7 @@ console.log('plano', plano);
             id: assinatura.asporder_id
         });
 
+        console.log("payment", payment)
 
         if (payment.status === 'pending') {
 
@@ -111,8 +112,6 @@ console.log('plano', plano);
 
     }
 
-
-    console.log("payment", payment)
 
     // Verificar PIX pendente
     //if (assinatura.assinaturaspagto_id) {
