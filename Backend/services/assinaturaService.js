@@ -65,47 +65,54 @@ export const buscarDadosAtualizAss = async (assinaturaid) => {
 
 export const renovarAssinatura = async (personalid, planoId) => {
 
-    // Buscar assinatura
-    const gateway = 'Mercado Pago';
-    
+    // Buscar assinatura atual
     const assinatura = await buscarAssinatura(personalid);
+
+    // Plano que ele acabou de escolher
     const plano = await buscarPlano(planoId);
 
-    console.log('planoID', planoId);
-    console.log('plano', plano);
-
-    //Verifica no mercado pago
     if (assinatura.asporder_id) {
 
         const payment = await paymentClient.get({
             id: assinatura.asporder_id
         });
 
-        switch (payment.status) {
 
-            case 'pending':
-                // retorna o QRCode existente
-                break;
+        if (payment.status === 'pending') {
 
-            case 'approved':
-                // assinatura já paga
-                break;
+            // compara valor do PIX pendente com o novo plano
 
-            default:
-                // cancelled, expired...
-                // gera um novo PIX
-                break;
+            if (Number(payment.transaction_amount) === Number(plano.valorvalido)) {
+
+                console.log('Existe PIX pendente para o mesmo valor');
+                return assinatura;
+                //return {
+                //    reutilizar: true,
+                //    qr_code: payment.point_of_interaction.transaction_data.qr_code,
+                //    qr_base64: payment.point_of_interaction.transaction_data.qr_code_base64
+                //};
+
+            } else {
+
+                console.log('PIX pendente é de outro plano');
+
+                // opcional: cancelar o antigo no Mercado Pago
+                // ou apenas ignorar e gerar outro
+
+            }
+
         }
+
     }
 
 
     console.log("payment", payment)
 
     // Verificar PIX pendente
-    if (assinatura.assinaturaspagto_id) {
-        const retorno = assinatura;
-        return retorno;
-    }
+    //if (assinatura.assinaturaspagto_id) {
+    //    const retorno = assinatura;
+    //    return retorno;
+    // }
     // Se existir, retornar
 
     // Se não existir:
