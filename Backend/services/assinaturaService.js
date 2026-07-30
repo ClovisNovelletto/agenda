@@ -13,8 +13,8 @@ export const buscarPlano = async (planoId) => {
         return retorno[0];
         
     } catch (err) {
-        console.error(err);
-        res.status(500).send('Erro ao buscar Assinatura');
+        console.error('Erro ao buscar plano:', err);
+        throw err;
     }
 };        
 
@@ -34,8 +34,8 @@ export const buscarAssinatura = async (personalid) => {
         return retorno[0];
         
     } catch (err) {
-        console.error(err);
-        res.status(500).send('Erro ao buscar Assinatura');
+        console.error('Erro ao buscar assinatura:', err);
+        throw err;
     }
 };
 
@@ -58,18 +58,24 @@ export const buscarDadosAtualizAss = async (assinaturaid) => {
         return retorno[0];
         
     } catch (err) {
-        console.error(err);
-        res.status(500).send('Erro na buscarDadosAtualizAss');
+        console.error('Erro ao buscar dados atul ass:', err);
+        throw err;
     }
 };
 
 export const renovarAssinatura = async (personalid, planoId) => {
 
+    console.log('personalid', personalid);
+    console.log('planoId', planoId);
+
     // Buscar assinatura atual
     const assinatura = await buscarAssinatura(personalid);
 
+        console.log('assinatura', assinatura);
+
     // Plano que ele acabou de escolher
     const plano = await buscarPlano(planoId);
+console.log('plano', plano);
 
     if (assinatura.asporder_id) {
 
