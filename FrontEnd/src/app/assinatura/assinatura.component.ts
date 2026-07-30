@@ -135,21 +135,32 @@ export class AssinaturaComponent implements OnInit{
         console.log("personalxxx", this.personal);
         console.log("console.log(this.personal.cpf)", this.personal.cpf);
 
-        if (!this.personal?.email || !this.personal?.cpf || !this.personal?.cep || !this.personal?.logradouro || !this.personal?.numero) {
+        const camposFaltando: string[] = [];
+
+        if (!this.personal?.telefone) camposFaltando.push('Telefone/WhatsApp');
+        if (!this.personal?.cpf) camposFaltando.push('CPF');
+        if (!this.personal?.cep) camposFaltando.push('CEP');
+        if (!this.personal?.logradouro) camposFaltando.push('Logradouro');
+        if (!this.personal?.numero) camposFaltando.push('Número');
+
+        if (camposFaltando.length > 0) {
+
             this.snackBar.open(
-                '✔ Falta dados para gerar pix (Nome, Email, CPF, CEP, Logradouro e Número)!',
+                `Complete seus dados castrais para ativar a assinatura. \n
+                 Campos pendentes: ${camposFaltando.join(', ')}.`,
                 '',
                 {
-                    duration: 3500,
-                    panelClass: ['snackbar-success'],
+                    duration: 5000,
+                    panelClass: ['multi-line-snackbar'],
                     horizontalPosition: 'center',
                     verticalPosition: 'top'
                 }
             );
+
             this.router.navigate(['/configuracoesConta']);
+            return;
         }
 
-        return;
         this.assinaturaService.assinaturaCriarPgtoPix(planoId).subscribe(ret => {
 
             console.log(ret);
