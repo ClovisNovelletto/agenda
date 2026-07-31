@@ -19,7 +19,13 @@ export async function pixPendente(orderId) {
 
     console.log('MERCADO PAGO ORDER', order);
 
-    return order.status === 'pending';
+    //console.dir(order.transactions.payments, { depth: null });
+    console.log(JSON.stringify(order.transactions.payments, null, 2));
+
+    return order.status === 'action_required' &&
+           order.status_detail === 'waiting_transfer'
+
+    //return order.status === 'pending';
 }
 /*
         if (payment.status === 'pending') {
