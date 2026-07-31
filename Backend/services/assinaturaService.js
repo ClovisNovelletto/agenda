@@ -77,39 +77,17 @@ export const renovarAssinatura = async (personalid, planoId) => {
 
     // Plano que ele acabou de escolher
     const plano = await buscarPlano(planoId);
-console.log('plano', plano);
+    console.log('plano', plano);
 
-    if (assinatura?.asporder_id) {
+    if (assinatura?.asporder_id && assinatura?.aspvalor == plano?.valorativo) {
 
-        const payment = await paymentClient.get({
-            id: assinatura.asporder_id
-        });
+        const pendente = await mercadoPagoService.pixPendente(
+            assinatura.asporder_id
+        );
 
-        console.log("payment", payment)
-
-        if (payment.status === 'pending') {
-
-            // compara valor do PIX pendente com o novo plano
-
-            if (Number(payment.transaction_amount) === Number(plano.valorativo)) {
-
-                console.log('Existe PIX pendente para o mesmo valor');
-                return assinatura;
-                //return {
-                //    reutilizar: true,
-                //    qr_code: payment.point_of_interaction.transaction_data.qr_code,
-                //    qr_base64: payment.point_of_interaction.transaction_data.qr_code_base64
-                //};
-
-            } else {
-
-                console.log('PIX pendente é de outro plano');
-
-                // opcional: cancelar o antigo no Mercado Pago
-                // ou apenas ignorar e gerar outro
-
-            }
-
+        if (pendente) {
+            // Retorna o QRCode gravado no banco
+            return assinatura;
         }
 
     }

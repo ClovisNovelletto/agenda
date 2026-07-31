@@ -7,6 +7,44 @@ const client = new MercadoPagoConfig({
 
 const orderClient = new Order(client);
 
+export async function pixPendente(orderId) {
+
+    if (!orderId) {
+        return false;
+    }
+
+    const order = await orderClient.get({
+        id: orderId
+    });
+
+    return order.status === 'pending';
+}
+/*
+        if (payment.status === 'pending') {
+
+            // compara valor do PIX pendente com o novo plano
+
+            if (Number(payment.transaction_amount) === Number(plano.valorativo)) {
+
+                console.log('Existe PIX pendente para o mesmo valor');
+                return assinatura;
+                //return {
+                //    reutilizar: true,
+                //    qr_code: payment.point_of_interaction.transaction_data.qr_code,
+                //    qr_base64: payment.point_of_interaction.transaction_data.qr_code_base64
+                //};
+
+            } else {
+
+                console.log('PIX pendente é de outro plano');
+
+                // opcional: cancelar o antigo no Mercado Pago
+                // ou apenas ignorar e gerar outro
+
+            }
+
+        }
+*/
 export const gerarPix = async ({assinatura, plano}) => {
 
     console.log("EXECUTNADO MercadoPagoService");
