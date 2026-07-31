@@ -79,8 +79,12 @@ export const renovarAssinatura = async (personalid, planoId) => {
     const plano = await buscarPlano(planoId);
     console.log('plano', plano);
 
-    if (assinatura?.asporder_id && assinatura?.aspvalor == plano?.valorativo) {
+    console.log('assinatura?.aspvalor', assinatura?.aspvalor);
+    console.log('plano?.valorativo', plano?.valorativo);
+    console.log('assinatura?.asporder_id', assinatura?.asporder_id);
 
+    if (assinatura?.asporder_id && assinatura?.aspvalor == plano?.valorativo) {
+            console.log('VAI VERIFICAR PIX PENDENTE');
         const pendente = await mercadoPagoService.pixPendente(
             assinatura.asporder_id
         );

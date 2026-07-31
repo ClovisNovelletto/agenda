@@ -17,6 +17,8 @@ export async function pixPendente(orderId) {
         id: orderId
     });
 
+    console.log('MERCADO PAGO ORDER', order);
+
     return order.status === 'pending';
 }
 /*
@@ -47,7 +49,7 @@ export async function pixPendente(orderId) {
 */
 export const gerarPix = async ({assinatura, plano}) => {
 
-    console.log("EXECUTNADO MercadoPagoService");
+    console.log("EXECUTANDO MercadoPagoService GERA PIX");
 
     const body = {
 
