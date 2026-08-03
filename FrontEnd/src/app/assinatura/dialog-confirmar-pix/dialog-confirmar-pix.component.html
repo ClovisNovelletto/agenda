@@ -1,6 +1,6 @@
 <h2 mat-dialog-title class="dialog-title" style="color:white; margin-left:10px;">
     <mat-icon>payments</mat-icon>
-    Confirmar geração do PIX
+    Geração de PIX
 </h2>
 
 <mat-dialog-content>
@@ -24,10 +24,15 @@
         </div>
 
         <div class="linha">
-            <span>Período</span>
-            <strong>
+            <span>Data Início</span>
+            <strong style="text-align: right;">
                 {{ data.inicio | date:'dd/MM/yyyy' }}
-                a
+            </strong>
+        </div>
+
+        <div class="linha">
+            <span>Data Fim</span>
+            <strong style="text-align: right;">
                 {{ data.fim | date:'dd/MM/yyyy' }}
             </strong>
         </div>

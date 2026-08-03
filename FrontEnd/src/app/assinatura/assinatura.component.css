@@ -96,6 +96,8 @@
 .btn-renovar{
     width:100%;
     margin-top:10px;
+    font-weight:bold;
+    font-size: 18px;
 }
 
 .historico{
@@ -174,7 +176,7 @@ mat-card-title{
 
 .plano-card{
     flex:1 1 180px;
-    max-width:220px;
+    /*max-width:220px;*/
 
     position: relative;
     padding: 14px 18px;
