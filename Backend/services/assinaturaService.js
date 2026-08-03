@@ -184,8 +184,9 @@ export async function confirmarPagamento(body) {
         RETURNING *;
     `;
 
-    const planoid = resultado.asplanoid;
-    console.log('lanoid', planoid);
+    console.log('resultado', resultado);
+    const planoid = resultado[0]?.asplanoid;
+    console.log('planoid', planoid);
     const dadAtAss = await buscarDadosAtualizAss(assinaturaId, planoid);
 
     console.log("Resultado UPDATE:", resultado);
