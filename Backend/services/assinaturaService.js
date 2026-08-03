@@ -48,7 +48,7 @@ export const buscarDadosAtualizAss = async (assinaturaid, planoid) => {
             WHERE assinatura_id=${assinaturaid}
               AND ASPStatus='PAGO'
               AND aspdata_pagamento >  NOW() - interval '3 day'
-              AND plano_id=planoid
+              AND plano_id=${planoid}
             ORDER BY AssinaturasPagto_ID
             DESC LIMIT 1
      `;
