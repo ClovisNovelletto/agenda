@@ -224,3 +224,8 @@ mat-card-title{
     font-weight:600;
     font-size:11px;
 }
+
+::ng-deep .dialog-pix .mdc-dialog__surface {
+    border: 2px solid #ff9800;
+    border-radius: 18px;
+}

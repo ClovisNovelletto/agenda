@@ -54,4 +54,12 @@ export class AssinaturaService {
 
   }
 
+ 
+  buscarDadosAtualizAss(assinaturaid: number, planoid: number): Observable<Assinatura> {
+    const token = localStorage.getItem('jwt-token');
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    return this.http.post<Assinatura>(`${environment.apiUrl}/assinatura/buscarDadosAtualizAss`, {assinaturaid, planoid}, { headers });
+  }
+
+  
 }

@@ -1,0 +1,65 @@
+.dialog-title{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:24px;
+    font-weight:600;
+    margin-bottom:10px;
+}
+
+.descricao{
+    color:#bdbdbd;
+    margin-bottom:18px;
+}
+
+.info-card{
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:12px;
+    padding:18px;
+    background:rgba(255,255,255,.03);
+}
+
+.linha{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px 0;
+}
+
+.linha:not(:last-child){
+    border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.linha span{
+    color:#b5b5b5;
+    font-size:14px;
+}
+
+.linha strong{
+    font-size:16px;
+    font-weight:600;
+}
+
+.valor{
+    color:#3ddc84;
+    font-size:28px !important;
+    font-weight:bold;
+}
+
+.observacao{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    margin-top:20px;
+    padding:12px;
+    border-radius:10px;
+    background:rgba(255,152,0,.12);
+    color:#ffabf3;;
+    font-size:14px;
+}
+
+mat-dialog-actions{
+    margin-top:15px;
+    gap:10px;
+}
+

@@ -8,5 +8,7 @@ export interface Assinatura {
     asdata_fim:Date;
     asgateway:string;    
     diasrestantes:number;
-
+    aspdata_pagamento:Date;
+    aspstatus:string;
+    
 }

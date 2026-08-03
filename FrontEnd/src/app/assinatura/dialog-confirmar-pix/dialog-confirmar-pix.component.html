@@ -1,0 +1,70 @@
+<h2 mat-dialog-title class="dialog-title" style="color:white; margin-left:10px;">
+    <mat-icon>payments</mat-icon>
+    Confirmar geração do PIX
+</h2>
+
+<mat-dialog-content>
+
+    <p class="descricao">
+        Confira os dados da assinatura antes de gerar o PIX.
+    </p>
+
+    <div class="info-card">
+
+        <div class="linha">
+            <span>Plano</span>
+            <strong>{{ data.plano }}</strong>
+        </div>
+
+        <div class="linha">
+            <span>Valor</span>
+            <strong class="valor">
+                {{ data.valor | currency:'BRL' }}
+            </strong>
+        </div>
+
+        <div class="linha">
+            <span>Período</span>
+            <strong>
+                {{ data.inicio | date:'dd/MM/yyyy' }}
+                a
+                {{ data.fim | date:'dd/MM/yyyy' }}
+            </strong>
+        </div>
+
+    </div>
+
+    <div class="observacao">
+        <mat-icon>info</mat-icon>
+
+        <span>
+            Caso sua assinatura ainda esteja ativa, a nova validade começará
+            somente após o término da atual.
+        </span>
+    </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+
+    <button
+        class="btn-salvar"
+        mat-stroked-button
+        (click)="cancelar()">
+
+        Cancelar
+
+    </button>
+
+    <button 
+        class="btn-salvar"
+        mat-flat-button
+        color="primary"
+        (click)="confirmar()">
+
+        <mat-icon>pix</mat-icon>
+        Gerar PIX
+
+    </button>
+
+</mat-dialog-actions>
