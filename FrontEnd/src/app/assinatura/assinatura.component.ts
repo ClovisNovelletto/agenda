@@ -230,7 +230,7 @@ export class AssinaturaComponent implements OnInit{
 
                 console.log(ret);
                 this.pix = ret;
-                
+                this.iniciarVerificacaoPagamento();
             });
 
         });
