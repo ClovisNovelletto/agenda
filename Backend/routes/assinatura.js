@@ -96,4 +96,50 @@ router.get('/assinatura',
     assinaturaService.buscarAssinatura
 )
 
+router.post('/buscarDadosAtualizAss', authenticateToken, async (req, res) => {
+
+  if (typeof req.body[`assinaturaid`] === 'undefined') {
+    req.body[`assinaturaid`] = null;
+  } 
+
+  if (typeof req.body[`planoid`] === 'undefined') {
+    req.body[`planoid`] = null;
+  } 
+
+  const {assinaturaid} = req.body;
+  const {planoid} = req.body;
+    try {
+        const retorno = await sql`
+            SELECT *
+              FROM h2uDadosAtualizAss
+            WHERE assinatura_id=${assinaturaid}
+              AND plano_id=${planoid}
+            ORDER BY AssinaturasPagto_ID
+            DESC LIMIT 1  
+     `;
+
+     console.log('buscarDadosAtualizAss', retorno);
+     console.log('buscarDadosAtualizAss', retorno[0]);
+        return res.json(retorno[0]);
+        
+    } catch (err) {
+        console.error('Erro ao buscar dados atul ass:', err);
+        throw err;
+    }
+
+/*  try { 
+    console.log("carrega Planos");
+
+    const {assinaturaid} = req.body;
+    const dadosAtualizAss = assinaturaService.buscarDadosAtualizAss(assinaturaid)
+
+    res.json(dadosAtualizAss);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao buscar dados atualização assinatura');
+  }
+*/
+})
+
 export default router;

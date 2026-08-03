@@ -24,7 +24,7 @@ export const buscarAssinatura = async (personalid) => {
         const retorno = await sql`
 
             SELECT  *
-            FROM h2uassinaturaspagtos
+              FROM h2uassinaturaspagtos
             WHERE personalid=${personalid}
               AND COALESCE(ASPStatus,'PENDENTE')='PENDENTE'
               AND COALESCE(ASPExpiracao, NOW() + interval '1 day') > NOW()
@@ -43,18 +43,17 @@ export const buscarDadosAtualizAss = async (assinaturaid) => {
 
     try {
         const retorno = await sql`
-            SELECT Descricao,
-                aspvalor,
-                aspdata_pagamento,
-                aspdata_pagamento + (meses * INTERVAL '1 month') AS validade
-            FROM AssinaturasPagtos
-                LEFT JOIN Planos ON Plano_ID=ASPlanoID
-            WHERE AspAssinaturaID=1
-            AND ASPStatus='PAGO'
+            SELECT *
+              FROM h2uDadosAtualizAss
+            WHERE AspAssinaturaID=${assinaturaid}
+              AND ASPStatus='PAGO'
+              AND aspdata_pagamento >  NOW() - interval '3 day'
             ORDER BY AssinaturasPagto_ID
             DESC LIMIT 1
      `;
 
+     console.log('buscarDadosAtualizAss', retorno);
+     console.log('buscarDadosAtualizAss', retorno[0]);
         return retorno[0];
         
     } catch (err) {
@@ -196,7 +195,8 @@ export async function confirmarPagamento(body) {
         SET asplano = ${dadAtAss.descricao},
             asvalor = ${dadAtAss.aspvalor},
             asdata_inicio = ${dadAtAss.aspdata_pagamento} ,
-	        asdata_fim = ${dadAtAss.validade}
+	        asdata_fim = ${dadAtAss.validade},
+            asdata_pripgto = COALESCE(asdata_pripgto,${dadAtAss.aspdata_pagamento}),
         WHERE assinatura_id = ${assinaturaId}
         RETURNING *;
     `;
@@ -277,4 +277,64 @@ export async function confirmarPagamento(body) {
   "type": "order",
   "user_id": "227121296"
 }
+
+console.log("payment:", payment);
+mostrou isso
+
+payment: {
+  amount: '19.90',
+  id: 'PAY01KYW54WCK20GAK8S28H9QCT1B',
+  paid_amount: '19.90',
+  payment_method: {
+    e2e_id: 'PIXE003603052026073116540e3d7492db5',
+    id: 'pix',
+    installments: 0,
+    type: 'bank_transfer'
+  },
+  reference: { id: '000e4bz70k' },
+  status: 'processed',
+  status_detail: 'accredited'
+}
+Antes do UPDATE
+Resultado UPDATE: Result(1) [
+  {
+    assinaturaspagto_id: 11,
+    aspassinaturaid: 5,
+    aspvalor: '19.90',
+    aspstatus: 'PAGO',
+    aspstatusgateway: 'processed',
+    asporder_id: 'ORD01KYW54WC9FPDY5N3ZJ2KZ6C9N',
+    asppayment_id: 'PAY01KYW54WCK20GAK8S28H9QCT1B',
+    asppix_copia_cola: '00020126580014br.gov.bcb.pix01363732778e-6344-4fdb-9e3a-4f52ed16f32d520400005303986540519.905802BR5923CLOVISROBERTONOVELLETTO6009Sao Paulo62250521mpqrinter171364168140630400EA',
+    asppayload: {
+      id: 'ORD01KYW54WC9FPDY5N3ZJ2KZ6C9N',
+      type: 'online',
+      status: 'action_required',
+      user_id: '227121296',
+      currency: 'BRL',
+      description: 'Mensal  - Período 31/07/2026 a 31/08/2026',
+      api_response: [Object],
+      capture_mode: 'automatic_async',
+      country_code: 'BRA',
+      created_date: '2026-07-31T13:17:18.611Z',
+      total_amount: '19.90',
+      transactions: [Object],
+      status_detail: 'waiting_transfer',
+      processing_mode: 'automatic',
+      integration_data: [Object],
+      last_updated_date: '2026-07-31T13:17:19.611Z',
+      total_paid_amount: '19.90',
+      external_reference: 'H2u_Ass_5_Renov'
+    },
+    aspgateway: 'Mercado Pago',
+    aspexternal_reference: 'H2u_Ass_5_Renov',
+    aspdata_pagamento: 2026-07-31T16:55:13.127Z,
+    criacao: 2026-07-31T13:17:19.741Z,
+    atualizacao: 2026-07-31T13:17:19.741Z,
+    aspexpiracao: 2026-08-01T13:17:18.928Z,
+    aspticket_url: null,
+    asplanoid: 1
+  }
+]
 */
+

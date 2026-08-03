@@ -126,8 +126,8 @@ router.get('/dadosPersonal', authenticateToken, async (req, res) => {
     const personal = await sql`
       SELECT personal_id AS id, personal AS nome, peremail AS email, percpf AS cpf,
              percep AS cep, perlogradouro AS logradouro, pernumero AS numero,
-             percomple AS complemento, perfone AS telefone, percidade AS cidade,
-             peruf AS uf
+             percomple AS complemento, perfone AS telefone, percidade AS cidade, peruf AS uf,
+             (SELECT Assinatura_ID FROM Assinaturas WHERE ASPersonalID=Personal_ID) AS assinaturaid
       FROM Personals
       WHERE personal_id = ${personalid}`;
     if (personal.length === 0) {
