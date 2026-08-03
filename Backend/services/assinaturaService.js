@@ -162,8 +162,6 @@ export async function confirmarPagamento(body) {
     //const assinaturaspagto_id = Number(partes[3]);
     const payment = body.data.transactions.payments[0];
 
-    const dadAtAss = buscarDadosAtualizAss(assinaturaId);
-
     console.log("assinaturaId:", assinaturaId);
     //console.log("assinaturaspagto_id:", assinaturaspagto_id);
     console.log("payment.id:", payment.id);
@@ -185,6 +183,7 @@ export async function confirmarPagamento(body) {
         RETURNING *;
     `;
 
+    const dadAtAss = buscarDadosAtualizAss(assinaturaId);
     console.log("Resultado UPDATE:", resultado);
     console.log("Depois do UPDATE");
 
