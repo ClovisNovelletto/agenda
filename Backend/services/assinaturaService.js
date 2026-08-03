@@ -195,7 +195,7 @@ export async function confirmarPagamento(body) {
             asvalor = ${dadAtAss.aspvalor},
             asdata_inicio = ${dadAtAss.aspdata_pagamento} ,
 	        asdata_fim = ${dadAtAss.validade},
-            asdata_pripgto = COALESCE(asdata_pripgto,${dadAtAss.aspdata_pagamento}),
+            asdata_pripgto = COALESCE(asdata_pripgto,${dadAtAss.aspdata_pagamento})
         WHERE assinatura_id = ${assinaturaId}
         RETURNING *;
     `;
