@@ -53,8 +53,8 @@ export const buscarDadosAtualizAss = async (assinaturaid, planoid) => {
             DESC LIMIT 1
      `;
 
-     console.log('buscarDadosAtualizAss', retorno);
-     console.log('buscarDadosAtualizAss', retorno[0]);
+     //console.log('buscarDadosAtualizAss', retorno);
+     //console.log('buscarDadosAtualizAss', retorno[0]);
         return retorno[0];
         
     } catch (err) {
@@ -189,16 +189,16 @@ export async function confirmarPagamento(body) {
     console.log('planoid', planoid);
     const dadAtAss = await buscarDadosAtualizAss(assinaturaId, planoid);
 
-    console.log("Resultado UPDATE:", resultado);
-    console.log("Depois do UPDATE");
+    //console.log("Resultado UPDATE:", resultado);
+    //console.log("Depois do UPDATE");
 
-     console.log("Antes do UPDATE");
+    //console.log("Antes do UPDATE");
 
     const resultAssina = await sql`
         UPDATE assinaturas
         SET asplano = ${dadAtAss.descricao},
             asvalor = ${dadAtAss.aspvalor},
-            asdata_inicio = ${dadAtAss.aspdata_pagamento} ,
+            asdata_inicio = ${dadAtAss.inicio} ,
 	        asdata_fim = ${dadAtAss.validade},
             asdata_pripgto = COALESCE(asdata_pripgto,${dadAtAss.aspdata_pagamento})
         WHERE assinatura_id = ${assinaturaId}
