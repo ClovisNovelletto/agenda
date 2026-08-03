@@ -39,7 +39,7 @@ export const buscarAssinatura = async (personalid) => {
     }
 };
 
-export const buscarDadosAtualizAss = async (assinaturaid) => {
+export const buscarDadosAtualizAss = async (assinaturaid, planoid) => {
 
     try {
         const retorno = await sql`
@@ -48,6 +48,7 @@ export const buscarDadosAtualizAss = async (assinaturaid) => {
             WHERE assinatura_id=${assinaturaid}
               AND ASPStatus='PAGO'
               AND aspdata_pagamento >  NOW() - interval '3 day'
+              AND plano_id=planoid
             ORDER BY AssinaturasPagto_ID
             DESC LIMIT 1
      `;
@@ -183,7 +184,10 @@ export async function confirmarPagamento(body) {
         RETURNING *;
     `;
 
-    const dadAtAss = await buscarDadosAtualizAss(assinaturaId);
+    const planoid = resultado.aspplanoid;
+    console.log(planoid, planoid);
+    const dadAtAss = await buscarDadosAtualizAss(assinaturaId, planoid);
+
     console.log("Resultado UPDATE:", resultado);
     console.log("Depois do UPDATE");
 
