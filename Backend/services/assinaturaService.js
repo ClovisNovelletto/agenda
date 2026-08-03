@@ -183,7 +183,7 @@ export async function confirmarPagamento(body) {
         RETURNING *;
     `;
 
-    const dadAtAss = buscarDadosAtualizAss(assinaturaId);
+    const dadAtAss = await buscarDadosAtualizAss(assinaturaId);
     console.log("Resultado UPDATE:", resultado);
     console.log("Depois do UPDATE");
 
