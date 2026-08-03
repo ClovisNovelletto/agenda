@@ -45,7 +45,7 @@ export const buscarDadosAtualizAss = async (assinaturaid) => {
         const retorno = await sql`
             SELECT *
               FROM h2uDadosAtualizAss
-            WHERE AspAssinaturaID=${assinaturaid}
+            WHERE assinatura_id=${assinaturaid}
               AND ASPStatus='PAGO'
               AND aspdata_pagamento >  NOW() - interval '3 day'
             ORDER BY AssinaturasPagto_ID
