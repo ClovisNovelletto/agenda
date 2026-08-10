@@ -5,7 +5,7 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app/app.routes';
 import { FormsModule } from '@angular/forms';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HeaderComponent } from './app/header/header.component';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -16,6 +16,8 @@ import { registerLocaleData } from '@angular/common';
 import { importProvidersFrom, LOCALE_ID } from '@angular/core';
 
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+
+import { authInterceptor } from './app/interceptors/auth.interceptor';
 
 registerLocaleData(localePt);
 
@@ -43,7 +45,7 @@ export const MY_DATE_FORMATS = {
 bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(routes), // Configura as rotas para o aplicativo
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([authInterceptor])),
     HeaderComponent,
     importProvidersFrom(MatNativeDateModule),
     provideAnimations(),

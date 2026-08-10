@@ -2,7 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDatepicker } from '@angular/material/datepicker';
-import { AgendaService, Aluno, Aula, StatusAula } from '../../services/agenda-individual.service';
+import { Aluno, Aula, StatusAula } from '../../services/agenda-individual.service';
+import { AgendaService } from '../../services/agenda.service';
+import { AlunoService } from '../../services/aluno.service';
 import { finalize } from 'rxjs/operators';
 
 import { NgModule } from '@angular/core';
@@ -116,7 +118,7 @@ export class AgendaIndividualComponent implements OnInit {
 
   @ViewChild('monthPicker') monthPicker!: MatDatepicker<Date>;
 
-  constructor(private agendaService: AgendaService, private authService: AuthService,  private agendaStatusService: AgendaStatusService,
+  constructor(private agendaService: AgendaService, private authService: AuthService,  private agendaStatusService: AgendaStatusService, private alunoService: AlunoService,
               private cd: ChangeDetectorRef, private personalService: PersonalService, private bottomSheet: MatBottomSheet, 
               private http: HttpClient, private dialog: MatDialog, private agendaTreinoService: AgendaTreinoService, private snackBar: MatSnackBar
   ) {}
@@ -161,7 +163,7 @@ export class AgendaIndividualComponent implements OnInit {
   private carregarAlunos() {
     //const personalid = this.authService.getPersonalid();
     this.carregandoAlunos = true;
-    this.agendaService.getAlunosAtivos(this.personalid!)
+    this.alunoService.listar()
       .pipe(finalize(() => this.carregandoAlunos = false))
       .subscribe({
         next: (resp: any) => {
@@ -203,15 +205,7 @@ export class AgendaIndividualComponent implements OnInit {
       ano,
       mes1a12
     }      
-//    const data_inicio: dayjs(this.mesSelecionado.dataInicio).format('YYYY-MM-DD');
-//    const data_fim: dayjs(this.mesSelecionado.dataFim).format('YYYY-MM-DD');
-/*
-    this.http.post<any[]>(`${environment.apiUrl}/agendaPorPeriodo`, payload, {headers}).subscribe(dados => {
-      const novos = dados.map(item =>  ({
-        agenda_id: item.agenda_id,
-        date: dayjs(item.date).toDate(),
-        start: dayjs(item.start).toDate(),
-*/        
+
     this.carregandoAulas = true;
     this.agendaService.getAulasDoAlunoMes(payload)
       .pipe(finalize(() => this.carregandoAulas = false))
@@ -372,9 +366,10 @@ export class AgendaIndividualComponent implements OnInit {
           statusid: result.statusid ?? 1,
         };
 
-        const token = localStorage.getItem('jwt-token');
-        const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-        this.http.put(`${environment.apiUrl}/agenda/agendaStatus`, updated, { headers }).subscribe({
+        //const token = localStorage.getItem('jwt-token');
+        //const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+        //this.http.put(`${environment.apiUrl}/agenda/agendaStatus`, updated, { headers }).subscribe({
+          this.agendaService.salvarStatus(updated).subscribe({
           next: () => {
             console.log('Compromisso atualizado com sucesso!');
             this.carregarAulas();
@@ -527,15 +522,15 @@ console.log('teste vai:');
   }
 
   salvarCompromisso(comp: any): void {
-    const token = localStorage.getItem('jwt-token');
-        const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-        console.log('entrou salvarCompromisso!');
+    //const token = localStorage.getItem('jwt-token');
+    //const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    console.log('entrou salvarCompromisso!');
 
     //console.log('comp', comp);
 
-      // Cria um objeto Date com a data que já está no formato correto
-      //const dataCompleta = new Date(comp.date);
-      const dataCompleta = dayjs.utc(comp.date).tz('America/Sao_Paulo').toDate();
+    // Cria um objeto Date com a data que já está no formato correto
+    //const dataCompleta = new Date(comp.date);
+    const dataCompleta = dayjs.utc(comp.date).tz('America/Sao_Paulo').toDate();
 
     const compromisso = {
       /*personalid: comp.personalid,*/ // opcional se já vem do token
@@ -560,7 +555,8 @@ console.log('teste vai:');
     //console.log(compromisso);
     console.log('comp:', comp);
     if (!(compromisso.agenda_id == null)) {
-      this.http.put(`${environment.apiUrl}/agenda/agendas`, compromisso, { headers }).subscribe({
+      //this.http.put(`${environment.apiUrl}/agenda/agendas`, compromisso, { headers }).subscribe({
+      this.agendaService.salvarCompromisso(compromisso).subscribe({  
         next: () => {
           console.log('Compromisso atualizado com sucesso!');
           this.carregarAulas();
@@ -571,7 +567,8 @@ console.log('teste vai:');
         }
       });
     }else{
-      this.http.post(`${environment.apiUrl}/agenda/agendas`, compromisso, { headers }).subscribe({
+      //this.http.post(`${environment.apiUrl}/agenda/agendas`, compromisso, { headers }).subscribe({
+      this.agendaService.inserirCompromisso(compromisso).subscribe({
         next: () => {
           console.log('Compromisso inserido com sucesso!');
           // Aqui você pode recarregar a agenda ou dar feedback ao usuário
@@ -586,8 +583,8 @@ console.log('teste vai:');
   
   salvarDescricao(comp: any): void {
     const token = localStorage.getItem('jwt-token');
-        const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-        console.log('entrou salvarDescricao!');
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    console.log('entrou salvarDescricao!');
 
     const compromisso = {
       agenda_id: comp.agenda_id,
@@ -597,7 +594,8 @@ console.log('teste vai:');
     console.log('Compromisso descrição dados enviados!');
 
     if (comp.agenda_id) {
-      this.http.put(`${environment.apiUrl}/agenda/agendasDescricao`, compromisso, { headers }).subscribe({
+      //this.http.put(`${environment.apiUrl}/agenda/agendasDescricao`, compromisso, { headers }).subscribe({
+      this.agendaService.salvarDescricao(compromisso).subscribe({
         next: () => {
           this.carregarAulas();
           console.log('Compromisso atualizado com sucesso!');

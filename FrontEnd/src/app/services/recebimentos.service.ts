@@ -5,6 +5,12 @@ import { Recebimento } from '../models/recebimento.model';
 import { environment } from '../../environments/environment';
 import { HttpHeaders } from '@angular/common/http'
 
+interface RecebParametros {
+  data_inicio: Date;
+  data_fim: Date;
+  alunoid: number
+}
+
 export interface Aluno {
   id: number;
   nome: string;
@@ -57,5 +63,12 @@ export class RecebimentosService {
     const token = localStorage.getItem('jwt-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
     return this.http.post<PrecoTabela[]>(`${environment.apiUrl}/tabelaPreco/precoTabela`, payload, { headers });
+  }
+
+  gerarRecebimento(payload: any): Observable<RecebParametros> {
+    return this.http.post<RecebParametros>(
+        `${environment.apiUrl}/financeiro/recebimentosGerar`,
+        payload
+    );
   }
 }

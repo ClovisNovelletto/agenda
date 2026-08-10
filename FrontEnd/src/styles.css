@@ -147,3 +147,17 @@ mat-icon {
   --mdc-snackbar-container-color: #ffb300 !important; /* amarelo */
   --mdc-snackbar-supporting-text-color: #000 !important;
 }
+
+.snackbar-assinatura-vencida {
+  --mdc-snackbar-container-color: #d32f2f;
+  --mdc-snackbar-supporting-text-color: white;
+  --mdc-snackbar-button-color: white;
+
+  white-space: pre-line;
+}
+
+.snackbar-assinatura-vencida_excluir {
+  --mdc-snackbar-container-color: #d32f2f;
+  --mdc-snackbar-supporting-text-color: white;
+  --mdc-snackbar-button-color: white;
+}

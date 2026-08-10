@@ -53,4 +53,9 @@ console.log('aluno: ', aluno);
       //return this.http.post<Aluno>(this.baseUrl, aluno);
     }
   }
+
+  listarAlunosAgenda(): Observable<Aluno[]> {
+    return this.http.get<Aluno[]>(`${environment.apiUrl}/aluno/alunos`, );
+  }
+
 }

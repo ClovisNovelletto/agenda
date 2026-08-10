@@ -25,6 +25,9 @@ import { CdkDropList, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { environment } from '../../../environments/environment';
 //import { Configuracoes } from '../configuracoes/configuracoes.component';
 import { PersonalService } from '../../services/personal.service';
+import { AlunoService } from '../../services/aluno.service';
+import { AgendaService } from '../../services/agenda.service';
+import { RecebimentosService } from '../../services/recebimentos.service';
 import { AgendaStatusService } from '../../services/agenda-status.service';
 import { AgendaStatus } from '../../models/agendaStatus.model';
 import { Observable } from 'rxjs';
@@ -193,7 +196,8 @@ export class AgendaComponent implements OnInit, AfterViewInit {
   constructor(private dialog: MatDialog, private http: HttpClient, private personalService: PersonalService,
               private agendaStatusService: AgendaStatusService, private bottomSheet: MatBottomSheet,
               private snackBar: MatSnackBar, private cd: ChangeDetectorRef, private authService: AuthService,
-              private agendaTreinoService: AgendaTreinoService) {}
+              private agendaTreinoService: AgendaTreinoService, private alunoService: AlunoService,
+              private agendaService: AgendaService, private recebimentosService: RecebimentosService  ) {}
 
   ngOnInit(): void {
     
@@ -236,23 +240,23 @@ export class AgendaComponent implements OnInit, AfterViewInit {
       forkJoin({
         /*config: this.loadPersonal(),*/
         status: this.loadAgendaStatus(),
-        alunos: this.loadAlunos(),
+        alunos: this.alunoService.listarAlunosAgenda(), 
         locais: this.loadLocals(),
         equips: this.loadEquiptos(),
         servis: this.loadServicos(),
-      }).subscribe(() => {
+      }).subscribe(resultado => {
+        this.alunos = resultado.alunos;
         this.generateMinutes();
         this.generateAllDropListIds();
         this.generateWeek();
         this.generateHours();
-
         this.loadAppointments(); // não precisa retornar nada
         setTimeout(() => this.cd.markForCheck());
       });
       
     });
-    
-
+console.log('LOCAIS:',  this.locals);   
+console.log('ALUNOS:',  this.alunos);
   }
 
   gerarListaMeses() {
@@ -364,14 +368,12 @@ export class AgendaComponent implements OnInit, AfterViewInit {
     );
   }
 
-  loadAlunos(): Observable<any[]> {
-    const token = localStorage.getItem('jwt-token');
-    const headers = new HttpHeaders({Authorization: `Bearer ${token}` });    
-  return this.http.get<any[]>(`${environment.apiUrl}/aluno/alunos`, { headers })
-    .pipe(
-      tap(data => this.alunos = data) // atualiza a variável
+  loadAlunos() {
+    return this.alunoService.listarAlunosAgenda().pipe(
+      tap(alunos => this.alunos = alunos)
     );
   }
+  
 
   loadLocals(): Observable<any[]> {
     const token = localStorage.getItem('jwt-token');
@@ -537,9 +539,9 @@ console.log("this.personal?.servicoid: ", this.configAgenda.servicoid);
   }
 
   salvarDescricao(comp: any): void {
-    const token = localStorage.getItem('jwt-token');
-        const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-        console.log('entrou salvarDescricao!');
+    //const token = localStorage.getItem('jwt-token');
+    //    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    //    console.log('entrou salvarDescricao!');
 
     const compromisso = {
       agenda_id: comp.agenda_id,
@@ -549,7 +551,7 @@ console.log("this.personal?.servicoid: ", this.configAgenda.servicoid);
     console.log('Compromisso descrição dados enviados!');
 
     if (comp.agenda_id) {
-      this.http.put(`${environment.apiUrl}/agenda/agendasDescricao`, compromisso, { headers }).subscribe({
+      this.agendaService.salvarDescricao(compromisso).subscribe({  
         next: () => {
           console.log('Compromisso atualizado com sucesso!');
           
@@ -577,28 +579,15 @@ console.log("this.personal?.servicoid: ", this.configAgenda.servicoid);
   }
 
   salvarCompromisso(comp: any): void {
-    const token = localStorage.getItem('jwt-token');
-        const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-        console.log('entrou salvarCompromisso!');
-
-    //console.log('comp', comp);
-
-      // Cria um objeto Date com a data que já está no formato correto
-      //const dataCompleta = new Date(comp.date);
-      const dataCompleta = dayjs.utc(comp.date).tz('America/Sao_Paulo').toDate();
 
     const compromisso = {
-      /*personalid: comp.personalid,*/ // opcional se já vem do token
       agenda_id: comp.agenda_id ?? null,
       alunoid: comp.alunoid,
       localid: comp.localid,
       aluno: comp.aluno,
       local: comp.local,
       data: comp.date,
-      /*hora: comp.hour,*/
-      /*titulo: comp.titulo,*/
-      //descricao: comp.descricao,
-      statusid: comp.statusid ?? 1,/*'agendado' // padrão*/
+      statusid: comp.statusid ?? 1,
       servicoid: comp.servicoid,
       servico: comp.servico,
       hour: comp.hour,
@@ -606,12 +595,13 @@ console.log("this.personal?.servicoid: ", this.configAgenda.servicoid);
       equipto: comp.equipto,
     };
 
-    console.log('Compromisso dados enviados!');
-    //console.log(compromisso);
+    if (compromisso.agenda_id != null) {
 
-    if (!(compromisso.agenda_id == null)) {
-      this.http.put(`${environment.apiUrl}/agenda/agendas`, compromisso, { headers }).subscribe({
+      this.agendaService.salvarCompromisso(compromisso).subscribe({
         next: () => {
+          console.log('Compromisso atualizado com sucesso!');
+
+          // atualização da tela...
           console.log('Compromisso atualizado com sucesso!');
           // Atualiza tela sem carregar dados
           const atual = this.appointments$.getValue();
@@ -640,12 +630,14 @@ console.log("this.personal?.servicoid: ", this.configAgenda.servicoid);
           setTimeout(() => this.cd.markForCheck());
         },
         error: (err) => {
-          console.error('Erro ao atualizar  compromisso:', err);
+          console.error('Erro ao atualizar compromisso:', err);
         }
       });
-    }else{
-      this.http.post(`${environment.apiUrl}/agenda/agendas`, compromisso, { headers }).subscribe({
-        next: (novoCompromisso: any) => {
+
+    } else {
+
+      this.agendaService.inserirCompromisso(compromisso).subscribe({
+        next: (novoCompromisso) => {
           console.log('Compromisso inserido com sucesso!');
           // Aqui você pode recarregar a agenda ou dar feedback ao usuário
           const atual = this.appointments$.getValue();
@@ -674,8 +666,7 @@ console.log("this.personal?.servicoid: ", this.configAgenda.servicoid);
             setTimeout(() => this.cd.markForCheck());
             /*this.cd.detectChanges();*/
           }
-          
-          //this.loadAppointments();
+          // atualização da tela...
         },
         error: (err) => {
           console.error('Erro ao inserir compromisso:', err);
@@ -683,6 +674,7 @@ console.log("this.personal?.servicoid: ", this.configAgenda.servicoid);
       });
     }
   }
+
 
   getStatusCor(statusid: number): string {
     //console.warn('statusid:', statusid);
@@ -940,7 +932,7 @@ console.log('teste vai:');
 
         const token = localStorage.getItem('jwt-token');
         const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-        this.http.put(`${environment.apiUrl}/agenda/agendaStatus`, updated, { headers }).subscribe({
+        this.agendaService.salvarStatus(updated).subscribe({
           next: () => {
             console.log('Compromisso atualizado com sucesso!');
             // Aqui você pode recarregar a agenda ou dar feedback ao usuário
@@ -1023,15 +1015,19 @@ console.log('teste vai:');
       next: (retorno) => {
         console.log('SUCESSO', retorno);
       },
-      error: (erro) => {
-        console.log('ERRO', erro);
+      error: () => {
+        this.snackBar.open(
+          'Erro ao gerar agenda!',
+          'Fechar',
+          { duration: 3000 }
+        );
       }
     });
 
   }
 
   //gerarAgenda(data: Date) {
-  gerarAgenda(retornoDialog: any/*mesSelecionado: { dataInicio: Date, dataFim: Date }, alunoid: number*/) {
+  gerarAgenda(retornoDialog: any/*mesSelecionado: { dataInicio: Date, dataFim: Date }, alunoid: number*/): boolean {
     this.mostrarSeletorMes = false;
 
     const payload = {
@@ -1039,25 +1035,38 @@ console.log('teste vai:');
       data_fim: dayjs(retornoDialog.mesSelecionado.dataFim).format('YYYY-MM-DD'),
       alunoid: retornoDialog.alunoid
     };
-    const token = localStorage.getItem('jwt-token');
-    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    this.http.post(`${environment.apiUrl}/agenda/agendaGerar`, payload, { headers }).subscribe({
+    this.agendaService.gerarAgenda(payload).subscribe({
       next: () => {
-        this.snackBar.open('Agenda gerada com sucesso!', 'Fechar', { duration: 3000 });
+        this.snackBar.open(
+          'Agenda gerada com sucesso!',
+          'Fechar',
+          { duration: 3000 }
+        );
+
         this.appointments$.next([]);
         this.appointments$ = new BehaviorSubject<Appointment[]>([]);
         this.carregamentosFeitos = [];
-        this.loadAppointments(); // ⬅️ recarrega os dados após sucesso
-        
+
+        this.loadAppointments();
+
         setTimeout(() => this.cd.markForCheck());
+        return true;
       },
-      error: err => {
-        this.snackBar.open('Erro ao gerar agenda!', 'Fechar', { duration: 3000 });
-      }
+      error: () => {
+
+        this.snackBar.open(
+          'Erro ao gerar agenda!',
+          'Fechar',
+          { duration: 3000 }
+        );
+      }, 
+      
     });
+    return false;
   }
 
-  gerarRecebimentos(retornoDialog: any/*mesSelecionado: { dataInicio: Date, dataFim: Date }, alunoid: number*/) {
+
+  gerarRecebimentos(retornoDialog: any/*mesSelecionado: { dataInicio: Date, dataFim: Date }, alunoid: number*/): boolean {
     this.mostrarSeletorMes = false;
 
     const payload = {
@@ -1065,25 +1074,21 @@ console.log('teste vai:');
       data_fim: dayjs(retornoDialog.mesSelecionado.dataFim).format('YYYY-MM-DD'),
       alunoid: retornoDialog.alunoid
     };
-    const token = localStorage.getItem('jwt-token');
-    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    this.http.post(`${environment.apiUrl}/financeiro/recebimentosGerar`, payload, { headers }).subscribe({
+
+    this.recebimentosService.gerarRecebimento(payload).subscribe({
       next: () => {
         this.snackBar.open('Recebimentos gerados com sucesso!', 'Fechar', { duration: 3000 });
-        //this.appointments$.next([]);
-        //this.appointments$ = new BehaviorSubject<Appointment[]>([]);
-        //this.carregamentosFeitos = [];
-        //this.loadAppointments(); // ⬅️ recarrega os dados após sucesso
-        //setTimeout(() => this.cd.markForCheck());
+        return true;
       },
       error: err => {
         this.snackBar.open('Erro ao gerar recebimentos!', 'Fechar', { duration: 3000 });
       }
     });
+    return false;
   }
 
 
-    abrirDialogoGerarTreino() {
+  abrirDialogoGerarTreino() {
     const dialogRef = this.dialog.open(DialogGerarAgendaComponent, {
       width: '360px',
       data: {
@@ -1114,7 +1119,7 @@ console.log('teste vai:');
       //mesSelecionado: retornoDialogo.mesSelcionado;
       //const alunoid: retornoDialogo.alunoid;
       if (retornoDialogo) {
-        this.gerarAgenda(retornoDialogo);
+        if(!this.gerarAgenda(retornoDialogo)) return;
         this.gerarTreino(retornoDialogo);
       }
     });
@@ -1151,7 +1156,7 @@ console.log('teste vai:');
       if (retornoDialogo) {
         //this.gerarAgenda(mesSelecionado, alunoid);
         //this.gerarRecebimentos(mesSelecionado);
-        this.gerarAgenda(retornoDialogo);
+        if(!this.gerarAgenda(retornoDialogo)) return;
         this.gerarRecebimentos(retornoDialogo);
         this.gerarTreino(retornoDialogo);
       }
@@ -1211,21 +1216,20 @@ console.log('teste vai:');
   }
 
   carregarAgendaPeriodo(inicio: Date, fim: Date) {
-    const token = localStorage.getItem('jwt-token');
-    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
 
     const payload = {
       data_inicio: dayjs(inicio).format('YYYY-MM-DD'),
       data_fim: dayjs(fim).format('YYYY-MM-DD HH:MM')
     };
-console.log('payload:', payload);
-    this.http.post<any[]>(`${environment.apiUrl}/agenda/agendaPorPeriodo`, payload, {headers}).subscribe(dados => {
-      const novos = dados.map(item =>  ({
+    console.log('payload:', payload);
+
+    this.agendaService.listarPorPeriodo(payload).subscribe(dados => {
+
+      const novos: Appointment[] = dados.map(item => ({
         agenda_id: item.agenda_id,
         date: dayjs(item.date).toDate(),
         start: dayjs(item.start).toDate(),
         hour: item.hour,
-        /*titulo: item.titulo,*/
         alunoid: item.alunoid,
         aluno: item.aluno,
         localid: item.localid,
@@ -1238,6 +1242,9 @@ console.log('payload:', payload);
         equipto: item.equipto,
         descricao: item.descricao,
       }));
+
+      // continua o processamento...
+    //});
       const atuais = this.appointments$.value;
 
       const mesclados = [

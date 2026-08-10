@@ -429,7 +429,7 @@ console.log("this.equiptoEncontrado: ", this.equiptoEncontrado)
       this.alunoSelecionado = aluno;
       console.log('alunoSelecionado: ', this.alunoSelecionado);
       this.atualizaServico(this.alunoSelecionado.servicoid);
-      this.atualizaLocal(this.alunoSelecionado.alulocalid);
+      this.atualizaLocal(this.alunoSelecionado.localid);
     } else {
       this.form.patchValue({ alunoid: '' });
     }

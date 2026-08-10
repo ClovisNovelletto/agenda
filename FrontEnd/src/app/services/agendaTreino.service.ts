@@ -36,9 +36,7 @@ export class AgendaTreinoService {
 
   gerarAgendaTreino(payload: any) {
     console.log("payload entrou ", payload);
-    const token = localStorage.getItem('jwt-token');
-    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    return this.http.post<AgendaTreino>(`${environment.apiUrl}/agendaTreino/gerarAgendaTreinos`, payload, { headers });
+    return this.http.post<AgendaTreino>(`${environment.apiUrl}/agendaTreino/gerarAgendaTreinos`, payload, );
     console.log("payload saiu", payload);
   }
 
