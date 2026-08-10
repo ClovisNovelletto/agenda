@@ -1,6 +1,7 @@
 import express from 'express';
 import { sql } from '../db.js';
 import { authenticateToken } from "../middleware/authMiddleware.js";
+import { verificaAssinatura } from "../middleware/assinaturaMiddleware.js";
 
 console.log(">>> agendaTreino.js !");
 const router = express.Router();
@@ -154,7 +155,7 @@ router.put('/concluirTreino', authenticateToken, async (req, res) => {
 });
 
 
-router.post('/gerarAgendaTreinos', authenticateToken, async (req, res) => {
+router.post('/gerarAgendaTreinos', authenticateToken, verificaAssinatura, async (req, res) => {
 
   try {
 

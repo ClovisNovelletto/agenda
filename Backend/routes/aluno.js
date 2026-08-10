@@ -201,20 +201,27 @@ router.post('/alunoInsert', authenticateToken, async (req, res) => {
   }
 });
 
-
-router.get('/alunos', authenticateToken, async (req, res) => {
-  try {
-    const personalid = req.user.personalid;
-    const alunos = await sql`SELECT aluno_id id, aluno nome, alufone telefone, alucodconvite codigo_convite,
+/*
+/*SELECT aluno_id id, aluno nome, alufone telefone, alucodconvite codigo_convite,
                                     aludia0, aludia1, aludia2, aludia3, aludia4, aludia5, aludia6, alulocalid,
                                     aluhora0, aluhora1, aluhora2, aluhora3, aluhora4, aluhora5, aluhora6, 
                                     CASE WHEN aluservicoid=2 THEN true ELSE false END AS "mostrarEquipto", 
                                     aluplanoid as planoid, alufrequenciaid as frequenciaid,
                                     AluServicoID AS "servicoid", (SELECT Servico FROM Servicos WHERE Servico_ID=AluServicoID) AS "servico"
       FROM alunos WHERE AluPersonalID=${personalid} AND AluAtivo = true
-      ORDER BY aluno`;
+*/
+
+router.get('/alunos', authenticateToken, async (req, res) => {
+  try {
+    const personalid = req.user.personalid;
+    const alunos = await sql`
+          SELECT * FROM h2ualunolista 
+            WHERE PersonalID=${personalid} 
+              AND Ativo = true
+          ORDER BY nome`;
     res.json(alunos);
-    //console.log(res.json(result.rows));
+    //console.log('ALUNOS:', alunos);
+
   } catch(err) {
       console.error(err);
     res.status(500).send('Erro ao buscar alunos');

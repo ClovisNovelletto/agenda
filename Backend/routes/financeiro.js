@@ -1,6 +1,7 @@
 import express from 'express';
 import { sql } from '../db.js';
 import { authenticateToken } from "../middleware/authMiddleware.js";
+import { verificaAssinatura } from "../middleware/assinaturaMiddleware.js";
 
 console.log(">>> financeiro.js !");
 const router = express.Router();
@@ -213,7 +214,7 @@ router.put('/recebimentoSave', authenticateToken, async (req, res) => {
 });
 
 
-router.post('/recebimentosGerar', authenticateToken, async (req, res) => {
+router.post('/recebimentosGerar', authenticateToken, verificaAssinatura, async (req, res) => {
   const personalid = req.user.personalid;
   const {data_inicio, data_fim, alunoid} = req.body;
 

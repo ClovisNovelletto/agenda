@@ -81,7 +81,7 @@ router.post('/carregaPlanos', authenticateToken, async (req, res) => {
       WHERE ativo=true
       `;
 
-    console.log("planos: ", planos)
+    //console.log("planos: ", planos)
 
     res.json(planos);
     

@@ -45,21 +45,39 @@ router.post('/login', async (req, res) => {
       const userid = user.id;
       const tipo = user.tipo_usuario;
       let personalid = null;
+      let ass_diasaviso = null;
+      let ass_status = null;
+      let ass_validade = null;
       let alunoid = null;
 
+
+      /*Personal*/
       if (tipo == 2) {
-        const resPersonal = await sql`SELECT personal_id FROM personals WHERE peruserid = ${userid}`;
+        const resPersonal = await sql`
+            SELECT personal_id,
+                   asdias_aviso diasaviso, 
+                   asstatus status, 
+                   asdata_fim validade
+              FROM personals
+              INNER JOIN Assinaturas ON AsPersonalID=Personal_ID
+            WHERE peruserid = ${userid}`;
+
         personalid = resPersonal[0]?.personal_id ?? null;
+        ass_diasaviso = resPersonal[0]?.diasaviso ?? null;
+        ass_status = resPersonal[0]?.status ?? null;
+        ass_validade = resPersonal[0]?.validade ?? null;
+
+        /*aluno*/
       } else if (tipo ==3) {
         const resAluno = await sql`SELECT aluno_id FROM alunos WHERE aluuserid = ${userid}`;
         alunoid = resAluno[0]?.aluno_id ?? null;
       }
 
       // Gera o token JWT com informações do usuário
-      const token = jwt.sign({ email, tipo, personalid, alunoid, userid }, SECRET_KEY, { expiresIn: '30d' });
+      const token = jwt.sign({ email, tipo, personalid, alunoid, userid, ass_diasaviso, ass_status, ass_validade }, SECRET_KEY, { expiresIn: '30d' });
 
       const tokenRefresh = jwt.sign(
-      { email: email, tipo: tipo, personalid: personalid, alunoid: alunoid, userid: userid }, SECRET_KEY_REFRESH, { expiresIn: '30d' });
+      { email: email, tipo: tipo, personalid: personalid, alunoid: alunoid, userid: userid, ass_diasaviso: ass_diasaviso, ass_status: ass_status, ass_validade: ass_validade }, SECRET_KEY_REFRESH, { expiresIn: '30d' });
       //console.log(token);
       //console.log(tokenRefresh);
       res.json({ token, tokenRefresh, mensagem: 'Login bem-sucedido!' });
@@ -92,6 +110,9 @@ router.post('/refresh', async (req, res) => {
     const email = decoded.email;
     const tipo = decoded.tipo;
     const personalid = decoded.personalid;
+    const ass_diasaviso = decoded.ass_diasaviso;
+    const ass_status = decoded.ass_status;
+    const ass_validade = decoded.ass_validade;
     const alunoid = decoded.alunoid;
 
     //console.log(userid);
@@ -108,13 +129,13 @@ router.post('/refresh', async (req, res) => {
     }
 
     const token = jwt.sign(
-      { email: email, tipo: tipo, personalid: personalid, alunoid: alunoid, userid: userid },
+      { email: email, tipo: tipo, personalid: personalid, alunoid: alunoid, userid: userid, ass_diasaviso: ass_diasaviso, ass_status: ass_status, ass_validade: ass_validade },
       SECRET_KEY,
       { expiresIn: '30d' }
     );
 
     const tokenRefresh = jwt.sign(
-      { email: email, tipo: tipo, personalid: personalid, alunoid: alunoid, userid: userid },
+      { email: email, tipo: tipo, personalid: personalid, alunoid: alunoid, userid: userid, ass_diasaviso: ass_diasaviso, ass_status: ass_status, ass_validade: ass_validade },
       SECRET_KEY_REFRESH,
       { expiresIn: '30d' }
     );

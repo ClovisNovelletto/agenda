@@ -1,6 +1,7 @@
 import express from 'express';
 import { sql } from '../db.js';
 import { authenticateToken } from "../middleware/authMiddleware.js";
+import { verificaAssinatura } from "../middleware/assinaturaMiddleware.js";
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc.js';
 import timezone from 'dayjs/plugin/timezone.js';
@@ -37,7 +38,7 @@ router.get('/agendaStatus', authenticateToken, async (req, res) => {
   }
 });
 
-router.put('/agendasDescricao', authenticateToken, async (req, res) => {
+router.put('/agendaUpDescricao', authenticateToken, verificaAssinatura, async (req, res) => {
   const { agenda_id, descricao } = req.body;
   const personalid = req.user.personalid;
   //console.log("agenda_id", agenda_id);
@@ -55,7 +56,7 @@ router.put('/agendasDescricao', authenticateToken, async (req, res) => {
     }
 });
 
-router.put('/agendas', authenticateToken, async (req, res) => {
+router.put('/agendaUpAll', authenticateToken, verificaAssinatura, async (req, res) => {
   const personalid = req.user.personalid;
   // tratamento equipto indefinido
   if (typeof req.body[`equiptoid`] === 'undefined') {
@@ -91,7 +92,7 @@ router.put('/agendas', authenticateToken, async (req, res) => {
     }
 });
 
-router.put('/agendaStatus', authenticateToken, async (req, res) => {
+router.put('/agendaUpStatus', authenticateToken, verificaAssinatura, async (req, res) => {
   const { agenda_id, alunoid, localid, data, /*hora,*/ /*titulo,*/ /*descricao,*/ statusid } = req.body;
 
   // UPDATE
@@ -108,7 +109,7 @@ router.put('/agendaStatus', authenticateToken, async (req, res) => {
 });
 
 
-router.post('/agendaGerar', authenticateToken, async (req, res) => {
+router.post('/agendaGerar', authenticateToken, verificaAssinatura, async (req, res) => {
   const personalid = req.user.personalid;
   const {data_inicio, data_fim, alunoid} = req.body;
 
@@ -170,7 +171,7 @@ router.post('/agendaPorPeriodo', authenticateToken, async (req, res) => {
   }
 });
 
-router.post('/agendas', authenticateToken, async (req, res) => {
+router.post('/agendaIns', authenticateToken, verificaAssinatura, async (req, res) => {
   const personalid = req.user.personalid;
 
   // tratamento equipto indefinido
