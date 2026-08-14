@@ -76,9 +76,12 @@ router.post('/dadosPagtos', authenticateToken, async (req, res) => {
 router.post('/carregaPlanos', authenticateToken, async (req, res) => {
   try { console.log("carrega Planos");
 
+    const ass_planostipoid = req.user.ass_planostipoid;
+
     const planos = await sql`select * 
         FROM h2uplanos
       WHERE ativo=true
+        AND planostipo_id = ${ass_planostipoid}
       `;
 
     //console.log("planos: ", planos)
