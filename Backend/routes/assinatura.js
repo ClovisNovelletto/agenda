@@ -32,7 +32,8 @@ router.get('/dadosPlano', authenticateToken, async (req, res) => {
       asdata_inicio: assinatura[0].asdata_inicio,
       asdata_fim: assinatura[0].asdata_fim,
       asgateway: assinatura[0].asgateway,
-      diasrestantes: assinatura[0].diasrestantes
+      diasrestantes: assinatura[0].diasrestantes,
+      asplanostipoid: assinatura[0].asplanostipoid
     });
 
     res.json({assinatura_id: assinatura[0].assinatura_id,
@@ -44,7 +45,8 @@ router.get('/dadosPlano', authenticateToken, async (req, res) => {
       asdata_inicio: assinatura[0].asdata_inicio,
       asdata_fim: assinatura[0].asdata_fim,
       asgateway: assinatura[0].asgateway,
-      diasrestantes: assinatura[0].diasrestantes
+      diasrestantes: assinatura[0].diasrestantes,
+      asplanostipoid: assinatura[0].asplanostipoid
     });
     
   } catch (err) {
