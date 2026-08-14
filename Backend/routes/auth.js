@@ -116,6 +116,7 @@ router.post('/refresh', async (req, res) => {
     const ass_diasaviso = decoded.ass_diasaviso;
     const ass_status = decoded.ass_status;
     const ass_validade = decoded.ass_validade;
+    const ass_planostipoid = decoded.ass_planostipoid;
     const alunoid = decoded.alunoid;
 
     //console.log(userid);
@@ -132,13 +133,13 @@ router.post('/refresh', async (req, res) => {
     }
 
     const token = jwt.sign(
-      { email: email, tipo: tipo, personalid: personalid, alunoid: alunoid, userid: userid, ass_diasaviso: ass_diasaviso, ass_status: ass_status, ass_validade: ass_validade },
+      { email: email, tipo: tipo, personalid: personalid, alunoid: alunoid, userid: userid, ass_diasaviso: ass_diasaviso, ass_status: ass_status, ass_validade: ass_validade, ass_planostipoid: ass_planostipoid },
       SECRET_KEY,
       { expiresIn: '30d' }
     );
 
     const tokenRefresh = jwt.sign(
-      { email: email, tipo: tipo, personalid: personalid, alunoid: alunoid, userid: userid, ass_diasaviso: ass_diasaviso, ass_status: ass_status, ass_validade: ass_validade },
+      { email: email, tipo: tipo, personalid: personalid, alunoid: alunoid, userid: userid, ass_diasaviso: ass_diasaviso, ass_status: ass_status, ass_validade: ass_validade, ass_planostipoid: ass_planostipoid },
       SECRET_KEY_REFRESH,
       { expiresIn: '30d' }
     );
