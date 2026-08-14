@@ -48,6 +48,7 @@ router.post('/login', async (req, res) => {
       let ass_diasaviso = null;
       let ass_status = null;
       let ass_validade = null;
+      let ass_planostipoid = null;
       let alunoid = null;
 
 
@@ -57,7 +58,8 @@ router.post('/login', async (req, res) => {
             SELECT personal_id,
                    asdias_aviso diasaviso, 
                    asstatus status, 
-                   asdata_fim validade
+                   asdata_fim validade,
+                   asplanostipoid planostipoid
               FROM personals
               INNER JOIN Assinaturas ON AsPersonalID=Personal_ID
             WHERE peruserid = ${userid}`;
@@ -66,6 +68,7 @@ router.post('/login', async (req, res) => {
         ass_diasaviso = resPersonal[0]?.diasaviso ?? null;
         ass_status = resPersonal[0]?.status ?? null;
         ass_validade = resPersonal[0]?.validade ?? null;
+        ass_planostipoid = resPersonal[1]?.planostipoid ?? null;
 
         /*aluno*/
       } else if (tipo ==3) {
@@ -74,10 +77,10 @@ router.post('/login', async (req, res) => {
       }
 
       // Gera o token JWT com informações do usuário
-      const token = jwt.sign({ email, tipo, personalid, alunoid, userid, ass_diasaviso, ass_status, ass_validade }, SECRET_KEY, { expiresIn: '30d' });
+      const token = jwt.sign({ email, tipo, personalid, alunoid, userid, ass_diasaviso, ass_status, ass_validade, ass_planostipoid }, SECRET_KEY, { expiresIn: '30d' });
 
       const tokenRefresh = jwt.sign(
-      { email: email, tipo: tipo, personalid: personalid, alunoid: alunoid, userid: userid, ass_diasaviso: ass_diasaviso, ass_status: ass_status, ass_validade: ass_validade }, SECRET_KEY_REFRESH, { expiresIn: '30d' });
+      { email: email, tipo: tipo, personalid: personalid, alunoid: alunoid, userid: userid, ass_diasaviso: ass_diasaviso, ass_status: ass_status, ass_validade: ass_validade, ass_planostipoid: ass_planostipoid }, SECRET_KEY_REFRESH, { expiresIn: '30d' });
       //console.log(token);
       //console.log(tokenRefresh);
       res.json({ token, tokenRefresh, mensagem: 'Login bem-sucedido!' });
@@ -196,9 +199,11 @@ router.post('/cadastro-personal', async (req, res) => {
 
     const personalid  = personal[0].personal_id;
     const assinatura = await sql`      
-      INSERT INTO assinaturas(ASPersonalID, asplano, asvalor, asdias_aviso, asstatus, asgateway, asdata_inicio, asdata_fim)
-      SELECT ${personalid} personalid, 'teste 10 dias' plano, 0.00 valor, 10 dias_aviso, 'Ativa' status,
-            'Mercado Pago' getway, now() inicio, now() + interval '10 day' validade
+      INSERT INTO assinaturas(ASPersonalID, asplanoid, asplano, asvalor, asdias_aviso, asstatus, asgateway, asdata_inicio, asdata_fim)
+      SELECT ${personalid} personalid,  CASE WHEN YEAR(NOW)<2028 THEN 1 ELSE 2 END Plano,
+              CASE WHEN YEAR(NOW)<2028 THEN 'Pioneiro' ELSE 'Premiun - teste 10 dias' END plano,
+              0.00 valor, 10 dias_aviso, 'Ativa' status, 'Mercado Pago' getway, now() inicio, 
+              CASE WHEN YEAR(NOW)<2028 THEN CAST('2027-12-31' AS TIMESTAMP) ELSE now() + interval '10 day' END validade
       RETURNING *`; 
 
     // link de verificação
