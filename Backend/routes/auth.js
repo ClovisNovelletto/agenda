@@ -292,10 +292,40 @@ router.post('/register-aluno', async (req, res) => {
       await sendMail(
         email,
         "Confirme seu e-mail",
+        `
+          <p>Olá ${nome},</p>
+
+          <p>Confirme seu e-mail clicando no link abaixo:</p>
+
+          <p>
+            <a href="${verifyLink}">Confirmar meu e-mail</a>
+          </p>
+
+          <p>
+            Ao utilizar o H2u Agenda, você estará sujeito aos nossos
+            <a href="https://app.h2uagenda.com.br/termos-de-uso">
+              Termos de Uso
+            </a>
+            e à nossa
+            <a href="https://app.h2uagenda.com.br/politica-privacidade">
+              Política de Privacidade
+            </a>.
+          </p>
+
+          <p>
+            Em caso de dúvidas sobre privacidade, entre em contato pelo e-mail
+            <a href="mailto:h2uagenda@gmail.com">h2uagenda@gmail.com</a>.
+          </p>
+        `
+      );
+      /*
+      await sendMail(
+        email,
+        "Confirme seu e-mail",
         `<p>Olá ${nome},</p>
         <p>Confirme seu e-mail clicando no link abaixo:</p>
         <a href="${verifyLink}">${verifyLink}</a>`
-      );
+      );*/
     } catch (err) {
       console.error('Erro ao enviar e-mail:', err);
       return res.status(500).json({ mensagem: 'Usuário criado, mas falha ao enviar e-mail de confirmação.' });
