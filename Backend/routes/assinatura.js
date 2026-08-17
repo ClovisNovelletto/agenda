@@ -23,7 +23,7 @@ router.get('/dadosPlano', authenticateToken, async (req, res) => {
         WHERE aspersonalid =${personalid}
         `;
 
-    console.log("assinatura: ", {assinatura_id: assinatura[0].assinatura_id,
+    /*console.log("assinatura: ", {assinatura_id: assinatura[0].assinatura_id,
       aspersonalid: assinatura[0].aspersonalid,
       asplano: assinatura[0].asplano,
       asvalor: assinatura[0].asvalor,
@@ -34,7 +34,7 @@ router.get('/dadosPlano', authenticateToken, async (req, res) => {
       asgateway: assinatura[0].asgateway,
       diasrestantes: assinatura[0].diasrestantes,
       asplanostipoid: assinatura[0].asplanostipoid
-    });
+    });*/
 
     res.json({assinatura_id: assinatura[0].assinatura_id,
       aspersonalid: assinatura[0].aspersonalid,
@@ -65,7 +65,7 @@ router.post('/dadosPagtos', authenticateToken, async (req, res) => {
       WHERE personalid =${personalid}
       `;
 
-    console.log("assinaturaPagto: " + assinaturaPagto)
+    //console.log("assinaturaPagto: " + assinaturaPagto)
 
     res.json(assinaturaPagto);
     
@@ -79,6 +79,8 @@ router.post('/carregaPlanos', authenticateToken, async (req, res) => {
   try { console.log("carrega Planos");
 
     const ass_planostipoid = req.user.ass_planostipoid;
+    //console.log('req.user',req.user);
+    //console.log('ass_planostipoid',ass_planostipoid);
 
     const planos = await sql`select * 
         FROM h2uplanos

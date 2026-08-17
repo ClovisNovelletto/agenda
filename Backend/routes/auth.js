@@ -68,7 +68,7 @@ router.post('/login', async (req, res) => {
         ass_diasaviso = resPersonal[0]?.diasaviso ?? null;
         ass_status = resPersonal[0]?.status ?? null;
         ass_validade = resPersonal[0]?.validade ?? null;
-        ass_planostipoid = resPersonal[1]?.planostipoid ?? null;
+        ass_planostipoid = resPersonal[0]?.planostipoid ?? null;
 
         /*aluno*/
       } else if (tipo ==3) {
@@ -76,11 +76,13 @@ router.post('/login', async (req, res) => {
         alunoid = resAluno[0]?.aluno_id ?? null;
       }
 
+       
       // Gera o token JWT com informações do usuário
       const token = jwt.sign({ email, tipo, personalid, alunoid, userid, ass_diasaviso, ass_status, ass_validade, ass_planostipoid }, SECRET_KEY, { expiresIn: '30d' });
-
+console.log('token', token);
       const tokenRefresh = jwt.sign(
       { email: email, tipo: tipo, personalid: personalid, alunoid: alunoid, userid: userid, ass_diasaviso: ass_diasaviso, ass_status: ass_status, ass_validade: ass_validade, ass_planostipoid: ass_planostipoid }, SECRET_KEY_REFRESH, { expiresIn: '30d' });
+console.log('tokenRefresh', tokenRefresh);      
       //console.log(token);
       //console.log(tokenRefresh);
       res.json({ token, tokenRefresh, mensagem: 'Login bem-sucedido!' });
@@ -143,6 +145,8 @@ router.post('/refresh', async (req, res) => {
       SECRET_KEY_REFRESH,
       { expiresIn: '30d' }
     );
+    console.log('token', token);
+    console.log('tokenRefresh', tokenRefresh);
     res.json({ token, tokenRefresh });
   } catch (err) {
     console.log("saiu pelo catch");
