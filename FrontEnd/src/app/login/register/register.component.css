@@ -82,7 +82,7 @@ h2 {
 .password-rules {
   font-size: 13px;
   color: #bbb;
-  margin-top: 6px;
+  margin-top: 0px;
   align-items: left;
   text-align: left;
 }
@@ -126,4 +126,13 @@ h2 {
   background-color: #00c853 !important;
   color: white !important;
   font-weight: 600;
+}
+
+.termos-checkbox {
+  margin-top: 40px;
+}
+
+.termos-checkbox ::ng-deep .mdc-label {
+  font-size: 10px !important;
+  line-height: 1.4;
 }

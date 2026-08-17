@@ -27,6 +27,8 @@ import { TreinoAlunoComponent} from './acessoAluno/treino-aluno/treino-aluno.com
 import { AnamneseAlunoListaComponent} from './acessoAluno/anamnese-aluno/anamnese-lista/anamnese-lista.component'
 import { ConfiguracoesAlunoComponent} from './acessoAluno/configuracoes-aluno/configuracoes-aluno.component'
 import { AssinaturaComponent} from './assinatura/assinatura.component'
+import { PoliticaPrivacidadeComponent} from './lgpd/politica-privacidade/politica-privacidade.component'
+import { TermosDeUsoComponent} from './lgpd/termos-de-uso/termos-de-uso.component'
 
 import { HomeComponent } from './home/home.component';
 import { PdfListaComponent } from './pdfs/pdf-lista.component';
@@ -60,6 +62,8 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'esqueci-senha', component: EsqueciSenhaComponent },
   { path: 'resetar-senha', component: ResetarSenhaComponent },
+  { path: 'politica-privacidade', component: PoliticaPrivacidadeComponent },
+  { path: 'termos-de-uso', component: TermosDeUsoComponent },
 
   /*acessos do aluno*/
   { path: 'agenda-Aluno', canActivate: [AuthGuard], loadComponent: () => import('./acessoAluno/agenda-aluno/agenda-aluno.component').then(m => m.AgendaAlunoComponent)},

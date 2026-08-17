@@ -112,6 +112,27 @@
               <a routerLink="/login">Voltar ao login</a>
             </div>
         </div>
+
+        <div class="termos-checkbox">
+          <mat-checkbox formControlName="aceitouTermos">
+
+            Li e concordo com os
+            <a
+              routerLink="/termos-de-uso"
+              (click)="$event.stopPropagation()">
+              Termos de Uso<br>
+            </a>
+
+            e estou ciente da
+
+            <a
+              routerLink="/politica-privacidade"
+              (click)="$event.stopPropagation()">
+              Política de Privacidade
+            </a>.
+
+          </mat-checkbox>
+        </div>
       </div>
     </form>
   </div>

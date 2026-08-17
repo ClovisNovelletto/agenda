@@ -39,7 +39,9 @@ ngOnInit() {
         path === '/register' ||
         path === '/login' ||
         path === '/resetar-senha' ||
-        path === '/esqueci-senha'
+        path === '/esqueci-senha' ||
+        path === '/politica-privacidade' ||
+        path === '/termos-de-uso'
     ) {
         return;
     }

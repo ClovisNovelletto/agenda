@@ -17,13 +17,14 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthLayoutComponent } from '../auth-layout/auth-layout.component'; // Adjust path
 import { RouterModule } from '@angular/router';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @Component({
   standalone: true,
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css'],
-  imports: [FormsModule, CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, 
+  imports: [FormsModule, CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatCheckboxModule,
             MatButtonModule, MatIconModule, MatToolbarModule, AuthLayoutComponent, RouterModule], // Adicione o RouterModule aqui]
 })
 export class RegisterComponent implements OnInit {
@@ -53,6 +54,7 @@ export class RegisterComponent implements OnInit {
       number: false,
       special: false
     };
+    aceitouTermos = false;
 
   constructor(private http: HttpClient, private router: Router, private fb: FormBuilder, private snackBar: MatSnackBar) {}
 
@@ -63,7 +65,8 @@ export class RegisterComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       /*usuario: ['', Validators.required],*/
       senha: ['', Validators.required],
-      codigoConvite: [''/*, Validators.required*/]
+      codigoConvite: [''/*, Validators.required*/],
+      aceitouTermos: [false, Validators.requiredTrue]
     });
   }
 
