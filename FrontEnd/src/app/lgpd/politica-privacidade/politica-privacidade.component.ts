@@ -21,18 +21,18 @@ import { Capacitor } from '@capacitor/core';
 })
 export class PoliticaPrivacidadeComponent {
 
-  isMobile: boolean = false;
+  //isMobile: boolean = false;
   constructor(private router: Router, private location: Location,) {}    
-  ngOnInit(): void {
-    this.isMobile = window.innerWidth <= 1028; // ajustável conforme seu layout
-      window.addEventListener('resize', () => {
-        this.isMobile = window.innerWidth <= 1028;
-        this.isMobile = window.innerWidth <= 1028;
-    });
-  }
+  //ngOnInit(): void {
+  //  this.isMobile = window.innerWidth <= 1028; // ajustável conforme seu layout
+  //    window.addEventListener('resize', () => {
+  //      this.isMobile = window.innerWidth <= 1028;
+  //      this.isMobile = window.innerWidth <= 1028;
+  //  });
+  //}
 
   voltar(): void {
-    if (Capacitor.isNativePlatform() || this.isMobile) {
+    if (Capacitor.isNativePlatform()) {
       this.location.back();
     } else if (window.history.length > 1) {
       this.location.back();
@@ -41,6 +41,7 @@ export class PoliticaPrivacidadeComponent {
       //this.router.navigate(['/']);
     }
   }
+
   voltar_EXCLUIR(): void {
     this.location.back();
     //this.router.navigate(['/']);
