@@ -129,10 +129,28 @@ h2 {
 }
 
 .termos-checkbox {
-  margin-top: 40px;
+  margin-top: 45px;
 }
 
 .termos-checkbox ::ng-deep .mdc-label {
-  font-size: 10px !important;
+  font-size: 12px !important;
   line-height: 1.4;
+}
+/*
+a {
+  color: #e85d00;
+  text-decoration: none;
+  font-weight: 500;
+}
+*/
+/* Cor padrão do link inativo */
+a {
+  color: #e85d00;
+  text-decoration: none;
+}
+
+/* Cor do link quando a rota está ativa (clicada) */
+a.ativo {
+  color: red;
+  font-weight: bold;
 }

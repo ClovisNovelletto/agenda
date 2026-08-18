@@ -119,6 +119,8 @@
             Li e concordo com os
             <a
               routerLink="/termos-de-uso"
+              routerLinkActive="ativo"
+              target="_blank"
               (click)="$event.stopPropagation()">
               Termos de Uso<br>
             </a>
@@ -127,6 +129,9 @@
 
             <a
               routerLink="/politica-privacidade"
+              routerLinkActive="ativo"
+              [routerLinkActiveOptions]="{exact: true}"
+              target="_blank"
               (click)="$event.stopPropagation()">
               Política de Privacidade
             </a>.

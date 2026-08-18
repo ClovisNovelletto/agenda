@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { Location } from '@angular/common';
 import { Router } from '@angular/router';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-privacidade',
@@ -22,8 +23,18 @@ export class PoliticaPrivacidadeComponent {
     constructor(private router: Router, private location: Location,) {}    
 
 
-    voltar(): void {
+  voltar(): void {
+    if (Capacitor.isNativePlatform()) {
       this.location.back();
+    } else if (window.history.length > 1) {
+      this.location.back();
+    } else {
+      window.close();
       //this.router.navigate(['/']);
     }
+  }
+  voltar_EXCLUIR(): void {
+    this.location.back();
+    //this.router.navigate(['/']);
+  }
 }
