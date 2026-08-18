@@ -205,10 +205,24 @@ router.post('/cadastro-personal', async (req, res) => {
     const personalid  = personal[0].personal_id;
     const assinatura = await sql`      
       INSERT INTO assinaturas(ASPersonalID, asplanoid, asplano, asvalor, asdias_aviso, asstatus, asgateway, asdata_inicio, asdata_fim)
-      SELECT ${personalid} personalid,  CASE WHEN YEAR(NOW)<2028 THEN 1 ELSE 2 END Plano,
-              CASE WHEN YEAR(NOW)<2028 THEN 'Pioneiro' ELSE 'Premiun - teste 10 dias' END plano,
-              0.00 valor, 10 dias_aviso, 'Ativa' status, 'Mercado Pago' getway, now() inicio, 
-              CASE WHEN YEAR(NOW)<2028 THEN CAST('2027-12-31' AS TIMESTAMP) ELSE now() + interval '10 day' END validade
+      SELECT ${personalid} personalid,  
+	  		 CASE WHEN EXTRACT(YEAR FROM NOW()) < 2028
+			   	  THEN 1 
+				  ELSE 2 
+			 END Plano,
+             CASE WHEN EXTRACT(YEAR FROM NOW()) < 2028 
+			 	  THEN 'Pioneiro' 
+				  ELSE 'Premiun - teste 10 dias'
+			 END plano,
+             0.00 valor,
+			 10 dias_aviso,
+			 'Ativa' status,
+			 'Mercado Pago' getway,
+			 now() inicio, 
+             CASE 
+			     WHEN EXTRACT(YEAR FROM NOW()) < 2028 THEN CAST('2027-12-31' AS TIMESTAMP) 
+			     ELSE NOW() + INTERVAL '10 days' 
+			 END AS validade       
       RETURNING *`; 
 
     // link de verificação
@@ -218,10 +232,39 @@ router.post('/cadastro-personal', async (req, res) => {
       await sendMail(
         email,
         "Confirme seu e-mail",
+        `
+          <p>Olá ${nome},</p>
+
+          <p>Confirme seu e-mail clicando no link abaixo:</p>
+
+          <p>
+            <a href="${verifyLink}">Confirmar meu e-mail</a>
+          </p>
+
+          <p>
+            Ao utilizar o H2u Agenda, você estará sujeito aos nossos
+            <a href="https://app.h2uagenda.com.br/termos-de-uso">
+              Termos de Uso
+            </a>
+            e à nossa
+            <a href="https://app.h2uagenda.com.br/politica-privacidade">
+              Política de Privacidade
+            </a>.
+          </p>
+
+          <p>
+            Em caso de dúvidas sobre privacidade, entre em contato pelo e-mail
+            <a href="mailto:h2uagenda@gmail.com">h2uagenda@gmail.com</a>.
+          </p>
+        `
+      );      
+      /*await sendMail(
+        email,
+        "Confirme seu e-mail",
         `<p>Olá ${nome},</p>
         <p>Confirme seu e-mail clicando no link abaixo:</p>
         <a href="${verifyLink}">${verifyLink}</a>`
-      );
+      );*/
     } catch (err) {
       console.error('Erro ao enviar e-mail:', err);
       return res.status(500).json({ mensagem: 'Usuário criado, mas falha ao enviar e-mail de confirmação.' });
