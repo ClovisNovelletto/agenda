@@ -204,12 +204,12 @@ router.post('/cadastro-personal', async (req, res) => {
 
     const personalid  = personal[0].personal_id;
     const assinatura = await sql`      
-      INSERT INTO assinaturas(ASPersonalID, asplanoid, asplano, asvalor, asdias_aviso, asstatus, asgateway, asdata_inicio, asdata_fim)
+      INSERT INTO assinaturas(ASPersonalID, asplanostipoid, asplano, asvalor, asdias_aviso, asstatus, asgateway, asdata_inicio, asdata_fim)
       SELECT ${personalid} personalid,  
 	  		 CASE WHEN EXTRACT(YEAR FROM NOW()) < 2028
 			   	  THEN 1 
 				  ELSE 2 
-			 END Plano,
+			 END PlanosTipoID,
              CASE WHEN EXTRACT(YEAR FROM NOW()) < 2028 
 			 	  THEN 'Pioneiro' 
 				  ELSE 'Premiun - teste 10 dias'
