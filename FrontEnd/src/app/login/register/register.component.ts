@@ -60,13 +60,6 @@ export class RegisterComponent implements OnInit {
 
     ngOnInit() {
 
-  const dados = sessionStorage.getItem('cadastroForm');
-
-    if (dados) {
-      this.formData.patchValue(JSON.parse(dados));
-      this.formData.updateValueAndValidity();
-    }
-
     this.formData = this.fb.group({
       tipoUsuario: ['', Validators.required],
       nome: ['', Validators.required],
@@ -76,6 +69,16 @@ export class RegisterComponent implements OnInit {
       codigoConvite: [''/*, Validators.required*/],
       aceitouTermos: [false, Validators.requiredTrue]
     });
+
+    const dados = sessionStorage.getItem('cadastroForm');
+
+    if (dados) {
+      const dadosForm = JSON.parse(dados);
+      this.formData.patchValue(dadosForm);
+      this.formData.updateValueAndValidity();
+      this.checkPasswordStrength(dadosForm.senha);
+    }
+
   }
 
   onRegister() {
