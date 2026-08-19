@@ -59,6 +59,14 @@ export class RegisterComponent implements OnInit {
   constructor(private http: HttpClient, private router: Router, private fb: FormBuilder, private snackBar: MatSnackBar) {}
 
     ngOnInit() {
+
+  const dados = sessionStorage.getItem('cadastroForm');
+
+    if (dados) {
+      this.formData.patchValue(JSON.parse(dados));
+      this.formData.updateValueAndValidity();
+    }
+
     this.formData = this.fb.group({
       tipoUsuario: ['', Validators.required],
       nome: ['', Validators.required],
@@ -200,4 +208,11 @@ export class RegisterComponent implements OnInit {
       }
     });      
   }
+
+  salvarEstadoFormulario(): void {
+    sessionStorage.setItem(
+      'cadastroForm',
+      JSON.stringify(this.formData.getRawValue())
+    );
+  }  
 }

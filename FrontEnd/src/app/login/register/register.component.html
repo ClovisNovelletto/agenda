@@ -117,13 +117,20 @@
           <mat-checkbox formControlName="aceitouTermos">
 
             Li e concordo com os <br>
+
             <a
+              routerLink="/termos-de-uso"
+              target="_blank"
+              (click)="salvarEstadoFormulario()">
+              Termos de Uso<br>
+            </a>
+            <!--<a
               routerLink="/termos-de-uso"
               routerLinkActive="ativo"
               target="_blank"
               (click)="$event.stopPropagation()">
               Termos de Uso<br>
-            </a>
+            </a>-->
 
             e estou ciente da <br>
 
